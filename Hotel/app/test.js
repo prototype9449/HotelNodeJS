@@ -6,12 +6,21 @@ var request = new SqlRequest({
 });
 
 let data = {
-   FullName : 'fsdfsttf',
+   Id : 28,
+   FullName : 'SomeName',
+   Passport : 'Passport',
+   Sex : 0
+};
+
+let data1 = {
+   Id : 28,
+   FullName : '2222',
    Passport : '32423424',
    Sex : 0
 };
 
-request.insertClient(data).then(()=> {
+request.updateClient(data, data1).then(()=> {
+   console.log('success');
    //request.deleteClient(data).then(() => {
    //   console.log('Success');
    //}).catch(console.log);
