@@ -1,0 +1,8 @@
+{
+  "Clients" : "Clients",
+  "Rooms" : "Rooms",
+  "RoomClient" : "RoomClient",
+  "RoomReservation" : "RoomReservation",
+  "DeleteBestClientInfo" : "DeleteBestClientInfo",
+  "ConnectionString" : "mssql://@login:@password@localhost/MyBase"
+}
