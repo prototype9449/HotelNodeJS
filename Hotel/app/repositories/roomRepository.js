@@ -7,8 +7,9 @@ class RoomRepository extends BaseRepository {
         super(user);
     }
 
-    getAll() {
-        return super.getObjects(constants.Rooms);
+    getAll(object) {
+        delete object.Id;
+        return super.getObjects(object, constants.Rooms);
     }
 
     insert(room) {

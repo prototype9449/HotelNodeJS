@@ -7,8 +7,8 @@ class RoomReservationRepository extends BaseRepository {
         super(user);
     }
 
-    getAll() {
-        return super.getObjects(constants.RoomReservation);
+    getAll(object) {
+        return super.getObjects(object, constants.RoomReservation);
     }
 
     insert(roomReservation) {

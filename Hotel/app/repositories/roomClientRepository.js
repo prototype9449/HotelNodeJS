@@ -7,8 +7,8 @@ class RoomClientRepository extends BaseRepository {
         super(user);
     }
 
-    getAll() {
-        return super.getObjects(constants.RoomClient);
+    getAll(object) {
+        return super.getObjects(object, constants.RoomClient);
     }
 
     insert(roomClient) {

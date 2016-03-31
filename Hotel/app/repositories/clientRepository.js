@@ -3,12 +3,13 @@ let BaseRepository = require('./baseRepository');
 let constants = require('../constants.json');
 
 class ClientRepository extends BaseRepository {
-    constructor(user){
+    constructor(user) {
         super(user);
     }
 
-    getAll() {
-        return super.getObjects(constants.Clients);
+    getAll(object) {
+        delete object.Id;
+        return super.getObjects(object, constants.Clients);
     }
 
     insert(client) {
@@ -28,12 +29,12 @@ class ClientRepository extends BaseRepository {
     }
 
     deleteBestClientInfo(year) {
-       return this.sqlInstance.connect().then(() => {
-            let request =  this.sqlInstance.createRequest();
+        return this.sqlInstance.connect().then(() => {
+            let request = this.sqlInstance.createRequest();
 
-           return request
-               .input('year', year)
-               .execute('DeleteBestClientInfo');
+            return request
+                .input('year', year)
+                .execute('DeleteBestClientInfo');
         });
     }
 }

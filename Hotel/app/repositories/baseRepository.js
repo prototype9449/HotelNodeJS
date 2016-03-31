@@ -3,9 +3,13 @@
 let sql = require('mssql');
 let tablesInfo = require('../constants');
 
-function createSelectQuery(sqlInstance, tableName) {
+function createSelectQuery(sqlInstance, object, tableName) {
     return sqlInstance.connect().then(() => {
-        return new sql.Request().query('select * from ' + tableName);
+        let properties = getPropertyCollection(object);
+        let equalString = properties.map(x => `${x.name} like '%' + @${x.name} + '%'`).join(' and ');
+        let queryString = `select * from ${tableName} where ${equalString}`;
+        let request = getFilledParamsRequest(sqlInstance, properties);
+        return request.query(queryString);
     });
 }
 
@@ -94,8 +98,8 @@ class BaseRepository {
         };
     }
 
-    getObjects(tableName) {
-        return createSelectQuery(this.sqlInstance, tableName);
+    getObjects(object, tableName) {
+        return createSelectQuery(this.sqlInstance, object, tableName);
     }
 
     insertObject(object, tableName) {
