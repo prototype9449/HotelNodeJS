@@ -1,6 +1,6 @@
 'use strict'
-var SqlRequest = new require('./sqlRequest');
-var request = new SqlRequest({
+var SqlContext = new require('./repositories/sqlContext');
+var request = new SqlContext({
    login : 'admin',
    password : 'admin'
 });
@@ -19,7 +19,7 @@ let data1 = {
    Sex : 0
 };
 
-request.updateClient(data, data1).then(()=> {
+request.Clients().updateClient(data, data1).then(()=> {
    console.log('success');
    //request.deleteClient(data).then(() => {
    //   console.log('Success');

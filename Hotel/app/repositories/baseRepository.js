@@ -1,7 +1,7 @@
 'use strict';
 
 let sql = require('mssql');
-let tablesInfo = require('./constants');
+let tablesInfo = require('../constants');
 
 function createSelectQuery(sqlInstance, tableName) {
     return sqlInstance.connect().then(() => {
@@ -86,7 +86,7 @@ function getUpdatePreparedQuery(sqlInstance, data, tableName) {
     });
 }
 
-class BaseSqlRequest {
+class BaseRepository {
     constructor(user) {
         this.sqlInstance = {
             connect: () => sql.connect(getConnectionString(user)),
@@ -111,91 +111,4 @@ class BaseSqlRequest {
     }
 }
 
-class SqlRequest extends BaseSqlRequest {
-    constructor(user) {
-        super(user);
-    }
-
-    getClients() {
-        return super.getObjects(tablesInfo.Clients);
-    }
-
-    getRooms() {
-        return super.getObjects(tablesInfo.Rooms);
-    }
-
-    getRoomClients() {
-        return super.getObjects(tablesInfo.RoomClient);
-    }
-
-    getRoomReservations() {
-        return super.getObjects(tablesInfo.RoomReservation);
-    }
-
-    deleteBestClientInfo(year) {
-        sql.connect(tablesInfo.ConnectionString).then(() => {
-            return new sql.Request()
-                .input('year', sql.Int, year)
-                .execute('DeleteBestClientInfo');
-        });
-    }
-
-    insertClient(client) {
-        return super.insertObject(client, tablesInfo.Clients);
-    }
-
-    insertRoom(room) {
-        return super.insertObject(room, tablesInfo.Rooms);
-    }
-
-    insertRoomClient(roomClient) {
-        return super.insertObject(roomClient, tablesInfo.RoomClient);
-    }
-
-    insertRoomReservation(roomReservation) {
-        return super.insertObject(roomReservation, tablesInfo.RoomReservation);
-    }
-
-    deleteClient(client) {
-        return super.deleteObject(client, tablesInfo.Clients);
-    }
-
-    deleteRoom(room) {
-        return super.deleteObject(room, tablesInfo.Rooms);
-    }
-
-    deleteRoomClient(room) {
-        return super.deleteObject(room, tablesInfo.RoomClient);
-    }
-
-    deleteRoomReservation(room) {
-        return super.deleteObject(room, tablesInfo.RoomReservation);
-    }
-
-    updateClient(oldObject, newObject) {
-        if (oldObject.Id !== newObject.Id) {
-            return Promise.reject(new Error('the ids should be the same'));
-        }
-        delete newClient.Id;
-        return super.updateObject({oldObject, newObject}, tablesInfo.Clients);
-    }
-
-    updateRoom(oldObject, newObject) {
-        if (oldObject.Id !== newObject.Id) {
-            return Promise.reject(new Error('the ids should be the same'));
-        }
-        delete newClient.Id;
-        return super.updateObject({oldObject, newObject}, tablesInfo.Rooms);
-    }
-
-    updateRoomClient(oldClient, newClient) {
-        return super.updateObject({oldObject, newObject}, tablesInfo.RoomClient);
-    }
-
-    updateRoomReservation(oldClient, newClient) {
-        return super.updateObject({oldObject, newObject}, tablesInfo.RoomReservation);
-    }
-}
-
-module.exports = SqlRequest;
-
+module.exports = BaseRepository;
