@@ -4,18 +4,17 @@ var express = require('express');
 var router = express.Router();
 let SqlContext = require('./repositories/sqlContext');
 
+function getContext(request) {
+    return new SqlContext({
+            login: request.cookies.login,
+            password: request.cookies.password
+        }
+    );
+}
+
 function createRouter(contextName) {
     router.get('/', (req, res) => {
-        //let user = {
-        //    login: req.cookie.login,
-        //    password: req.cookie.password
-        //};
-
-        let user = {
-            login: 'admin',
-            password: 'admin'
-        };
-        new SqlContext(user)[contextName]().getAll()
+        getContext(req)[contextName]().getAll()
             .then((objects) => {
                 res.send(objects);
             })
@@ -26,7 +25,7 @@ function createRouter(contextName) {
     });
 
     router.post('/', (req, res) => {
-        new SqlContext(req.body.user)[contextName]().insert(req.body.object)
+        getContext(req)[contextName]().insert(req.body.object)
             .then(() => {
                 res.send('Success');
             })
@@ -37,7 +36,7 @@ function createRouter(contextName) {
     });
 
     router.put('/', (req, res) => {
-        new SqlContext(req.body.user)[contextName]().update(req.body.oldObject, req.body.newObject)
+        getContext(req)[contextName]().update(req.body.oldObject, req.body.newObject)
             .then(() => {
                 res.send('Success');
             })
@@ -48,7 +47,7 @@ function createRouter(contextName) {
     });
 
     router.delete('/', (req, res) => {
-        new SqlContext(req.body.user)[contextName]().delete(req.body.object)
+        getContext(req)[contextName]().delete(req.body.object)
             .then(() => {
                 res.send('Success');
             })

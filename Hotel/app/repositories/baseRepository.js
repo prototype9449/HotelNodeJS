@@ -90,7 +90,7 @@ class BaseRepository {
     constructor(user) {
         this.sqlInstance = {
             connect: () => sql.connect(getConnectionString(user)),
-            createRequest: () => new sql.Request
+            createRequest: () => new sql.Request()
         };
     }
 

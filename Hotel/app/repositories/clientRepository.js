@@ -26,6 +26,16 @@ class ClientRepository extends BaseRepository {
         delete newObject.Id;
         return super.updateObject({oldObject, newObject}, constants.Clients);
     }
+
+    deleteBestClientInfo(year) {
+       return this.sqlInstance.connect().then(() => {
+            let request =  this.sqlInstance.createRequest();
+
+           return request
+               .input('year', year)
+               .execute('DeleteBestClientInfo');
+        });
+    }
 }
 
 module.exports = ClientRepository;
