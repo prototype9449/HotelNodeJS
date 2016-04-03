@@ -9,7 +9,10 @@ class RoomRepository extends BaseRepository {
 
     getAll(object) {
         delete object.Id;
-        return super.getObjects(object, constants.Rooms);
+        return super.getObjects(object, constants.Rooms).then(rooms => {
+            rooms.forEach(room => room.Occupation = room.Occupation == true ? 'Yes' : 'No' )
+            return rooms;
+        });
     }
 
     insert(room) {

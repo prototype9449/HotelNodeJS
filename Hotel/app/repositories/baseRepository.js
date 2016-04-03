@@ -4,10 +4,10 @@ let sql = require('mssql');
 let tablesInfo = require('../constants');
 
 function createSelectQuery(sqlInstance, object, tableName) {
-    return sqlInstance.connect().then(() => {
+    return sqlInstance.connect().then((connection) => {
         let properties = getPropertyCollection(object);
         let queryString = `select * from ${tableName}`;
-        let request = getFilledParamsRequest(sqlInstance, properties);
+        let request = getFilledParamsRequest(connection, properties);
 
         if(properties.length == 0){
             return request.query(queryString);
@@ -32,8 +32,8 @@ function getPropertyCollection(object) {
     return properties;
 }
 
-function getFilledParamsRequest(sqlInstance, properties) {
-    let request = sqlInstance.createRequest();
+function getFilledParamsRequest(connection, properties) {
+    let request = connection.request();
     properties.forEach(x => {
         request = request.input(x.name, x.value);
     });
@@ -41,22 +41,22 @@ function getFilledParamsRequest(sqlInstance, properties) {
 }
 
 function getInsertPreparedQuery(sqlInstance, object, tableName) {
-    return sqlInstance.connect().then(() => {
+    return sqlInstance.connect().then((connection) => {
         let properties = getPropertyCollection(object);
         let propNames = properties.map(x => x.name).join(',');
         let propSpecialNames = properties.map(x => '@' + x.name).join(',');
         let queryString = `insert into ${tableName} (${propNames}) values (${propSpecialNames})`;
-        let request = getFilledParamsRequest(sqlInstance, properties);
+        let request = getFilledParamsRequest(connection, properties);
         return request.query(queryString);
     });
 }
 
 function getDeletePreparedQuery(sqlInstance, object, tableName) {
-    return sqlInstance.connect().then(() => {
+    return sqlInstance.connect().then((connection) => {
         let properties = getPropertyCollection(object);
         let equalString = properties.map(x => `${x.name} = @${x.name}`).join(' and ');
         let queryString = `delete from ${tableName} where ${equalString}`;
-        let request = getFilledParamsRequest(sqlInstance, properties);
+        let request = getFilledParamsRequest(connection, properties);
         return request.query(queryString);
     });
 }
@@ -68,7 +68,7 @@ function getConnectionString(user) {
 }
 
 function getUpdatePreparedQuery(sqlInstance, data, tableName) {
-    return sqlInstance.connect().then(() => {
+    return sqlInstance.connect().then((connection) => {
         let convertList = (list, word) => list.map(x => {
             return {
                 name: x.name,
@@ -91,7 +91,7 @@ function getUpdatePreparedQuery(sqlInstance, data, tableName) {
         let equalString = oldProperties.map(x => `${x.name} = @${x.paramName}`).join(' and ');
 
         let queryString = `update ${tableName} set ${assignString} where ${equalString}`;
-        let request = getFilledParamsRequest(sqlInstance, changeParamNameToName(newProperties.concat(oldProperties)));
+        let request = getFilledParamsRequest(connection, changeParamNameToName(newProperties.concat(oldProperties)));
         return request.query(queryString);
     });
 }
@@ -99,8 +99,7 @@ function getUpdatePreparedQuery(sqlInstance, data, tableName) {
 class BaseRepository {
     constructor(user) {
         this.sqlInstance = {
-            connect: () => sql.connect(getConnectionString(user)),
-            createRequest: () => new sql.Request()
+            connect: () => sql.connect(getConnectionString(user))
         };
     }
 

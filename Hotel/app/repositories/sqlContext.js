@@ -3,7 +3,7 @@
 let ClientRepository = require('./clientRepository');
 let RoomRepository = require('./roomRepository');
 let RoomClientRepository = require('./roomClientRepository');
-let RoomReservationRepository = require('./clientRepository');
+let RoomReservationRepository = require('./roomReservationRepository');
 let contextNames = require('./contextNames');
 
 class SqlContext{
@@ -19,11 +19,11 @@ class SqlContext{
         return new RoomRepository(this.user);
     }
 
-    [contextNames.roomClients](){
+    [contextNames.roomClient](){
         return new RoomClientRepository(this.user);
     }
 
-    [contextNames.roomReservations](){
+    [contextNames.roomReservation](){
         return new RoomReservationRepository(this.user);
     }
 }

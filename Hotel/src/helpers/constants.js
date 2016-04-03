@@ -1,8 +1,8 @@
 export const urls = {
     clients : "Clients",
     rooms : "Rooms",
-    roomClients : "RoomClients",
-    roomReservations : "RoomReservations"
+    roomClient : "RoomClient",
+    roomReservation : "RoomReservation"
 };
 
 export const verbs = {

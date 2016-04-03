@@ -20,9 +20,9 @@ app.use(function (req, res, next) {
 });
 app.use(procedureRouter());
 
-setRoute(app, contextNames.roomReservations);
+setRoute(app, contextNames.roomReservation);
 setRoute(app, contextNames.clients);
 setRoute(app, contextNames.rooms);
-setRoute(app, contextNames.roomClients);
+setRoute(app, contextNames.roomClient);
 
 app.listen(3000);

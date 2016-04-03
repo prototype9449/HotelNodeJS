@@ -6,6 +6,7 @@ import TableRowColumn from 'material-ui/lib/table/table-row-column';
 import TableBody from 'material-ui/lib/table/table-body';
 import React from 'react';
 
+
 function getProperties(object) {
     let names = Object.getOwnPropertyNames(object);
     return names.map(x => {
@@ -19,21 +20,23 @@ export default class CustomTable extends React.Component {
         super(props);
     }
 
+    handleClick(event, ...rest){
+        let e =1;
+    }
+
     render() {
-        debugger;
         if(this.props.objects.length == 0){
             return null;
         }
-
 
         let tableRows = this.props.objects.map((object)=> {
 
             let properties = getProperties(object);
             let columns = properties.map(x => {
-                return <TableRowColumn>{x.value}</TableRowColumn>
+                return <TableRowColumn >{x.value}</TableRowColumn>
             });
 
-            return (<TableRow className='tableRow'>{columns}</TableRow>);
+            return (<TableRow key={object.Id} className='tableRow'>{columns}</TableRow>);
         });
         let properties = getProperties(this.props.objects[0]);
         let tableHeaders = properties.map(x => {
@@ -41,7 +44,7 @@ export default class CustomTable extends React.Component {
         });
 
         return (
-            <Table className="table">
+            <Table className="table" >
                 <TableHeader>
                     <TableRow>
                         {tableHeaders}

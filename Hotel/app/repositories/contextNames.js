@@ -1,6 +1,6 @@
 const clients = 'Clients';
 const rooms = 'Rooms';
-const roomClients = 'RoomClient';
-const roomReservations = 'RoomReservation';
+const roomClient = 'RoomClient';
+const roomReservation = 'RoomReservation';
 
-module.exports = {clients, rooms, roomClients, roomReservations};
+module.exports = {clients, rooms, roomClient, roomReservation};

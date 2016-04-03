@@ -2,7 +2,6 @@ import $ from 'jquery';
 import {urls, verbs} from './constants';
 
 function getAjaxRequest(verb, data, restUrl) {
-    debugger;
     return $.ajax({
         type: verb,
         crossDomain: true,
@@ -60,11 +59,11 @@ export default class SqlContext{
         return new Repository(urls.rooms);
     }
 
-    static [urls.roomClients](){
-        return new Repository(urls.roomClients);
+    static [urls.roomClient](){
+        return new Repository(urls.roomClient);
     }
 
-    static [urls.roomReservations](){
-        return new Repository(urls.roomReservations);
+    static [urls.roomReservation](){
+        return new Repository(urls.roomReservation);
     }
 }
