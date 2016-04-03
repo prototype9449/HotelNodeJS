@@ -6,9 +6,15 @@ let tablesInfo = require('../constants');
 function createSelectQuery(sqlInstance, object, tableName) {
     return sqlInstance.connect().then(() => {
         let properties = getPropertyCollection(object);
-        let equalString = properties.map(x => `${x.name} like '%' + @${x.name} + '%'`).join(' and ');
-        let queryString = `select * from ${tableName} where ${equalString}`;
+        let queryString = `select * from ${tableName}`;
         let request = getFilledParamsRequest(sqlInstance, properties);
+
+        if(properties.length == 0){
+            return request.query(queryString);
+        }
+
+        let equalString = properties.map(x => `${x.name} like '%' + @${x.name} + '%'`).join(' and ');
+        queryString = queryString +` where ${equalString}`;
         return request.query(queryString);
     });
 }
