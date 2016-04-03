@@ -24,7 +24,7 @@ module.exports = {
             {
                 test: /\.jsx?$/,
                 include: path.join(__dirname, 'src'),
-                loader: 'react-hot!babel'
+                loader: 'react-hot!babel-loader?stage=0'
             },
             {
                 test: /\.scss$/,
