@@ -9,7 +9,10 @@ class ClientRepository extends BaseRepository {
 
     getAll(object) {
         delete object.Id;
-        return super.getObjects(object, constants.Clients);
+        return super.getObjects(object, constants.Clients).then((clients) => {
+            clients.forEach(x => x.Sex = x.Sex ==true ? 'Man' : 'Woman');
+            return clients;
+        });
     }
 
     insert(client) {
