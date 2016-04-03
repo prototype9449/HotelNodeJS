@@ -1,38 +1,27 @@
 import React from 'react';
 import $ from 'jquery';
 import 'jquery.cookie';
+import sqlContext from '../helpers/repository';
 
 class App extends React.Component {
     constructor() {
         super();
         $.cookie('login', 'admin');
         $.cookie('password', 'admin');
-
-        $.ajax({
-                type: "GET",
-                crossDomain: true,
-                xhrFields: {
-                    withCredentials: true
-                },
-                url: "http://localhost:3000/Clients"
-            })
+        sqlContext.Clients().getAll()
             .done((result) => {
                 debugger;
-                this.setState({messages: ['  fdsfdsfd s', 'f sdf dsf']});
+
+                this.setState({clients: result});
             });
 
-        this.state = {
-            messages: [
-                'Hello there how are you?',
-                'I am fine, and you?'
-            ]
-        };
+        this.state = {clients: []};
     }
 
     render() {
-        var messageNodes = this.state.messages.map((message)=> {
+        var messageNodes = this.state.clients.map((client)=> {
             return (
-                <div>{message}</div>
+                <div>{client.FullName}</div>
             );
         });
 
