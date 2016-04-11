@@ -1,11 +1,11 @@
-import Table from 'material-ui/lib/table/table';
-import TableHeaderColumn from 'material-ui/lib/table/table-header-column';
-import TableRow from 'material-ui/lib/table/table-row';
-import TableHeader from 'material-ui/lib/table/table-header';
-import TableRowColumn from 'material-ui/lib/table/table-row-column';
-import TableBody from 'material-ui/lib/table/table-body';
 import React from 'react';
-
+import Row from './Row.jsx';
+import Checkbox from 'material-ui/lib/checkbox';
+import RaisedButton from 'material-ui/lib/raised-button';
+import Dialog from 'material-ui/lib/dialog';
+import FlatButton from 'material-ui/lib/flat-button';
+import TextField from 'material-ui/lib/text-field';
+import FormDialog from './FormDialog.jsx';
 
 function getProperties(object) {
     let names = Object.getOwnPropertyNames(object);
@@ -14,48 +14,105 @@ function getProperties(object) {
     });
 }
 
-export default class CustomTable extends React.Component {
-
+export default class SuperTable extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            isAllChecked: false,
+            checkedRows: [],
+            isDialogOpen: false
+        };
+        this.name = this.props.name;
     }
 
-    handleClick(event, ...rest){
-        let e =1;
+    checkAll(e) {
+        this.setState({
+            isAllChecked: !this.isAllChecked
+        });
+        e.preventDefault();
+    }
+
+    CheckRow(index, isChecked) {
+        let checkedRows = this.state.checkedRows;
+        if(isChecked){
+            checkedRows.push(this.props.objects[index]);
+        }
+
+        this.setState({checkedRows})
+    }
+
+    cancelHandle() {
+        this.setState({
+            isDialogOpen: false
+        });
+    }
+
+    openDialog() {
+        this.setState({
+            isDialogOpen: true
+        })
+    }
+
+    createHandle(e) {
+        let values = this.refs.formDialog.getProperties();
+        const s = 1;
+    }
+
+    deleteHandle() {
+        let deletingObjects = this.state.checkedRows;
+
+        let s = 1;
     }
 
     render() {
-        if(this.props.objects.length == 0){
+        if (this.props.objects.length == 0) {
             return null;
         }
 
-        let tableRows = this.props.objects.map((object)=> {
+        let tableRows = this.props.objects.map((object, i)=> {
 
-            let properties = getProperties(object);
-            let columns = properties.map(x => {
-                return <TableRowColumn key = {x.value}>{x.value}</TableRowColumn>
-            });
-
-            return (<TableRow key={object.Id} className='tableRow'>{columns}</TableRow>);
+            let isChecked = this.state.checkedRows.some(x=> x.Id == object.Id);
+            return <Row checked={isChecked} object={object} key={i + this.name} index={i}
+                        callback={this.CheckRow.bind(this)}/>
         });
         let properties = getProperties(this.props.objects[0]);
-        let tableHeaders = properties.map(x => {
-            return <TableHeaderColumn key = {x.name}>{x.name}</TableHeaderColumn>;
+        let tableHeaders = properties.map((x, i) => {
+            return <th key={i}>
+                {x.name}
+            </th>;
         });
 
         return (
-            <Table className="table" >
-                <TableHeader>
-                    <TableRow>
+
+            <div>
+                <FormDialog
+                    ref = 'formDialog'
+                    isOpen ={this.state.isDialogOpen}
+                    cancelHandle = {this.cancelHandle.bind(this)}
+                    createHandle ={this.createHandle.bind(this)}
+                    properties = {properties}
+                />
+                <FlatButton label="Create" onClick={this.openDialog.bind(this)}/>
+                <FlatButton label="Delete" onClick={this.deleteHandle.bind(this)}/>
+                <Checkbox
+                    defaultChecked={this.state.isAllChecked}
+                    onCheck={this.checkAll.bind(this)}
+                    label="Select All"
+                    labelPosition="right"
+                />
+
+                <table className="table table-hover">
+                    <thead>
+                    <tr>
                         {tableHeaders}
-                    </TableRow>
-                </TableHeader>
-
-                <TableBody>
+                    </tr>
+                    </thead>
+                    <tbody>
                     {tableRows}
-                </TableBody>);
-            </Table>)
+                    </tbody>
+                </table>
+            </div>
+        )
     }
+
 }
-
-

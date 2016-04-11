@@ -6,7 +6,7 @@ import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import CustomTable from './CustomTable.jsx';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
-import SuperTable from './SuperTable.jsx';
+import SuperTable from './CustomTable.jsx';
 
 class App extends React.Component {
     constructor() {
