@@ -6,6 +6,7 @@ import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import CustomTable from './CustomTable.jsx';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
+import SuperTable from './SuperTable.jsx';
 
 class App extends React.Component {
     constructor() {
@@ -56,25 +57,25 @@ class App extends React.Component {
 
     render() {
         return (
-            <Tabs onChange={this.handleChange} value={this.state.tabValue} className = 'tabs'>
+            <Tabs onChange={this.handleChange.bind(this)} value={this.state.tabValue} className = 'tabs'>
                 <Tab label="Tab A" value='a'>
                     <div>
-                        <CustomTable key="clients" objects={this.state.clients}/>
+                        <SuperTable key="clients" objects={this.state.clients} name ="clients"/>
                     </div>
                 </Tab>
                 <Tab label="Tab B" value='b'>
                     <div>
-                        <CustomTable key="rooms" objects={this.state.rooms}/>
+                        <SuperTable key="rooms" objects={this.state.rooms} name ="rooms"/>
                     </div>
                 </Tab>
                 <Tab label="Tab C" value='c'>
                     <div>
-                        <CustomTable key="roomClients" objects={this.state.roomClients}/>
+                        <SuperTable key="roomClients" objects={this.state.roomClients} name = "roomClients"/>
                     </div>
                 </Tab>
                 <Tab label="Tab D" value='d'>
                     <div>
-                        <CustomTable key="roomReservations" objects={this.state.roomReservations}/>
+                        <SuperTable key="roomReservations" objects={this.state.roomReservations} name="roomReservations"/>
                     </div>
                 </Tab>
             </Tabs>);

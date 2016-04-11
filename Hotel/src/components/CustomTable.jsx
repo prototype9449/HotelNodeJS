@@ -33,14 +33,14 @@ export default class CustomTable extends React.Component {
 
             let properties = getProperties(object);
             let columns = properties.map(x => {
-                return <TableRowColumn >{x.value}</TableRowColumn>
+                return <TableRowColumn key = {x.value}>{x.value}</TableRowColumn>
             });
 
             return (<TableRow key={object.Id} className='tableRow'>{columns}</TableRow>);
         });
         let properties = getProperties(this.props.objects[0]);
         let tableHeaders = properties.map(x => {
-            return <TableHeaderColumn>{x.name}</TableHeaderColumn>;
+            return <TableHeaderColumn key = {x.name}>{x.name}</TableHeaderColumn>;
         });
 
         return (
