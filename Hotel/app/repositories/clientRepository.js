@@ -16,10 +16,12 @@ class ClientRepository extends BaseRepository {
     }
 
     insert(client) {
+        client.Sex = client.Sex == 'Man';
         return super.insertObject(client, constants.Clients);
     }
 
     delete(client) {
+        client.Sex = client.Sex == 'Man';
         return super.deleteObject(client, constants.Clients);
     }
 
@@ -28,6 +30,9 @@ class ClientRepository extends BaseRepository {
             return Promise.reject(new Error('the ids should be the same'));
         }
         delete newObject.Id;
+
+        oldObject.Sex = oldObject.Sex == 'Man';
+        newObject.Sex = newObject.Sex == 'Man';
         return super.updateObject({oldObject, newObject}, constants.Clients);
     }
 

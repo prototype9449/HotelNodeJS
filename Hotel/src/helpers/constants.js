@@ -11,3 +11,8 @@ export const verbs = {
     put : "PUT",
     delete : "DELETE"
 };
+
+export const roomFields = ['Floor', 'Price', 'Comfort', 'Occupation'];
+export const clientFields = ['FullName', 'Passport', 'Sex'];
+export const roomClientFields = ['RoomId', 'ClientId', 'CheckInDate', 'Term'];
+export const roomReservationFields = ['RoomId', 'ClientId', 'CheckInDate', 'Term'];

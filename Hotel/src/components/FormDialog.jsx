@@ -10,15 +10,13 @@ export default class FormDialog extends React.Component {
         this.fields = {};
     }
 
-    getProperties() {
-        let properties = [];
-        for(let prop in this.fields){
-            properties.push({
-                    name : prop,
-                    value : this.fields[prop].getValue()
-                });
-        }
-        return properties;
+    getCreatedObject() {
+        let object = {};
+        Object.keys(this.fields).forEach(prop => {
+            object[prop] = this.fields[prop].getValue();
+        });
+
+        return object;
     }
 
     render() {
@@ -37,9 +35,9 @@ export default class FormDialog extends React.Component {
             />
         ];
 
-        const textFields = this.props.properties.map(x => {
+        const textFields = this.props.fields.map(x => {
             return <div>
-                <TextField hintText={x.name} ref={(field) => this.fields[x.name] = field}/>
+                <TextField hintText={x} ref={(field) => this.fields[x] = field}/>
                 <br/>
             </div>
         });

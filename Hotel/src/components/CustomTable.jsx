@@ -18,50 +18,66 @@ export default class SuperTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isAllChecked: false,
-            checkedRows: [],
+            areAllChecked: false,
+            checkedRows: new Set(),
             isDialogOpen: false
         };
         this.name = this.props.name;
     }
 
     checkAll(e) {
-        this.setState({
-            isAllChecked: !this.isAllChecked
-        });
-        e.preventDefault();
+        let areAllChecked = !this.state.areAllChecked;
+        let checkedRows = new Set();
+        if (areAllChecked) {
+            this.props.objects.forEach(x => checkedRows.add(x));
+            this.setState({
+                areAllChecked: !this.state.areAllChecked,
+                checkedRows
+            });
+        } else{
+            if(this.state.checkedRows.size == this.props.objects.length) {
+                this.setState({
+                    areAllChecked : false,
+                    checkedRows : new Set()
+                });
+            }
+        }
+
     }
 
     CheckRow(index, isChecked) {
         let checkedRows = this.state.checkedRows;
-        if(isChecked){
-            checkedRows.push(this.props.objects[index]);
+        let areAllChecked = this.state.areAllChecked;
+        if (isChecked) {
+            checkedRows.add(this.props.objects[index]);
+            areAllChecked = checkedRows.size == this.props.objects.length;
+        } else {
+            areAllChecked = false;
+            checkedRows.delete(this.props.objects[index]);
         }
 
-        this.setState({checkedRows})
+        this.setState({checkedRows, areAllChecked})
     }
 
-    cancelHandle() {
+    dialogHandle() {
         this.setState({
-            isDialogOpen: false
-        });
-    }
-
-    openDialog() {
-        this.setState({
-            isDialogOpen: true
+            isDialogOpen: !this.state.isDialogOpen
         })
     }
 
     createHandle(e) {
-        let values = this.refs.formDialog.getProperties();
+        const object = this.refs.formDialog.getCreatedObject();
+        this.props.sqlContext.insert(object).done(() => {
+            this.dialogHandle();
+            console.log('success');
+        }).fail(() => console.log('fail'));
         const s = 1;
     }
 
     deleteHandle() {
-        let deletingObjects = this.state.checkedRows;
-
-        let s = 1;
+        let deletingObjects = Array.from(this.state.checkedRows);
+        this.props.sqlContext.delete(...deletingObjects);
+        
     }
 
     render() {
@@ -71,7 +87,7 @@ export default class SuperTable extends React.Component {
 
         let tableRows = this.props.objects.map((object, i)=> {
 
-            let isChecked = this.state.checkedRows.some(x=> x.Id == object.Id);
+            let isChecked = Array.from(this.state.checkedRows).some(x=> x.Id == object.Id);
             return <Row checked={isChecked} object={object} key={i + this.name} index={i}
                         callback={this.CheckRow.bind(this)}/>
         });
@@ -86,16 +102,16 @@ export default class SuperTable extends React.Component {
 
             <div>
                 <FormDialog
-                    ref = 'formDialog'
-                    isOpen ={this.state.isDialogOpen}
-                    cancelHandle = {this.cancelHandle.bind(this)}
-                    createHandle ={this.createHandle.bind(this)}
-                    properties = {properties}
+                    ref='formDialog'
+                    isOpen={this.state.isDialogOpen}
+                    cancelHandle={this.dialogHandle.bind(this)}
+                    createHandle={this.createHandle.bind(this)}
+                    fields={this.props.fields}
                 />
-                <FlatButton label="Create" onClick={this.openDialog.bind(this)}/>
+                <FlatButton label="Create" onClick={this.dialogHandle.bind(this)}/>
                 <FlatButton label="Delete" onClick={this.deleteHandle.bind(this)}/>
                 <Checkbox
-                    defaultChecked={this.state.isAllChecked}
+                    checked={this.state.areAllChecked}
                     onCheck={this.checkAll.bind(this)}
                     label="Select All"
                     labelPosition="right"

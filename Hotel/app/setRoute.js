@@ -10,6 +10,23 @@ function getContext(request) {
     );
 }
 
+function getError(err, responce, data) {
+    console.log(err);
+        responce.set({
+            'Content-Type': 'application/json',
+            'Status': '409'
+        });
+        responce.send(JSON.stringify({ message : data}));
+}
+
+function getSuccess(responce, data) {
+        responce.set({
+            'Status': '202',
+            'Content-Type': 'application/json'
+        });
+        responce.send(JSON.stringify({ message : data}));
+}
+
 function setRoute(app, contextName) {
     app.route('/' + contextName)
         .get((req, res) => {
@@ -18,38 +35,28 @@ function setRoute(app, contextName) {
                     res.send(objects);
                 })
                 .catch((err) => {
-                    console.log(err);
-                    res.send('there was an error');
+                    getError(err, res,'there was an error');
                 });
         })
         .post((req, res) => {
             getContext(req)[contextName]().insert(req.body.object)
-                .then(() => {
-                    res.send('Success');
-                })
+                .then(() => getSuccess(res,'Success'))
                 .catch((err) => {
-                    console.log(err);
-                    res.send('there was an error');
+                    getError(err, res,'there was an error');
                 })
         })
         .put((req, res) => {
             getContext(req)[contextName]().update(req.body.oldObject, req.body.newObject)
-                .then(() => {
-                    res.send('Success');
-                })
+                .then(() => getSuccess(res,'Success'))
                 .catch((err) => {
-                    console.log(err);
-                    res.send('there was an error');
+                    getError(err, res,'there was an error');
                 })
         })
         .delete((req, res) => {
             getContext(req)[contextName]().delete(req.body.object)
-                .then(() => {
-                    res.send('Success');
-                })
+                .then(() => getSuccess(res,'Success'))
                 .catch((err) => {
-                    console.log(err);
-                    res.send('there was an error');
+                    getError(err, res,'there was an error');
                 })
         });
 }

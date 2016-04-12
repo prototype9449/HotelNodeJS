@@ -12,7 +12,7 @@ function getAjaxRequest(verb, data, restUrl) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         url: `http://localhost:3000/${restUrl}`
-    })
+    });
 }
 
 function getQuery(object) {
@@ -38,15 +38,21 @@ class Repository {
     }
 
     insert(object) {
-        return getAjaxRequest(verbs.post, object, this.tableName);
+        return getAjaxRequest(verbs.post, {object}, this.tableName);
     }
 
     update(oldObject, newObject) {
         return getAjaxRequest(verbs.put, {oldObject, newObject}, this.tableName);
     }
 
-    delete(object) {
-        return getAjaxRequest(verbs.delete, object, this.tableName);
+    delete(...objects) {
+        if(objects.length == 1){
+            let object = objects[0];
+            getAjaxRequest(verbs.delete, {object}, this.tableName);
+        } else{
+            objects.forEach(object => getAjaxRequest(verbs.delete, {object}, this.tableName))
+        }
+        
     }
 }
 

@@ -7,6 +7,8 @@ import CustomTable from './CustomTable.jsx';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 import SuperTable from './CustomTable.jsx';
+import {roomFields, clientFields, roomClientFields, roomReservationFields} from '../helpers/constants';
+
 
 class App extends React.Component {
     constructor() {
@@ -23,14 +25,7 @@ class App extends React.Component {
         };
     }
 
-    handleChange = (value) => {
-        this.setState({
-            tabValue: value
-        });
-    };
-
     componentDidMount() {
-
         sqlContext.Clients().getAll()
             .done((result) => {
                 this.setState({clients: result});
@@ -57,25 +52,29 @@ class App extends React.Component {
 
     render() {
         return (
-            <Tabs onChange={this.handleChange.bind(this)} value={this.state.tabValue} className = 'tabs'>
-                <Tab label="Tab A" value='a'>
+            <Tabs className='tabs'>
+                <Tab label="Tab A">
                     <div>
-                        <SuperTable key="clients" objects={this.state.clients} name ="clients"/>
+                        <SuperTable key="clients" fields={clientFields} sqlContext={sqlContext.Clients()}
+                                    objects={this.state.clients} name="clients"/>
                     </div>
                 </Tab>
-                <Tab label="Tab B" value='b'>
+                <Tab label="Tab B">
                     <div>
-                        <SuperTable key="rooms" objects={this.state.rooms} name ="rooms"/>
+                        <SuperTable key="rooms" fields={roomFields} sqlContext={sqlContext.Rooms()} objects={this.state.rooms}
+                                    name="rooms"/>
                     </div>
                 </Tab>
-                <Tab label="Tab C" value='c'>
+                <Tab label="Tab C">
                     <div>
-                        <SuperTable key="roomClients" objects={this.state.roomClients} name = "roomClients"/>
+                        <SuperTable key="roomClients" fields={roomClientFields} sqlContext={sqlContext.RoomClient()}
+                                    objects={this.state.roomClients} name="roomClients"/>
                     </div>
                 </Tab>
-                <Tab label="Tab D" value='d'>
+                <Tab label="Tab D">
                     <div>
-                        <SuperTable key="roomReservations" objects={this.state.roomReservations} name="roomReservations"/>
+                        <SuperTable key="roomReservations" fields={roomReservationFields} sqlContext={sqlContext.RoomReservation()}
+                                    objects={this.state.roomReservations} name="roomReservations"/>
                     </div>
                 </Tab>
             </Tabs>);
