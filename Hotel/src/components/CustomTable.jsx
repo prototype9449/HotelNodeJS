@@ -6,6 +6,7 @@ import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import TextField from 'material-ui/lib/text-field';
 import FormDialog from './FormDialog.jsx';
+import CustomSet from '../helpers/customSet';
 
 function getProperties(object) {
     let names = Object.getOwnPropertyNames(object);
@@ -19,7 +20,7 @@ export default class SuperTable extends React.Component {
         super(props);
         this.state = {
             areAllChecked: false,
-            checkedRows: new Set(),
+            checkedRows: new CustomSet(),
             isDialogOpen: false
         };
         this.name = this.props.name;
@@ -27,7 +28,7 @@ export default class SuperTable extends React.Component {
 
     checkAll(e) {
         let areAllChecked = !this.state.areAllChecked;
-        let checkedRows = new Set();
+        let checkedRows = new CustomSet();
         if (areAllChecked) {
             this.props.objects.forEach(x => checkedRows.add(x));
             this.setState({
@@ -38,7 +39,7 @@ export default class SuperTable extends React.Component {
             if(this.state.checkedRows.size == this.props.objects.length) {
                 this.setState({
                     areAllChecked : false,
-                    checkedRows : new Set()
+                    checkedRows : new CustomSet()
                 });
             }
         }
@@ -75,9 +76,10 @@ export default class SuperTable extends React.Component {
     }
 
     deleteHandle() {
-        let deletingObjects = Array.from(this.state.checkedRows);
-        this.props.sqlContext.delete(...deletingObjects);
-        
+        let deletingObjects = this.state.checkedRows.toArray();
+        this.props.sqlContext.delete(...deletingObjects).then(() =>{
+            this.props.onDeleteObjects(deletingObjects);
+        });
     }
 
     render() {
@@ -87,7 +89,7 @@ export default class SuperTable extends React.Component {
 
         let tableRows = this.props.objects.map((object, i)=> {
 
-            let isChecked = Array.from(this.state.checkedRows).some(x=> x.Id == object.Id);
+            let isChecked = this.state.checkedRows.toArray().some(x=> x.Id == object.Id);
             return <Row checked={isChecked} object={object} key={i + this.name} index={i}
                         callback={this.CheckRow.bind(this)}/>
         });

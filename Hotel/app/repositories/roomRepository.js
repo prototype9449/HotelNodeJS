@@ -19,8 +19,8 @@ class RoomRepository extends BaseRepository {
         return super.insertObject(room, constants.Rooms);
     }
 
-    delete(room) {
-        return super.deleteObject(room, constants.Rooms);
+    delete(rooms) {
+        return super.deleteObject(rooms, constants.Rooms);
     }
 
     update(oldObject, newObject) {

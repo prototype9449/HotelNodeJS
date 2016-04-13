@@ -53,7 +53,7 @@ function setRoute(app, contextName) {
                 })
         })
         .delete((req, res) => {
-            getContext(req)[contextName]().delete(req.body.object)
+            getContext(req)[contextName]().delete(req.body.objects)
                 .then(() => getSuccess(res,'Success'))
                 .catch((err) => {
                     getError(err, res,'there was an error');

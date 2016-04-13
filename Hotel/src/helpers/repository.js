@@ -46,30 +46,24 @@ class Repository {
     }
 
     delete(...objects) {
-        if(objects.length == 1){
-            let object = objects[0];
-            getAjaxRequest(verbs.delete, {object}, this.tableName);
-        } else{
-            objects.forEach(object => getAjaxRequest(verbs.delete, {object}, this.tableName))
-        }
-        
+        return getAjaxRequest(verbs.delete, {objects}, this.tableName);
     }
 }
 
-export default class SqlContext{
-    static [urls.clients](){
+export default class SqlContext {
+    static [urls.clients]() {
         return new Repository(urls.clients);
     }
 
-    static [urls.rooms](){
+    static [urls.rooms]() {
         return new Repository(urls.rooms);
     }
 
-    static [urls.roomClient](){
+    static [urls.roomClient]() {
         return new Repository(urls.roomClient);
     }
 
-    static [urls.roomReservation](){
+    static [urls.roomReservation]() {
         return new Repository(urls.roomReservation);
     }
 }

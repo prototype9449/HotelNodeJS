@@ -20,9 +20,9 @@ class ClientRepository extends BaseRepository {
         return super.insertObject(client, constants.Clients);
     }
 
-    delete(client) {
-        client.Sex = client.Sex == 'Man';
-        return super.deleteObject(client, constants.Clients);
+    delete(clients) {
+        clients.forEach(x => x.Sex = x.Sex == 'Man');
+        return super.deleteObject(clients, constants.Clients);
     }
 
     update(oldObject, newObject) {
