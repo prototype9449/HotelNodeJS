@@ -35,11 +35,11 @@ export default class SuperTable extends React.Component {
                 areAllChecked: !this.state.areAllChecked,
                 checkedRows
             });
-        } else{
-            if(this.state.checkedRows.size == this.props.objects.length) {
+        } else {
+            if (this.state.checkedRows.size == this.props.objects.length) {
                 this.setState({
-                    areAllChecked : false,
-                    checkedRows : new CustomSet()
+                    areAllChecked: false,
+                    checkedRows: new CustomSet()
                 });
             }
         }
@@ -77,7 +77,7 @@ export default class SuperTable extends React.Component {
 
     deleteHandle() {
         let deletingObjects = this.state.checkedRows.toArray();
-        this.props.sqlContext.delete(...deletingObjects).then(() =>{
+        this.props.sqlContext.delete(...deletingObjects).then(() => {
             this.props.onDeleteObjects(deletingObjects);
         });
     }
@@ -89,7 +89,7 @@ export default class SuperTable extends React.Component {
 
         let tableRows = this.props.objects.map((object, i)=> {
 
-            let isChecked = this.state.checkedRows.toArray().some(x=> x.Id == object.Id);
+            let isChecked = this.state.checkedRows.toArray().some(x=> _.isEqual(x, object));
             return <Row checked={isChecked} object={object} key={i + this.name} index={i}
                         callback={this.CheckRow.bind(this)}/>
         });
@@ -132,5 +132,4 @@ export default class SuperTable extends React.Component {
             </div>
         )
     }
-
 }

@@ -10,6 +10,15 @@ import SuperTable from './CustomTable.jsx';
 import {roomFields, clientFields, roomClientFields, roomReservationFields} from '../helpers/constants';
 import _ from 'lodash';
 
+function areEqual(firstArray, secondArray) {
+    if (firstArray.length != secondArray.length) {
+        return false;
+    }
+
+    let intersectedArray = _.intersectionWith(firstArray, secondArray, _.isEqual);
+    return firstArray.length == intersectedArray.length;
+}
+
 class App extends React.Component {
     constructor() {
         super();
@@ -27,25 +36,36 @@ class App extends React.Component {
         this.interval = null;
     }
 
-    componentDidMount() {
-        this.interval = setInterval(() => {
-            sqlContext.Clients().getAll()
-                .done((result) => {
+    fetchData() {
+        sqlContext.Clients().getAll()
+            .done((result) => {
+                if (!areEqual(result, this.state.clients)) {
                     this.setState({clients: result});
-                });
-            sqlContext.Rooms().getAll()
-                .done((result) => {
+                }
+            });
+        sqlContext.Rooms().getAll()
+            .done((result) => {
+                if (!areEqual(result, this.state.rooms)) {
                     this.setState({rooms: result});
-                });
-            sqlContext.RoomClient().getAll()
-                .done((result) => {
+                }
+            });
+        sqlContext.RoomClient().getAll()
+            .done((result) => {
+                if (!areEqual(result, this.state.roomClients)) {
                     this.setState({roomClients: result});
-                });
-            sqlContext.RoomReservation().getAll()
-                .done((result) => {
+                }
+            });
+        sqlContext.RoomReservation().getAll()
+            .done((result) => {
+                if (!areEqual(result, this.state.roomReservations)) {
                     this.setState({roomReservations: result});
-                });
-        }, 10000);
+                }
+            });
+    }
+
+    componentDidMount() {
+        this.fetchData();
+        this.interval = setInterval(() => this.fetchData(), 10000);
     }
 
     componentWillUnmount() {
