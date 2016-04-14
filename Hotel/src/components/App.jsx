@@ -3,10 +3,9 @@ import $ from 'jquery';
 import 'jquery.cookie';
 import sqlContext from '../helpers/repository';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import CustomTable from './CustomTable.jsx';
+import CustomTable from './customTable.jsx';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
-import SuperTable from './CustomTable.jsx';
 import {roomFields, clientFields, roomClientFields, roomReservationFields} from '../helpers/constants';
 import _ from 'lodash';
 
@@ -92,7 +91,7 @@ class App extends React.Component {
             <Tabs className='tabs'>
                 <Tab label="Tab A">
                     <div>
-                        <SuperTable key="clients"
+                        <CustomTable key="clients"
                                     onDeleteObjects={this.onDeleteObjects.bind(this, 'clients')}
                                     fields={clientFields}
                                     sqlContext={sqlContext.Clients()}
@@ -101,7 +100,7 @@ class App extends React.Component {
                 </Tab>
                 <Tab label="Tab B">
                     <div>
-                        <SuperTable key="rooms"
+                        <CustomTable key="rooms"
                                     onDeleteObjects={this.onDeleteObjects.bind(this, 'rooms')}
                                     fields={roomFields}
                                     sqlContext={sqlContext.Rooms()}
@@ -111,7 +110,7 @@ class App extends React.Component {
                 </Tab>
                 <Tab label="Tab C">
                     <div>
-                        <SuperTable key="roomClients"
+                        <CustomTable key="roomClients"
                                     onDeleteObjects={this.onDeleteObjects.bind(this, 'roomClients')}
                                     fields={roomClientFields}
                                     sqlContext={sqlContext.RoomClient()}
@@ -121,7 +120,7 @@ class App extends React.Component {
                 </Tab>
                 <Tab label="Tab D">
                     <div>
-                        <SuperTable key="roomReservations"
+                        <CustomTable key="roomReservations"
                                     onDeleteObjects={this.onDeleteObjects.bind(this, 'roomReservations')}
                                     fields={roomReservationFields}
                                     sqlContext={sqlContext.RoomReservation()}

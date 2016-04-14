@@ -37,7 +37,7 @@ export default class FormDialog extends React.Component {
 
         const textFields = this.props.fields.map(x => {
             return <div>
-                <TextField hintText={x} ref={(field) => this.fields[x] = field}/>
+                <TextField type="number" hintText={x} ref={(field) => this.fields[x] = field}/>
                 <br/>
             </div>
         });

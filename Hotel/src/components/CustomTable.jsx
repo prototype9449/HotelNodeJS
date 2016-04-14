@@ -1,5 +1,5 @@
 import React from 'react';
-import Row from './Row.jsx';
+import Row from './row.jsx';
 import Checkbox from 'material-ui/lib/checkbox';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Dialog from 'material-ui/lib/dialog';
@@ -15,7 +15,7 @@ function getProperties(object) {
     });
 }
 
-export default class SuperTable extends React.Component {
+export default class CustomTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -99,6 +99,10 @@ export default class SuperTable extends React.Component {
                 {x.name}
             </th>;
         });
+
+        tableHeaders.unshift((<th>
+            {' '}
+        </th>));
 
         return (
 
