@@ -6,59 +6,79 @@ import getActions from '../create-cancel-actions.jsx';
 import SelectField from 'material-ui/lib/select-field';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import DatePicker from 'material-ui/lib/date-picker/date-picker';
+import autobind from 'autobind-decorator'
 
 export default class RoomDialog extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            RoomId : 0,
-            CheckInDate : '',
-            Term : 5
-        }
+    static propTypes = {
+        RoomId: React.PropTypes.number,
+        ClientId: React.PropTypes.number,
+        CheckInDate: React.PropTypes.string,
+        Term: React.PropTypes.number,
+        isOpen: React.PropTypes.bool,
+        onCreateHandler : React.PropTypes.func,
+        onCancelHandler : React.PropTypes.func
+    };
+
+    static defaultProps = {
+        RoomId: 0,
+        ClientId: 0,
+        CheckInDate: '',
+        Term: 5
     }
 
+    constructor(props) {
+        super(props);
+        ({RoomId, ClientId, CheckInDate, Term} = this.props);
+        this.state = {RoomId, ClientId, CheckInDate, Term};
+    }
+
+    @autobind
     getCreatedObject() {
         return this.state;
     }
 
-    onRoomIdChange(e){
-        if(e.target.value < 0)
+    @autobind
+    onRoomIdChange(e) {
+        if (e.target.value < 0)
             return;
 
-        this.setState({RoomId : e.target.value});
+        this.setState({RoomId: e.target.value});
     }
 
-    onClientIdChange(e){
-        if(e.target.value < 0)
+    @autobind
+    onClientIdChange(e) {
+        if (e.target.value < 0)
             return;
 
-        this.setState({ClientId : e.target.value});
+        this.setState({ClientId: e.target.value});
     }
 
-    onCheckInDateChange(e){
-
-        this.setState({CheckInDate : e.target.value});
+    @autobind
+    onCheckInDateChange(e) {
+        this.setState({CheckInDate: e.target.value});
     }
 
-    onTermChange(e){
-        if(e.target.value < 0)
+    @autobind
+    onTermChange(e) {
+        if (e.target.value < 0)
             return;
 
-        this.setState({Term : e.target.value});
+        this.setState({Term: e.target.value});
     }
 
     render() {
-        const actions = getActions(this.props.createHandle, this.props.cancelHandle);
+        const actions = getActions(this.props.onCreateHandler, this.props.onCancelHandler);
 
         const fields =
             (<div>
-                <TextField type="number" hintText="RoomId" onChange = {this.onRoomIdChange.bind(this)}/>
+                <TextField type="number" hintText="RoomId" onChange={this.onRoomIdChange}/>
                 <br/>
-                <TextField type="number" hintText="ClientId" onChange = {this.onClientIdChange.bind(this)}/>
+                <TextField type="number" hintText="ClientId" onChange={this.onClientIdChange}/>
                 <br/>
-                <DatePicker hintText="CheckInDate" container="dialog" mode="landscape" onChange = {this.onCheckInDateChange.bind(this)} />
+                <DatePicker hintText="CheckInDate" container="dialog" mode="landscape"
+                            onChange={this.onCheckInDateChange}/>
                 <br/>
-                <TextField type="number" hintText="Term" onChange = {this.onTermChange.bind(this)}/>
+                <TextField type="number" hintText="Term" onChange={this.onTermChange}/>
                 <br/>
             </div>);
 
@@ -67,7 +87,7 @@ export default class RoomDialog extends React.Component {
                        actions={actions}
                        modal={false}
                        open={this.props.isOpen}
-                       onRequestClose={this.props.cancelHandle}>
+                       onRequestClose={this.props.onCancelHandler}>
             {fields}
         </Dialog>;
     }

@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import {urls, verbs} from './constants';
+import {urls, verbs} from './../constants/utils';
 
 function getAjaxRequest(verb, data, restUrl) {
     return $.ajax({

@@ -16,6 +16,7 @@ function getProperties(object) {
 }
 
 export default class CustomTable extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
