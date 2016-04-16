@@ -8,6 +8,8 @@ import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 import {roomFields, clientFields, roomClientFields, roomReservationFields} from '../constants/utils';
 import _ from 'lodash';
+import RefreshIndicator from 'material-ui/lib/refresh-indicator';
+import FailureServerDialog from './dialogs/failureServerDialog.jsx'
 
 function areEqual(firstArray, secondArray) {
     if (firstArray.length != secondArray.length) {
@@ -88,48 +90,55 @@ class App extends React.Component {
 
     render() {
         return (
-            <Tabs className='tabs'>
-                <Tab label="Tab A">
-                    <div>
-                        <CustomTable key="clients"
-                                     onDeleteObjects={this.onDeleteObjects.bind(this, 'clients')}
-                                     fields={clientFields}
-                                     sqlContext={sqlContext.Clients()}
-                                     objects={this.state.clients} name="clients">
-                        </CustomTable>
-                    </div>
-                </Tab>
-                <Tab label="Tab B">
-                    <div>
-                        <CustomTable key="rooms"
-                                     onDeleteObjects={this.onDeleteObjects.bind(this, 'rooms')}
-                                     fields={roomFields}
-                                     sqlContext={sqlContext.Rooms()}
-                                     objects={this.state.rooms}
-                                     name="rooms"/>
-                    </div>
-                </Tab>
-                <Tab label="Tab C">
-                    <div>
-                        <CustomTable key="roomClients"
-                                     onDeleteObjects={this.onDeleteObjects.bind(this, 'roomClients')}
-                                     fields={roomClientFields}
-                                     sqlContext={sqlContext.RoomClient()}
-                                     objects={this.state.roomClients}
-                                     name="roomClients"/>
-                    </div>
-                </Tab>
-                <Tab label="Tab D">
-                    <div>
-                        <CustomTable key="roomReservations"
-                                     onDeleteObjects={this.onDeleteObjects.bind(this, 'roomReservations')}
-                                     fields={roomReservationFields}
-                                     sqlContext={sqlContext.RoomReservation()}
-                                     objects={this.state.roomReservations}
-                                     name="roomReservations"/>
-                    </div>
-                </Tab>
-            </Tabs>);
+            <div>
+                <RefreshIndicator size={50}
+                                  left={200}
+                                  top={0}
+                                  status="hide"/>
+                <FailureServerDialog/>
+                <Tabs className='tabs'>
+                    <Tab label="Tab A">
+                        <div>
+                            <CustomTable key="clients"
+                                         onDeleteObjects={this.onDeleteObjects.bind(this, 'clients')}
+                                         fields={clientFields}
+                                         sqlContext={sqlContext.Clients()}
+                                         objects={this.state.clients} name="clients">
+                            </CustomTable>
+                        </div>
+                    </Tab>
+                    <Tab label="Tab B">
+                        <div>
+                            <CustomTable key="rooms"
+                                         onDeleteObjects={this.onDeleteObjects.bind(this, 'rooms')}
+                                         fields={roomFields}
+                                         sqlContext={sqlContext.Rooms()}
+                                         objects={this.state.rooms}
+                                         name="rooms"/>
+                        </div>
+                    </Tab>
+                    <Tab label="Tab C">
+                        <div>
+                            <CustomTable key="roomClients"
+                                         onDeleteObjects={this.onDeleteObjects.bind(this, 'roomClients')}
+                                         fields={roomClientFields}
+                                         sqlContext={sqlContext.RoomClient()}
+                                         objects={this.state.roomClients}
+                                         name="roomClients"/>
+                        </div>
+                    </Tab>
+                    <Tab label="Tab D">
+                        <div>
+                            <CustomTable key="roomReservations"
+                                         onDeleteObjects={this.onDeleteObjects.bind(this, 'roomReservations')}
+                                         fields={roomReservationFields}
+                                         sqlContext={sqlContext.RoomReservation()}
+                                         objects={this.state.roomReservations}
+                                         name="roomReservations"/>
+                        </div>
+                    </Tab>
+                </Tabs>
+            </div>);
     }
 }
 

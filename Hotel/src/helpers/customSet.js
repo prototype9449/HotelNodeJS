@@ -11,16 +11,23 @@ export default class CustomSet {
         });
 
         if (!isThere) {
-            this.set.push(object);
+            this.set = [...this.set, object]
         }
+        return this
     }
 
     get size() {
         return this.set.length;
     }
 
-    delete(object) {
-        _.remove(this.set, (x) => _.isEqual(x, object));
+    delete(...deleted) {
+        this.set = this.set.filter(x => !deleted.some(y => _.isEqual(x, y)));
+        return this
+    }
+
+    clear(){
+        this.set = [];
+        return this;
     }
 
     toArray() {

@@ -15,8 +15,8 @@ export default class ClientDialog extends React.Component {
         Sex: React.PropTypes.string,
         isShownId: React.PropTypes.bool,
         isOpen: React.PropTypes.bool,
-        onCreateHandler : React.PropTypes.func,
-        onCancelHandler : React.PropTypes.func
+        onCreateHandler: React.PropTypes.func,
+        onCancelHandler: React.PropTypes.func
     };
 
     static defaultProps = {
@@ -74,8 +74,13 @@ export default class ClientDialog extends React.Component {
     render() {
         const actions = getActions(this.props.onCreateHandler, this.props.onCancelHandler)
 
-        const textFields =
-            (<div>
+        return <Dialog className="dialog"
+                       title="Create client"
+                       actions={actions}
+                       modal={false}
+                       open={this.props.isOpen}
+                       onRequestClose={this.props.onCancelHandler}>
+            <div>
                 {this.props.isShownId && <TextField type="text" hintText="Id" onChange={this.onIdChange}/> }
                 <br/>
                 <TextField type="text" hintText="FullName" onChange={this.onFullNameChange}/>
@@ -86,15 +91,7 @@ export default class ClientDialog extends React.Component {
                     <MenuItem value="Man" primaryText="Man"/>
                     <MenuItem value="Woman" primaryText="Woman"/>
                 </SelectField>
-            </div>)
-
-        return <Dialog className="dialog"
-                       title="Create client"
-                       actions={actions}
-                       modal={false}
-                       open={this.props.isOpen}
-                       onRequestClose={this.props.onCancelHandler}>
-            {textFields}
+            </div>
         </Dialog>
     }
 }

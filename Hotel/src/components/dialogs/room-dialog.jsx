@@ -15,8 +15,8 @@ export default class RoomDialog extends React.Component {
         Comfort: React.PropTypes.number,
         Occupation: React.PropTypes.bool,
         isOpen: React.PropTypes.bool,
-        onCreateHandler : React.PropTypes.func,
-        onCancelHandler : React.PropTypes.func
+        onCreateHandler: React.PropTypes.func,
+        onCancelHandler: React.PropTypes.func
     };
 
     static defaultProps = {
@@ -29,8 +29,8 @@ export default class RoomDialog extends React.Component {
 
     constructor(props) {
         super(props)
-        ({ Id, Floor, Price, Comfort,Occupation } = this.props)
-        this.state = {Id, Floor, Price, Comfort,Occupation}
+        ({Id, Floor, Price, Comfort, Occupation} = this.props)
+        this.state = {Id, Floor, Price, Comfort, Occupation}
     }
 
     @autobind
@@ -88,8 +88,14 @@ export default class RoomDialog extends React.Component {
     render() {
         const actions = getActions(this.props.onCreateHandler, this.props.onCancelHandler)
 
-        const fields =
-            (<div>
+        return <Dialog className="dialog"
+                       title="Create room"
+                       actions={actions}
+                       modal={false}
+                       open={this.props.isOpen}
+                       onRequestClose={this.props.onCancelHandler}>
+            (
+            <div>
                 {this.props.isShownId && <TextField type="number" hintText="Id" onChange={this.onIdChange}/>}
                 <br/>
                 <TextField type="number" hintText="Floor" onChange={this.onFloorChange}/>
@@ -103,15 +109,7 @@ export default class RoomDialog extends React.Component {
                     toogle={this.state.Occupation}
                     onToggle={this.onOccupationChange}
                 />
-            </div>)
-
-        return <Dialog className="dialog"
-                       title="Create room"
-                       actions={actions}
-                       modal={false}
-                       open={this.props.isOpen}
-                       onRequestClose={this.props.onCancelHandler}>
-            {fields}
+            </div>
         </Dialog>
     }
 }

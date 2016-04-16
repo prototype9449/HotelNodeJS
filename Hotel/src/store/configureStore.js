@@ -1,12 +1,8 @@
 import { createStore } from 'redux'
 import rootReducer from '../reducers'
 
-const initialState = {
 
-}
-
-
-export default function configureStore(state = initialState) {
+export default function configureStore(state) {
     const store = createStore(rootReducer, state)
 
     if (module.hot) {

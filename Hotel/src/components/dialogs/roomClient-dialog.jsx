@@ -15,8 +15,8 @@ export default class RoomDialog extends React.Component {
         CheckInDate: React.PropTypes.string,
         Term: React.PropTypes.number,
         isOpen: React.PropTypes.bool,
-        onCreateHandler : React.PropTypes.func,
-        onCancelHandler : React.PropTypes.func
+        onCreateHandler: React.PropTypes.func,
+        onCancelHandler: React.PropTypes.func
     };
 
     static defaultProps = {
@@ -69,8 +69,13 @@ export default class RoomDialog extends React.Component {
     render() {
         const actions = getActions(this.props.onCreateHandler, this.props.onCancelHandler);
 
-        const fields =
-            (<div>
+        return <Dialog className="dialog"
+                       title="Create RoomClient"
+                       actions={actions}
+                       modal={false}
+                       open={this.props.isOpen}
+                       onRequestClose={this.props.onCancelHandler}>
+            <div>
                 <TextField type="number" hintText="RoomId" onChange={this.onRoomIdChange}/>
                 <br/>
                 <TextField type="number" hintText="ClientId" onChange={this.onClientIdChange}/>
@@ -80,15 +85,7 @@ export default class RoomDialog extends React.Component {
                 <br/>
                 <TextField type="number" hintText="Term" onChange={this.onTermChange}/>
                 <br/>
-            </div>);
-
-        return <Dialog className="dialog"
-                       title="Create RoomClient"
-                       actions={actions}
-                       modal={false}
-                       open={this.props.isOpen}
-                       onRequestClose={this.props.onCancelHandler}>
-            {fields}
+            </div>
         </Dialog>;
     }
 }
