@@ -121,6 +121,7 @@ function reducer(state = initialState, action) {
                 ...state,
                 [action.table]: {
                     ...state[action.table],
+                    checkedRows: state[action.table].objects.toSet(),
                     areAllChecked: true
                 }
             }
@@ -129,7 +130,7 @@ function reducer(state = initialState, action) {
                 ...state,
                 [action.table]: {
                     ...state[action.table],
-                    checkedRows: checkedRows.clear(),
+                    checkedRows: state[action.table].checkedRows.clear(),
                     areAllChecked: false
                 }
             }
@@ -138,7 +139,7 @@ function reducer(state = initialState, action) {
             const areAllChecked = state[action.table].checkedRows.size === state[action.table].objects;
             const checkedRows = state[action.table].checkedRows.add(action.object)
 
-            return {
+            const result =  {
                 ...state,
                 [action.table]: {
                     ...state[action.table],
@@ -146,6 +147,7 @@ function reducer(state = initialState, action) {
                     areAllChecked
                 }
             }
+            return result
         }
         case types.UNCHECK_ROW :
             const checkedRows = state[action.table].checkedRows.delete(action.object)

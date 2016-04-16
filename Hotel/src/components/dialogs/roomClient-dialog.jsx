@@ -49,30 +49,29 @@ export default class RoomDialog extends React.Component {
         return this.state.object
     }
 
-    onRoomIdChange(e) {
-        if (e.target.value < 0)
-            return;
-
-        this.setState({RoomId: e.target.value});
+    changeState(object) {
+        this.setState({
+            object: {
+                ...this.state.object,
+                ...object
+            }
+        })
     }
 
+    onRoomIdChange(e) {
+        this.changeState({RoomId: e.target.value});
+    }
 
     onClientIdChange(e) {
-        if (e.target.value < 0)
-            return;
-
-        this.setState({ClientId: e.target.value});
+        this.changeState({ClientId: e.target.value});
     }
 
-    onCheckInDateChange(e) {
-        this.setState({CheckInDate: e.target.value});
+    onCheckInDateChange(e,date) {
+        this.changeState({CheckInDate: date});
     }
 
     onTermChange(e) {
-        if (e.target.value < 0)
-            return;
-
-        this.setState({Term: e.target.value});
+        this.changeState({Term: e.target.value});
     }
 
     onCreateHandler() {
@@ -80,8 +79,8 @@ export default class RoomDialog extends React.Component {
     }
 
     render() {
-        const {onCloseDialog, isOpen} = this.props
-        const {RoomId, ClientId, CheckInDate, Term} = this.props.object
+        const {onCloseDialog, isOpen, currentTableName, ownTableName} = this.props
+        const {RoomId, ClientId, CheckInDate, Term} = this.state.object
         const actions = getActions(this.onCreateHandler, onCloseDialog)
 
         return <Dialog className="dialog"

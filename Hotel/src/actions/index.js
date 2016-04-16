@@ -45,7 +45,7 @@ export function checkAllRows(table) {
 }
 
 export function uncheckAllRows(table) {
-    return {type: types.CHECK_ALL_ROWS, table}
+    return {type: types.UNCHECK_ALL_ROWS, table}
 }
 
 export function checkRow(table, object) {
@@ -53,5 +53,5 @@ export function checkRow(table, object) {
 }
 
 export function uncheckRow(table, object) {
-    return {type: types.CHECK_ROW, table, object}
+    return {type: types.UNCHECK_ROW, table, object}
 }

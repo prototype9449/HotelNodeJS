@@ -52,7 +52,7 @@ class App extends React.Component {
 
     componentDidMount() {
         this.props.fetchObjects()
-        this.interval = setInterval(() => this.props.fetchObjects(), 10000)
+        //this.interval = setInterval(() => this.props.fetchObjects(), 10000)
     }
 
     componentWillUnmount() {
@@ -90,6 +90,7 @@ class App extends React.Component {
                                 <ClientDialog
                                     {...dialogForObject}
                                     onCreateObject={onCreateObject(urls.clients)}
+                                    onCloseDialog = {onCloseCreateDialog}
                                     ownTableName={urls.clients}/>
                             </CustomTable>
                         </div>
@@ -105,6 +106,7 @@ class App extends React.Component {
                                 <RoomDialog
                                     {...dialogForObject}
                                     ownTableName={urls.rooms}
+                                    onCloseDialog = {onCloseCreateDialog}
                                     onCreateObject={onCreateObject(urls.rooms)}/>
                             </CustomTable>
                         </div>
@@ -120,6 +122,7 @@ class App extends React.Component {
                                 <RoomClientDialog
                                     {...dialogForObject}
                                     onCreateObject={onCreateObject(urls.roomClient)}
+                                    onCloseDialog = {onCloseCreateDialog}
                                     ownTableName={urls.roomClient}/>
                             </CustomTable>
                         </div>
@@ -135,6 +138,7 @@ class App extends React.Component {
                                 <RoomReservationDialog
                                     {...dialogForObject}
                                     onCreateObject={onCreateObject(urls.roomReservation)}
+                                    onCloseDialog = {onCloseCreateDialog}
                                     ownTableName={urls.roomReservation}/>
                             </CustomTable>
                         </div>
@@ -149,9 +153,9 @@ App.childContextTypes = {
 }
 
 function mapStateToProps(state) {
-    const dialogForObject = dialogForObject ? {
+    const dialogForObject = state.dialogForObject ? {
         isOpen: true,
-        currentTableName: dialogForObject.table,
+        currentTableName: state.dialogForObject.table,
         isShownId: false
     } : null
 
@@ -170,12 +174,10 @@ const mapDispatchToProps = (dispatch) => {
     const fetchObjects = () => service.fetchObjects(dispatch)
     const onCheck = dispatch((dispatch, getState) =>
         (table) =>
-            (object) =>
-                (index, isChecked) => {
-                    debugger
-
+            (index) =>
+                (target, isChecked) => {
                     const state = getState();
-                    const object = state[table].checkedRows.toArray()[index]
+                    const object = state[table].objects.toArray()[index]
                     if (isChecked) {
                         dispatch(actions.checkRow(table, object))
                     } else {
@@ -183,8 +185,12 @@ const mapDispatchToProps = (dispatch) => {
                     }
                 })
 
-    const onCheckAll = (table) => (a, b) => {
-        dispatch(actions.checkAllRows(table))
+    const onCheckAll = (table) => (target, areAllChecked) => {
+        if(areAllChecked) {
+            dispatch(actions.checkAllRows(table))
+        } else {
+            dispatch(actions.uncheckAllRows(table))
+        }
     }
 
     const onShowCreateDialog = (table) => () => dispatch(actions.openCreateDialog(table))

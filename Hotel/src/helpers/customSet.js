@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 export default class CustomSet {
     constructor(array = []) {
-        this.set = array;
+        this.set = [...array];
     }
 
     add(object) {
@@ -29,12 +29,16 @@ export default class CustomSet {
         return this.set.some(x=> _.isEqual(x, object))
     }
 
+    toSet(){
+        return new CustomSet(this.set)
+    }
+
     clear() {
         this.set = [];
         return this;
     }
 
     toArray() {
-        return this.set;
+        return [...this.set];
     }
 }

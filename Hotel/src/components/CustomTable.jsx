@@ -25,8 +25,8 @@ export default class CustomTable extends React.Component {
 
         let tableRows = objects.toArray().map((object, i)=> {
             let isChecked = checkedRows.hasObject(object);
-            return <Row checked={isChecked} object={object} key={i} index={i}
-                        onCheck={onCheck(object)}/>
+            return <Row isChecked={isChecked} object={object} key={i} index={i}
+                        onCheck={onCheck(i)}/>
         });
 
         let tableHeaders = [' '].concat(nameFields).map((name, i) => {

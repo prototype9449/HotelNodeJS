@@ -18,8 +18,8 @@ export default class RoomDialog extends React.Component {
         }),
         isOpen: React.PropTypes.bool,
         isShownId: React.PropTypes.bool,
-        currentTableName : React.PropTypes.string,
-        ownTableName : React.PropTypes.string,
+        currentTableName: React.PropTypes.string,
+        ownTableName: React.PropTypes.string,
         onCreateObject: React.PropTypes.func,
         onCloseDialog: React.PropTypes.func
     };
@@ -32,8 +32,8 @@ export default class RoomDialog extends React.Component {
             Comfort: 1,
             Occupation: false
         },
-        isOpen : false,
-        isShownId : false
+        isOpen: false,
+        isShownId: false
     }
 
     constructor(props) {
@@ -58,37 +58,49 @@ export default class RoomDialog extends React.Component {
         return {Floor, Price, Comfort, Occupation}
     }
 
+    changeState(object) {
+        this.setState({
+            object: {
+                ...this.state.object,
+                ...object
+            }
+        })
+    }
+
     onIdChange(e) {
         if (e.target.value < 0)
             return;
 
-        this.setState({Id: e.target.value})
+        this.changeState({Id: e.target.value})
     }
 
     onFloorChange(e) {
         if (e.target.value < 1 || e.target.value > 10)
             return;
 
-        this.setState({Floor: e.target.value})
+        this.changeState({Floor: e.target.value})
     }
 
     onPriceChange(e) {
-        const reg = /^ *\$?\d+(?:\.\d{2})? *$/
-        if (!e.target.value.match(reg))
-            return;
+        this.changeState({Price: e.target.value})
+    }
 
-        this.setState({Price: e.target.value})
+    isPriceValid() {
+        const reg = /^ *\$?\d+(?:\.\d{2})? *$/
+        return this.state.object.Price.match(reg) !== null
+    }
+
+    isComfortValid(){
+        const comfort = this.state.object.Comfort
+        return comfort > 0 && comfort < 11
     }
 
     onComfortChange(e) {
-        if (e.target.value < 1 || e.target.value > 10)
-            return;
-
-        this.setState({Comfort: e.target.value})
+        this.changeState({Comfort: e.target.value})
     }
 
     onOccupationChange(event, index, value) {
-        this.setState({Occupation: value})
+        this.changeState({Occupation: value})
     }
 
     onCreateHandler() {
@@ -96,9 +108,9 @@ export default class RoomDialog extends React.Component {
     }
 
     render() {
-        const {onCloseDialog, isOpen, isShownId} = this.props
-        const {Id, Floor, Price, Comfort, Occupation} = this.props.object
-        const actions = getActions(this.onCreateHandler, onCloseDialog)
+        const {onCloseDialog, isOpen, isShownId, currentTableName, ownTableName} = this.props
+        const {Id, Floor, Price, Comfort, Occupation} = this.state.object
+        const actions = getActions(this.onCreateHandler, onCloseDialog, !this.isPriceValid() && !this.isComfortValid())
 
         return <Dialog className="dialog"
                        title="Create room"
@@ -106,7 +118,6 @@ export default class RoomDialog extends React.Component {
                        modal={false}
                        open={isOpen && currentTableName == ownTableName}
                        onRequestClose={onCloseDialog}>
-            (
             <div>
                 {isShownId && <TextField type="number" value={Id} hintText="Id" onChange={this.onIdChange}/>}
                 <br/>

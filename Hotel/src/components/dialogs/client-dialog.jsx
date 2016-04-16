@@ -16,8 +16,8 @@ export default class ClientDialog extends React.Component {
         }),
         isShownId: React.PropTypes.bool,
         isOpen: React.PropTypes.bool,
-        currentTableName : React.PropTypes.string,
-        ownTableName : React.PropTypes.string,
+        currentTableName: React.PropTypes.string,
+        ownTableName: React.PropTypes.string,
         onCreateObject: React.PropTypes.func,
         onCloseDialog: React.PropTypes.func
     };
@@ -29,20 +29,21 @@ export default class ClientDialog extends React.Component {
             Passport: '',
             Sex: 'Man'
         },
-        isOpen : false,
-        isShownId : false
+        isOpen: false,
+        isShownId: false
     };
 
     constructor(props) {
         super(props)
         const {Id, FullName, Passport, Sex} = this.props.object
         this.state = {object: {Id, FullName, Passport, Sex}}
-        
-        this.onCreateHandler = this.onCreateHandler.bind(this); 
-        this.onIdChange = this.onIdChange.bind(this); 
-        this.onFullNameChange = this.onFullNameChange.bind(this); 
-        this.onPassportChange = this.onPassportChange.bind(this); 
-        this.onSexChange = this.onSexChange.bind(this); 
+
+        this.onCreateHandler = this.onCreateHandler.bind(this)
+        this.onIdChange = this.onIdChange.bind(this)
+        this.onFullNameChange = this.onFullNameChange.bind(this)
+        this.onPassportChange = this.onPassportChange.bind(this)
+        this.onSexChange = this.onSexChange.bind(this)
+        this.isPassportValid = this.isPassportValid.bind(this)
     }
 
     getCreatedObject() {
@@ -54,26 +55,46 @@ export default class ClientDialog extends React.Component {
         return {FullName, Passport, Sex}
     }
 
+    changeState(object) {
+        this.setState({
+            object: {
+                ...this.state.object,
+                ...object
+            }
+        })
+    }
+
     onIdChange(e) {
         if (e.target.value < 0)
             return;
-        this.setState({Id: e.target.value})
+
+        this.changeState({
+            Id: e.target.value
+        })
+
     }
 
     onFullNameChange(e) {
-        this.setState({FullName: e.target.value})
+        this.changeState({
+            FullName: e.target.value
+        })
     }
 
     onPassportChange(e) {
-        const reg = /^[0-9]{6}[-]{1}[0-9]{4}$/
-        if (e.target.value.match(reg)) {
-            this.setState({Passport: e.target.value})
-        }
+        this.changeState({
+            Passport: e.target.value
+        })
     }
 
-    
+    isPassportValid() {
+        const reg = /^[0-9]{6}[-]{1}[0-9]{4}$/
+        return this.state.object.Passport.match(reg) !== null
+    }
+
     onSexChange(event, index, value) {
-        this.setState({Sex: value})
+        this.changeState({
+            Sex: value
+        })
     }
 
     onCreateHandler() {
@@ -82,8 +103,10 @@ export default class ClientDialog extends React.Component {
 
     render() {
         const {isOpen, isShownId, onCloseDialog, currentTableName, ownTableName} = this.props
-        const {Id, FullName, Passport, Sex} = this.props.object
-        const actions = getActions(this.onCreateHandler, onCloseDialog)
+        const {Id, FullName, Passport, Sex} = this.state.object
+
+        const actions = getActions(this.onCreateHandler, onCloseDialog, !this.isPassportValid())
+
 
         return <Dialog className="dialog"
                        title="Create client"
