@@ -9,41 +9,44 @@ import autobind from 'autobind-decorator'
 
 export default class ClientDialog extends React.Component {
     static propTypes = {
-        Id: React.PropTypes.number,
-        FullName: React.PropTypes.string,
-        Passport: React.PropTypes.string,
-        Sex: React.PropTypes.string,
+        object: React.PropTypes.shape({
+            Id: React.PropTypes.number,
+            FullName: React.PropTypes.string,
+            Passport: React.PropTypes.string,
+            Sex: React.PropTypes.string
+        }),
         isShownId: React.PropTypes.bool,
         isOpen: React.PropTypes.bool,
+        currentTableName : React.PropTypes.string,
+        ownTableName : React.PropTypes.string,
         onCreateHandler: React.PropTypes.func,
         onCancelHandler: React.PropTypes.func
     };
 
     static defaultProps = {
-        Id: 0,
-        FullName: '',
-        Passport: '',
-        Sex: 'Man',
-        isShownId: true
+        object: {
+            Id: 0,
+            FullName: '',
+            Passport: '',
+            Sex: 'Man'
+        },
+        isOpen : false,
+        isShownId : false
     };
 
     constructor(props) {
         super(props)
-        ({Id, FullName, Passport, Sex} = this.props);
-        this.state = {Id, FullName, Passport, Sex}
+        ({Id, FullName, Passport, Sex} = this.props.object)
+        this.state = {object: {Id, FullName, Passport, Sex}}
     }
 
-    @autobind
     getCreatedObject() {
         if (this.props.isShownId) {
             return this.state
         }
+        ({FullName, Passport, Sex} = this.props.object)
 
-        return {
-            FullName: this.state.FullName,
-            Passport: this.state.Passport,
-            Sex: this.state.Sex
-        }
+        return {FullName, Passport, Sex}
     }
 
     @autobind
@@ -71,23 +74,30 @@ export default class ClientDialog extends React.Component {
         this.setState({Sex: value})
     }
 
+    @autobind
+    onCreateHandler() {
+        this.props.onCreateHandler(this.getCreatedObject());
+    }
+
     render() {
-        const actions = getActions(this.props.onCreateHandler, this.props.onCancelHandler)
+        const {isOpen, isShownId, onCancelHandler, currentTableName, ownTableName} = this.props
+        const {Id, FullName, Passport, Sex} = this.props.object
+        const actions = getActions(this.onCreateHandler, onCancelHandler)
 
         return <Dialog className="dialog"
                        title="Create client"
                        actions={actions}
                        modal={false}
-                       open={this.props.isOpen}
-                       onRequestClose={this.props.onCancelHandler}>
+                       open={isOpen && currentTableName == ownTableName}
+                       onRequestClose={onCancelHandler}>
             <div>
-                {this.props.isShownId && <TextField type="text" hintText="Id" onChange={this.onIdChange}/> }
+                {isShownId && <TextField type="text" value={Id} hintText="Id" onChange={this.onIdChange}/> }
                 <br/>
-                <TextField type="text" hintText="FullName" onChange={this.onFullNameChange}/>
+                <TextField type="text" hintText="FullName" value={FullName} onChange={this.onFullNameChange}/>
                 <br/>
-                <TextField type="text" hintText="Passport" onChange={this.onPassportChange}/>
+                <TextField type="text" hintText="Passport" value={Passport} onChange={this.onPassportChange}/>
                 <br/>
-                <SelectField value={this.state.Sex} onChange={this.onSexChange} floatingLabelText="Sex">
+                <SelectField value={Sex} onChange={this.onSexChange} floatingLabelText="Sex">
                     <MenuItem value="Man" primaryText="Man"/>
                     <MenuItem value="Woman" primaryText="Woman"/>
                 </SelectField>

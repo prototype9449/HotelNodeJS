@@ -97,16 +97,14 @@ function reducer(state = initialState, action) {
                 isIndicatorShown: true
             }
         case types.REQUEST_DELETE_SUCCESS :
-
             const deleted = action.objects;
             const current = state[action.table].objects;
-            const resultObjects = current.delete(deleted);
 
             return {
                 ...state,
                 [action.table]: {
                     ...(getInitialStateForTable()),
-                    objects: resultObjects
+                    objects: current.delete(deleted)
                 },
                 isIndicatorShown: false
             }
@@ -128,6 +126,7 @@ function reducer(state = initialState, action) {
                 }
             }
         case types.CHECK_ROW :
+        {
             const areAllChecked = state[action.table].checkedRows.size === state[action.table].objects;
             const checkedRows = state[action.table].checkedRows.add(action.object)
 
@@ -139,6 +138,7 @@ function reducer(state = initialState, action) {
                     areAllChecked
                 }
             }
+        }
         case types.UNCHECK_ROW :
             const checkedRows = state[action.table].checkedRows.delete(action.object)
             return {

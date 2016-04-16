@@ -8,27 +8,32 @@ function getProperties(object) {
     });
 }
 
-
 export default class Row extends React.Component {
+    static propTypes = {
+        object: React.PropTypes.object,
+        isChecked: React.PropTypes.bool,
+        onCheck: React.PropTypes.func,
+        onClick: React.PropTypes.func
+    }
+
     constructor(props) {
         super(props);
     }
 
-    checkIt() {
-        this.props.callback(this.props.index, !this.props.checked);
-    }
-
     render() {
-        let properties = getProperties(this.props.object);
-        let columns = properties.map((x,i) => {
-            return <td key={i}>
-                {x.value}
-            </td>
+        const {object, isChecked, onCheck, onClick} = this.props;
+
+        const properties = getProperties(object);
+        const columns = properties.map((x, i) => {
+            const elem = (<td key={i} className = "tdHover">
+                <div className="divHover" key={i} href="#" onClick={onClick}>{x.value}</div>
+            </td>)
+            return elem;
         });
 
         return <tr className='tableRow'>
             <td>
-                <Checkbox checked={this.props.checked} onCheck={this.checkIt.bind(this)} />
+                <Checkbox checked={isChecked} onCheck={onCheck}/>
             </td>
             {columns}
         </tr>;

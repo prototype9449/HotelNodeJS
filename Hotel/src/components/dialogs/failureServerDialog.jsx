@@ -4,6 +4,8 @@ import FlatButton from 'material-ui/lib/flat-button';
 
 export default class FailureServerDialog extends React.Component {
     static propTypes = {
+        isOpen : React.PropTypes.bool,
+        errorText : React.PropTypes.string,
         onOkHandler: React.PropTypes.func
     };
 
@@ -12,21 +14,23 @@ export default class FailureServerDialog extends React.Component {
     }
 
     render() {
+        const {isOpen, onOkHandler, errorText} = this.props
+
         const actions = [
             <FlatButton
                 label="Ok"
                 secondary={true}
-                onTouchTap={this.props.onOkHandler}
+                onTouchTap={onOkHandler}
             />]
 
         return <Dialog className="dialog"
                        title="Error"
                        actions={actions}
                        modal={false}
-                       open={this.props.isOpen}
-                       onRequestClose={this.props.onOkHandler}>
+                       open={isOpen}
+                       onRequestClose={onOkHandler}>
             <div>
-                There was an error with receiving of objects from server
+                {errorText}
             </div>
         </Dialog>
     }

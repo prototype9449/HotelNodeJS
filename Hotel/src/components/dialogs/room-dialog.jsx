@@ -9,46 +9,49 @@ import autobind from 'autobind-decorator'
 
 export default class RoomDialog extends React.Component {
     static propTypes = {
-        Id: React.PropTypes.number,
-        Floor: React.PropTypes.number,
-        Price: React.PropTypes.string,
-        Comfort: React.PropTypes.number,
-        Occupation: React.PropTypes.bool,
+        object: React.PropTypes.shape({
+            Id: React.PropTypes.number,
+            Floor: React.PropTypes.number,
+            Price: React.PropTypes.string,
+            Comfort: React.PropTypes.number,
+            Occupation: React.PropTypes.bool
+        }),
         isOpen: React.PropTypes.bool,
+        isShownId: React.PropTypes.bool,
+        currentTableName : React.PropTypes.string,
+        ownTableName : React.PropTypes.string,
         onCreateHandler: React.PropTypes.func,
         onCancelHandler: React.PropTypes.func
     };
 
     static defaultProps = {
-        Id: 0,
-        Floor: 1,
-        Price: 100.00,
-        Comfort: 1,
-        Occupation: false
+        object: {
+            Id: 0,
+            Floor: 1,
+            Price: 100.00,
+            Comfort: 1,
+            Occupation: false
+        },
+        isOpen : false,
+        isShownId : false
     }
 
     constructor(props) {
         super(props)
-        ({Id, Floor, Price, Comfort, Occupation} = this.props)
-        this.state = {Id, Floor, Price, Comfort, Occupation}
+        ({Id, Floor, Price, Comfort, Occupation} = this.props.object)
+        this.state = {object: {Id, Floor, Price, Comfort, Occupation}}
     }
 
-    @autobind
     getCreatedObject() {
         if (this.props.isShownId) {
-            return this.state
+            return this.state.object
         }
-
-        return {
-            Floor: this.state.Floor,
-            Price: this.state.Price,
-            Comfort: this.state.Comfort,
-            Occupation: this.state.Occupation
-        }
+        ({Floor, Price, Comfort, Occupation} = this.state.object);
+        return {Floor, Price, Comfort, Occupation}
     }
 
     @autobind
-    onIdhange(e) {
+    onIdChange(e) {
         if (e.target.value < 0)
             return;
 
@@ -85,28 +88,34 @@ export default class RoomDialog extends React.Component {
         this.setState({Occupation: value})
     }
 
+    onCreateHandler() {
+        this.props.onCreateHandler(this.getCreatedObject());
+    }
+
     render() {
-        const actions = getActions(this.props.onCreateHandler, this.props.onCancelHandler)
+        const {onCancelHandler, isOpen, isShownId}
+        const {Id, Floor, Price, Comfort, Occupation} = this.props.object
+        const actions = getActions(this.onCreateHandler, onCancelHandler)
 
         return <Dialog className="dialog"
                        title="Create room"
                        actions={actions}
                        modal={false}
-                       open={this.props.isOpen}
-                       onRequestClose={this.props.onCancelHandler}>
+                       open={isOpen && currentTableName == ownTableName}
+                       onRequestClose={onCancelHandler}>
             (
             <div>
-                {this.props.isShownId && <TextField type="number" hintText="Id" onChange={this.onIdChange}/>}
+                {isShownId && <TextField type="number" value={Id} hintText="Id" onChange={this.onIdChange}/>}
                 <br/>
-                <TextField type="number" hintText="Floor" onChange={this.onFloorChange}/>
+                <TextField type="number" hintText="Floor" value={Floor} onChange={this.onFloorChange}/>
                 <br/>
-                <TextField type="text" hintText="Price" onChange={this.onPriceChange}/>
+                <TextField type="text" hintText="Price" value={Price} onChange={this.onPriceChange}/>
                 <br/>
-                <TextField type="number" hintText="Comfort" onChange={this.onComfortChange}/>
+                <TextField type="number" hintText="Comfort" value={Comfort} onChange={this.onComfortChange}/>
                 <br/>
                 <Toggle
                     label="Occupation"
-                    toogle={this.state.Occupation}
+                    toogle={Occupation}
                     onToggle={this.onOccupationChange}
                 />
             </div>

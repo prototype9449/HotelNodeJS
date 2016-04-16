@@ -25,7 +25,11 @@ export default class CustomSet {
         return this
     }
 
-    clear(){
+    hasObject(object) {
+        return set.some(x=> _.isEqual(x, object))
+    }
+
+    clear() {
         this.set = [];
         return this;
     }

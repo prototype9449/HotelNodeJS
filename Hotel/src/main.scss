@@ -4,9 +4,29 @@ body {
   color: $color;
 }
 
+.divHover {
+  cursor: pointer;
+  height: 100%;
+  padding: 8px;
+}
 
-.tabs{
-  max-width : 1000px;
+
+table {
+  width: 100%
+}
+
+table {
+  thead {
+    tr {
+      td {
+        padding: 0px;
+      }
+    }
+  }
+}
+
+.tabs {
+  max-width: 1000px;
   margin-top: 30px;
   margin-bottom: 30px;
   margin-left: auto;

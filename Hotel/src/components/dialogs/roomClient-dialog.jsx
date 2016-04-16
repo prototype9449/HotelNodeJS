@@ -10,31 +10,37 @@ import autobind from 'autobind-decorator'
 
 export default class RoomDialog extends React.Component {
     static propTypes = {
-        RoomId: React.PropTypes.number,
-        ClientId: React.PropTypes.number,
-        CheckInDate: React.PropTypes.string,
-        Term: React.PropTypes.number,
+        object: React.PropTypes.shape({
+            RoomId: React.PropTypes.number,
+            ClientId: React.PropTypes.number,
+            CheckInDate: React.PropTypes.string,
+            Term: React.PropTypes.number
+        }),
         isOpen: React.PropTypes.bool,
+        currentTableName : React.PropTypes.string,
+        ownTableName : React.PropTypes.string,
         onCreateHandler: React.PropTypes.func,
         onCancelHandler: React.PropTypes.func
     };
 
     static defaultProps = {
-        RoomId: 0,
-        ClientId: 0,
-        CheckInDate: '',
-        Term: 5
+        object: {
+            RoomId: 0,
+            ClientId: 0,
+            CheckInDate: '',
+            Term: 5
+        },
+        isOpen : false
     }
 
     constructor(props) {
         super(props);
-        ({RoomId, ClientId, CheckInDate, Term} = this.props);
-        this.state = {RoomId, ClientId, CheckInDate, Term};
+        ({RoomId, ClientId, CheckInDate, Term} = this.props.object)
+        this.state = {object: {RoomId, ClientId, CheckInDate, Term}}
     }
 
-    @autobind
     getCreatedObject() {
-        return this.state;
+        return this.state.object
     }
 
     @autobind
@@ -66,26 +72,33 @@ export default class RoomDialog extends React.Component {
         this.setState({Term: e.target.value});
     }
 
+    @autobind
+    onCreateHandler(){
+        this.props.onCreateHandler(this.getCreatedObject())
+    }
+
     render() {
-        const actions = getActions(this.props.onCreateHandler, this.props.onCancelHandler);
+        const {onCancelHandler, isOpen} = this.props
+        const {RoomId, ClientId, CheckInDate, Term} = this.props.object
+        const actions = getActions(this.onCreateHandler, onCancelHandler)
 
         return <Dialog className="dialog"
                        title="Create RoomClient"
                        actions={actions}
                        modal={false}
-                       open={this.props.isOpen}
-                       onRequestClose={this.props.onCancelHandler}>
+                       open={isOpen && currentTableName == ownTableName}
+                       onRequestClose={onCancelHandler}>
             <div>
-                <TextField type="number" hintText="RoomId" onChange={this.onRoomIdChange}/>
+                <TextField type="number" value={RoomId} hintText="RoomId" onChange={this.onRoomIdChange}/>
                 <br/>
-                <TextField type="number" hintText="ClientId" onChange={this.onClientIdChange}/>
+                <TextField type="number" value={ClientId} hintText="ClientId" onChange={this.onClientIdChange}/>
                 <br/>
-                <DatePicker hintText="CheckInDate" container="dialog" mode="landscape"
+                <DatePicker value={CheckInDate} hintText="CheckInDate" container="dialog" mode="landscape"
                             onChange={this.onCheckInDateChange}/>
                 <br/>
-                <TextField type="number" hintText="Term" onChange={this.onTermChange}/>
+                <TextField type="number" value={Term} hintText="Term" onChange={this.onTermChange}/>
                 <br/>
             </div>
-        </Dialog>;
+        </Dialog>
     }
 }
