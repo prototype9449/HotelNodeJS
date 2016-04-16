@@ -51,19 +51,19 @@ class Repository {
 }
 
 export default class SqlContext {
-    static [urls.clients]() {
+    static get [urls.clients]() {
         return new Repository(urls.clients);
     }
 
-    static [urls.rooms]() {
+    static get [urls.rooms]() {
         return new Repository(urls.rooms);
     }
 
-    static [urls.roomClient]() {
+    static get [urls.roomClient]() {
         return new Repository(urls.roomClient);
     }
 
-    static [urls.roomReservation]() {
+    static get [urls.roomReservation]() {
         return new Repository(urls.roomReservation);
     }
 }

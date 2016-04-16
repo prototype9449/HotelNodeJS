@@ -20,8 +20,11 @@ export default class CustomSet {
         return this.set.length;
     }
 
-    delete(...deleted) {
-        this.set = this.set.filter(x => !deleted.some(y => _.isEqual(x, y)));
+    delete(deleted) {
+        this.set = this.set.filter(x => {
+                return deleted.some(y => !_.isEqual(x, y))
+            }
+        );
         return this
     }
 
@@ -29,7 +32,7 @@ export default class CustomSet {
         return this.set.some(x=> _.isEqual(x, object))
     }
 
-    toSet(){
+    toSet() {
         return new CustomSet(this.set)
     }
 

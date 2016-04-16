@@ -53,12 +53,16 @@ function reducer(state = initialState, action) {
         case types.OPEN_ERROR_DIALOG :
             return {
                 ...state,
-                errorTexts: [...errorTexts, saction.text],
+                errorTexts: [...state.errorTexts, action.text],
                 isErrorDialogShown: true
             }
         case types.OPEN_CREATE_DIALOG :
             return {
                 ...state,
+                [action.table]: {
+                    ...[action.table],
+                    isIndicatorShown: false
+                },
                 dialogForObject: {
                     table: action.table
                 }
@@ -72,8 +76,17 @@ function reducer(state = initialState, action) {
                 }
             }
         case types.CLOSE_DIALOG :
+            let object = {}
+            Object.keys(urls).forEach(x => {
+                object[urls[x]] = {
+                    ...state[[urls[x]]],
+                    isIndicatorShown : false
+                }
+            })
+
             return {
                 ...state,
+                ...object,
                 dialogForObject: null,
                 isErrorDialogShown: false
             }
@@ -82,11 +95,12 @@ function reducer(state = initialState, action) {
                 ...state,
                 dialogForObject: null,
                 [action.table]: {
-                    ...(getInitialStateForTable()),
+                    ...state[action.table],
                     isIndicatorShown: true
                 }
             }
         case types.REQUEST_CREATE_SUCCESS :
+            debugger
             const resultObjects = state[action.table].objects.add(action.object)
             return {
                 ...state,
@@ -100,7 +114,7 @@ function reducer(state = initialState, action) {
             return {
                 ...state,
                 [action.table]: {
-                    ...(getInitialStateForTable()),
+                    ...state[action.table],
                     isIndicatorShown: true
                 }
             }
@@ -139,7 +153,7 @@ function reducer(state = initialState, action) {
             const areAllChecked = state[action.table].checkedRows.size === state[action.table].objects;
             const checkedRows = state[action.table].checkedRows.add(action.object)
 
-            const result =  {
+            const result = {
                 ...state,
                 [action.table]: {
                     ...state[action.table],

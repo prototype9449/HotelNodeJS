@@ -13,9 +13,9 @@ function getContext(request) {
 function getError(err, responce, data) {
     console.log(err);
         responce.set({
-            'Content-Type': 'application/json',
-            'Status': '409'
+            'Content-Type': 'application/json'
         });
+        responce.statusCode = 409;
         responce.send(JSON.stringify({ message : data}));
 }
 

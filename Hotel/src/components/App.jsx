@@ -67,18 +67,18 @@ class App extends React.Component {
     }
 
     render() {
-        const {isIndicatorShown, onOkErrorDialogHandler, errorTexts, isErrorDialogShown} = this.props;
+        const {onOkErrorDialogHandler, errorTexts, isErrorDialogShown} = this.props;
         const {dialogForObject} = this.props;
         const {onCheck, onCheckAll, onShowCreateDialog, onDelete, onCreateObject, onCloseCreateDialog } = this.props
         return (
             <div>
-                <RefreshIndicator size={50} left={200} top={0}
-                                  status={ isIndicatorShown ? "hide" : "loading"}/>
                 <FailureServerDialog onOkHandler={onOkErrorDialogHandler}
                                      isOpen={isErrorDialogShown}
                                      errorTexts={errorTexts}/>
                 <Tabs className='tabs'>
                     <Tab label="Clients">
+                        <RefreshIndicator size={50} left={200} top={0}
+                                          status={ this.props[urls.clients].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
                             <CustomTable
                                 {...this.props[urls.clients]}
@@ -90,12 +90,14 @@ class App extends React.Component {
                                 <ClientDialog
                                     {...dialogForObject}
                                     onCreateObject={onCreateObject(urls.clients)}
-                                    onCloseDialog = {onCloseCreateDialog}
+                                    onCloseDialog={onCloseCreateDialog(urls.clients)}
                                     ownTableName={urls.clients}/>
                             </CustomTable>
                         </div>
                     </Tab>
                     <Tab label="Rooms">
+                        <RefreshIndicator size={50} left={200} top={0}
+                                          status={ this.props[urls.rooms].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
                             <CustomTable {...this.props[urls.rooms]}
                                 onCheck={onCheck(urls.rooms)}
@@ -106,12 +108,14 @@ class App extends React.Component {
                                 <RoomDialog
                                     {...dialogForObject}
                                     ownTableName={urls.rooms}
-                                    onCloseDialog = {onCloseCreateDialog}
+                                    onCloseDialog={onCloseCreateDialog(urls.rooms)}
                                     onCreateObject={onCreateObject(urls.rooms)}/>
                             </CustomTable>
                         </div>
                     </Tab>
                     <Tab label="RoomClients">
+                        <RefreshIndicator size={50} left={200} top={0}
+                                          status={ this.props[urls.roomClient].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
                             <CustomTable {...this.props[urls.roomClient]}
                                 onCheck={onCheck(urls.roomClient)}
@@ -122,12 +126,14 @@ class App extends React.Component {
                                 <RoomClientDialog
                                     {...dialogForObject}
                                     onCreateObject={onCreateObject(urls.roomClient)}
-                                    onCloseDialog = {onCloseCreateDialog}
+                                    onCloseDialog={onCloseCreateDialog(urls.roomClient)}
                                     ownTableName={urls.roomClient}/>
                             </CustomTable>
                         </div>
                     </Tab>
                     <Tab label="RoomReservations">
+                        <RefreshIndicator size={50} left={50} top={0}
+                                          status={ this.props[urls.roomReservation].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
                             <CustomTable {...this.props[urls.roomReservation]}
                                 onCheck={onCheck(urls.roomReservation)}
@@ -138,7 +144,7 @@ class App extends React.Component {
                                 <RoomReservationDialog
                                     {...dialogForObject}
                                     onCreateObject={onCreateObject(urls.roomReservation)}
-                                    onCloseDialog = {onCloseCreateDialog}
+                                    onCloseDialog={onCloseCreateDialog(urls.roomReservation)}
                                     ownTableName={urls.roomReservation}/>
                             </CustomTable>
                         </div>
@@ -186,7 +192,7 @@ const mapDispatchToProps = (dispatch) => {
                 })
 
     const onCheckAll = (table) => (target, areAllChecked) => {
-        if(areAllChecked) {
+        if (areAllChecked) {
             dispatch(actions.checkAllRows(table))
         } else {
             dispatch(actions.uncheckAllRows(table))
@@ -203,11 +209,11 @@ const mapDispatchToProps = (dispatch) => {
                 service.deleteObjects(dispatch, table, deletingObjects)
             })
 
-    const onCreateObject = (table) => (object) => () => {
+    const onCreateObject = (table) => (object) => {
         service.createObject(dispatch, table, object)
     }
 
-    const onCloseCreateDialog = () => dispatch(actions.closeDialog())
+    const onCloseCreateDialog = (table) => () => dispatch(actions.closeDialog())
 
     return {
         onOkErrorDialogHandler,

@@ -50,8 +50,7 @@ export default class ClientDialog extends React.Component {
         if (this.props.isShownId) {
             return this.state
         }
-        ({FullName, Passport, Sex} = this.props.object)
-
+        const {FullName, Passport, Sex} = this.state.object
         return {FullName, Passport, Sex}
     }
 

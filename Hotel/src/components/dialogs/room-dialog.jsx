@@ -54,7 +54,7 @@ export default class RoomDialog extends React.Component {
         if (this.props.isShownId) {
             return this.state.object
         }
-        ({Floor, Price, Comfort, Occupation} = this.state.object);
+        const {Floor, Price, Comfort, Occupation} = this.state.object
         return {Floor, Price, Comfort, Occupation}
     }
 
