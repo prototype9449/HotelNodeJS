@@ -4,8 +4,8 @@ import FlatButton from 'material-ui/lib/flat-button';
 
 export default class FailureServerDialog extends React.Component {
     static propTypes = {
-        isOpen : React.PropTypes.bool,
-        errorText : React.PropTypes.string,
+        isOpen: React.PropTypes.bool,
+        errorTexts: React.PropTypes.arrayOf(React.PropTypes.string),
         onOkHandler: React.PropTypes.func
     };
 
@@ -14,7 +14,11 @@ export default class FailureServerDialog extends React.Component {
     }
 
     render() {
-        const {isOpen, onOkHandler, errorText} = this.props
+        const {isOpen, onOkHandler, errorTexts} = this.props
+
+        const errorLines = errorTexts.map(x => {
+            return <li>{x}</li>
+        })
 
         const actions = [
             <FlatButton
@@ -30,7 +34,9 @@ export default class FailureServerDialog extends React.Component {
                        open={isOpen}
                        onRequestClose={onOkHandler}>
             <div>
-                {errorText}
+                <ul>
+                    {errorLines}
+                </ul>
             </div>
         </Dialog>
     }

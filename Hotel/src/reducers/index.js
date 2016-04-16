@@ -8,7 +8,8 @@ function getInitialStateForTable() {
     return {
         objects: new CustomSet(),
         checkedRows: new CustomSet(),
-        areAllChecked: false
+        areAllChecked: false,
+        isIndicatorShown: false
     }
 }
 
@@ -26,31 +27,33 @@ const initialState = {
         ...(getInitialStateForTable())
     },
     dialogForObject: null,
-    errorText: null,
-    isErrorDialogShown: false,
-    isIndicatorShown: false
+    errorTexts: [],
+    isErrorDialogShown: false
 }
 
 function reducer(state = initialState, action) {
     switch (action.type) {
-        case types.ADD_OBJECTS_REQUEST :
-            return {
-                ...state,
-                isIndicatorShown: true
-            }
-        case types.ADD_OBJECTS_SUCCESS :
+        case types.REQUEST_ADD_SEND :
             return {
                 ...state,
                 [action.table]: {
                     ...(getInitialStateForTable()),
-                    objects: action.objects
-                },
-                isIndicatorShown: false
+                    isIndicatorShown: true
+                }
+            }
+        case types.REQUEST_ADD_SUCCESS :
+            return {
+                ...state,
+                [action.table]: {
+                    ...(getInitialStateForTable()),
+                    objects: action.objects,
+                    isIndicatorShown: false
+                }
             }
         case types.OPEN_ERROR_DIALOG :
             return {
                 ...state,
-                errorText: action.text,
+                errorTexts: [...errorTexts, saction.text],
                 isErrorDialogShown: true
             }
         case types.OPEN_CREATE_DIALOG :
@@ -71,7 +74,6 @@ function reducer(state = initialState, action) {
         case types.CLOSE_DIALOG :
             return {
                 ...state,
-                errorText: null,
                 dialogForObject: null,
                 isErrorDialogShown: false
             }
@@ -79,7 +81,10 @@ function reducer(state = initialState, action) {
             return {
                 ...state,
                 dialogForObject: null,
-                isIndicatorShown: true
+                [action.table]: {
+                    ...(getInitialStateForTable()),
+                    isIndicatorShown: true
+                }
             }
         case types.REQUEST_CREATE_SUCCESS :
             const resultObjects = state[action.table].objects.add(action.object)
@@ -94,19 +99,22 @@ function reducer(state = initialState, action) {
         case types.REQUEST_DELETE_SEND :
             return {
                 ...state,
-                isIndicatorShown: true
+                [action.table]: {
+                    ...(getInitialStateForTable()),
+                    isIndicatorShown: true
+                }
             }
         case types.REQUEST_DELETE_SUCCESS :
-            const deleted = action.objects;
+            const deleted = state[action.table].checkedRows.toArray();
             const current = state[action.table].objects;
 
             return {
                 ...state,
                 [action.table]: {
                     ...(getInitialStateForTable()),
-                    objects: current.delete(deleted)
-                },
-                isIndicatorShown: false
+                    objects: current.delete(deleted),
+                    isIndicatorShown: false
+                }
             }
         case types.CHECK_ALL_ROWS :
             return {

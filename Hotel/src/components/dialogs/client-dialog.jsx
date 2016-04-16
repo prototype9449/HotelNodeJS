@@ -19,8 +19,8 @@ export default class ClientDialog extends React.Component {
         isOpen: React.PropTypes.bool,
         currentTableName : React.PropTypes.string,
         ownTableName : React.PropTypes.string,
-        onCreateHandler: React.PropTypes.func,
-        onCancelHandler: React.PropTypes.func
+        onCreateObject: React.PropTypes.func,
+        onCloseDialog: React.PropTypes.func
     };
 
     static defaultProps = {
@@ -76,20 +76,20 @@ export default class ClientDialog extends React.Component {
 
     @autobind
     onCreateHandler() {
-        this.props.onCreateHandler(this.getCreatedObject());
+        this.props.onCreateObject(this.getCreatedObject());
     }
 
     render() {
-        const {isOpen, isShownId, onCancelHandler, currentTableName, ownTableName} = this.props
+        const {isOpen, isShownId, onCloseDialog, currentTableName, ownTableName} = this.props
         const {Id, FullName, Passport, Sex} = this.props.object
-        const actions = getActions(this.onCreateHandler, onCancelHandler)
+        const actions = getActions(this.onCreateHandler, onCloseDialog)
 
         return <Dialog className="dialog"
                        title="Create client"
                        actions={actions}
                        modal={false}
                        open={isOpen && currentTableName == ownTableName}
-                       onRequestClose={onCancelHandler}>
+                       onRequestClose={onCloseDialog}>
             <div>
                 {isShownId && <TextField type="text" value={Id} hintText="Id" onChange={this.onIdChange}/> }
                 <br/>

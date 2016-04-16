@@ -19,8 +19,8 @@ export default class RoomDialog extends React.Component {
         isOpen: React.PropTypes.bool,
         currentTableName : React.PropTypes.string,
         ownTableName : React.PropTypes.string,
-        onCreateHandler: React.PropTypes.func,
-        onCancelHandler: React.PropTypes.func
+        onCreateObject: React.PropTypes.func,
+        onCloseDialog: React.PropTypes.func
     };
 
     static defaultProps = {
@@ -74,20 +74,20 @@ export default class RoomDialog extends React.Component {
 
     @autobind
     onCreateHandler(){
-        this.props.onCreateHandler(this.getCreatedObject())
+        this.props.onCreateObject(this.getCreatedObject())
     }
 
     render() {
-        const {onCancelHandler, isOpen} = this.props
+        const {onCloseDialog, isOpen} = this.props
         const {RoomId, ClientId, CheckInDate, Term} = this.props.object
-        const actions = getActions(this.onCreateHandler, onCancelHandler)
+        const actions = getActions(this.onCreateHandler, onCloseDialog)
 
         return <Dialog className="dialog"
                        title="Create RoomClient"
                        actions={actions}
                        modal={false}
                        open={isOpen && currentTableName == ownTableName}
-                       onRequestClose={onCancelHandler}>
+                       onRequestClose={onCloseDialog}>
             <div>
                 <TextField type="number" value={RoomId} hintText="RoomId" onChange={this.onRoomIdChange}/>
                 <br/>
