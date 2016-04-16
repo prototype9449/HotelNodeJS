@@ -46,7 +46,7 @@ function reducer(state = initialState, action) {
                 ...state,
                 [action.table]: {
                     ...(getInitialStateForTable()),
-                    objects: action.objects,
+                    objects: new CustomSet(action.objects),
                     isIndicatorShown: false
                 }
             }
@@ -162,8 +162,4 @@ function reducer(state = initialState, action) {
     }
 }
 
-const rootReducer = combineReducers({
-    reducer
-})
-
-export default rootReducer
+export default reducer

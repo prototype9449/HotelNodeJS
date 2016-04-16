@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
 export default class CustomSet {
-    constructor() {
-        this.set = [];
+    constructor(array = []) {
+        this.set = array;
     }
 
     add(object) {
@@ -26,7 +26,7 @@ export default class CustomSet {
     }
 
     hasObject(object) {
-        return set.some(x=> _.isEqual(x, object))
+        return this.set.some(x=> _.isEqual(x, object))
     }
 
     clear() {

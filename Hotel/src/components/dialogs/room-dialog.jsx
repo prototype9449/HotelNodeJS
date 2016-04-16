@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
+import Toggle from 'material-ui/lib/toggle';
 import Dialog from 'material-ui/lib/dialog'
 import FlatButton from 'material-ui/lib/flat-button'
 import TextField from 'material-ui/lib/text-field'
 import getActions from '../create-cancel-actions.jsx'
 import SelectField from 'material-ui/lib/select-field'
 import MenuItem from 'material-ui/lib/menus/menu-item'
-import autobind from 'autobind-decorator'
 
 export default class RoomDialog extends React.Component {
     static propTypes = {
@@ -28,7 +28,7 @@ export default class RoomDialog extends React.Component {
         object: {
             Id: 0,
             Floor: 1,
-            Price: 100.00,
+            Price: '100.00',
             Comfort: 1,
             Occupation: false
         },
@@ -38,8 +38,16 @@ export default class RoomDialog extends React.Component {
 
     constructor(props) {
         super(props)
-        ({Id, Floor, Price, Comfort, Occupation} = this.props.object)
+        const {Id, Floor, Price, Comfort, Occupation} = this.props.object
         this.state = {object: {Id, Floor, Price, Comfort, Occupation}}
+
+        this.getCreatedObject = this.getCreatedObject.bind(this)
+        this.onIdChange = this.onIdChange.bind(this)
+        this.onFloorChange = this.onFloorChange.bind(this)
+        this.onPriceChange = this.onPriceChange.bind(this)
+        this.onComfortChange = this.onComfortChange.bind(this)
+        this.onOccupationChange = this.onOccupationChange.bind(this)
+        this.onCreateHandler = this.onCreateHandler.bind(this)
     }
 
     getCreatedObject() {
@@ -50,7 +58,6 @@ export default class RoomDialog extends React.Component {
         return {Floor, Price, Comfort, Occupation}
     }
 
-    @autobind
     onIdChange(e) {
         if (e.target.value < 0)
             return;
@@ -58,7 +65,6 @@ export default class RoomDialog extends React.Component {
         this.setState({Id: e.target.value})
     }
 
-    @autobind
     onFloorChange(e) {
         if (e.target.value < 1 || e.target.value > 10)
             return;
@@ -66,7 +72,6 @@ export default class RoomDialog extends React.Component {
         this.setState({Floor: e.target.value})
     }
 
-    @autobind
     onPriceChange(e) {
         const reg = /^ *\$?\d+(?:\.\d{2})? *$/
         if (!e.target.value.match(reg))
@@ -75,7 +80,6 @@ export default class RoomDialog extends React.Component {
         this.setState({Price: e.target.value})
     }
 
-    @autobind
     onComfortChange(e) {
         if (e.target.value < 1 || e.target.value > 10)
             return;
@@ -83,7 +87,6 @@ export default class RoomDialog extends React.Component {
         this.setState({Comfort: e.target.value})
     }
 
-    @autobind
     onOccupationChange(event, index, value) {
         this.setState({Occupation: value})
     }

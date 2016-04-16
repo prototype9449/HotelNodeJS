@@ -14,7 +14,7 @@ import RoomDialog from './dialogs/room-dialog.jsx'
 import RoomClientDialog from './dialogs/roomClient-dialog.jsx'
 import RoomReservationDialog from './dialogs/roomClient-dialog.jsx'
 import {urls, fields} from '../constants/utils'
-import {fetchObjects, deleteObjects, createObject} from '../helpers/service'
+import * as service from '../helpers/service'
 
 function areEqual(firstArray, secondArray) {
     if (firstArray.length != secondArray.length) {
@@ -27,7 +27,7 @@ function areEqual(firstArray, secondArray) {
 
 class App extends React.Component {
     static propTypes = {
-        errorTexts: React.PropTypes.string,
+        errorTexts: React.PropTypes.arrayOf(React.PropTypes.string),
         isErrorDialogShown: React.PropTypes.bool,
         isIndicatorShown: React.PropTypes.bool,
         onOkErrorDialogHandler: React.PropTypes.func,
@@ -51,8 +51,8 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchData()
-        this.interval = setInterval(() => this.props.fetchData(), 10000)
+        this.props.fetchObjects()
+        this.interval = setInterval(() => this.props.fetchObjects(), 10000)
     }
 
     componentWillUnmount() {
@@ -67,7 +67,6 @@ class App extends React.Component {
     }
 
     render() {
-
         const {isIndicatorShown, onOkErrorDialogHandler, errorTexts, isErrorDialogShown} = this.props;
         const {dialogForObject} = this.props;
         const {onCheck, onCheckAll, onShowCreateDialog, onDelete, onCreateObject, onCloseCreateDialog } = this.props
@@ -156,27 +155,33 @@ function mapStateToProps(state) {
         isShownId: false
     } : null
 
-    return {
+    const result = {
         ...state,
         dialogForObject
     }
+    return result
 }
 
 import * as actions from '../actions'
 
-function mapDispatchToProps(dispatch, ownProps) {
+const mapDispatchToProps = (dispatch) => {
     const onOkErrorDialogHandler = () => dispatch(actions.closeDialog())
 
-    const fetchObjects = () => fetchObjects(dispatch)
+    const fetchObjects = () => service.fetchObjects(dispatch)
+    const onCheck = dispatch((dispatch, getState) =>
+        (table) =>
+            (object) =>
+                (index, isChecked) => {
+                    debugger
 
-    const onCheck = (table) => (object) => (index, isChecked) => {
-        const object = ownProps[table].checkedRows.toArray()[index]
-        if (isChecked) {
-            dispatch(actions.checkRow(table, object))
-        } else {
-            dispatch(actions.uncheckRow(table, object))
-        }
-    }
+                    const state = getState();
+                    const object = state[table].checkedRows.toArray()[index]
+                    if (isChecked) {
+                        dispatch(actions.checkRow(table, object))
+                    } else {
+                        dispatch(actions.uncheckRow(table, object))
+                    }
+                })
 
     const onCheckAll = (table) => (a, b) => {
         dispatch(actions.checkAllRows(table))
@@ -184,13 +189,16 @@ function mapDispatchToProps(dispatch, ownProps) {
 
     const onShowCreateDialog = (table) => () => dispatch(actions.openCreateDialog(table))
 
-    const onDelete = (table) => () => {
-        const deletingObjects = ownProps[table].checkedRows.toArray()
-        deleteObjects(dispatch, table, deletingObjects)
-    }
+    const onDelete = dispatch((dispatch, getState) =>
+        (table) =>
+            () => {
+                const state = getState()
+                const deletingObjects = state[table].checkedRows.toArray()
+                service.deleteObjects(dispatch, table, deletingObjects)
+            })
 
     const onCreateObject = (table) => (object) => () => {
-        createObject(dispatch, table, object)
+        service.createObject(dispatch, table, object)
     }
 
     const onCloseCreateDialog = () => dispatch(actions.closeDialog())

@@ -5,7 +5,6 @@ import TextField from 'material-ui/lib/text-field';
 import getActions from '../create-cancel-actions.jsx';
 import SelectField from 'material-ui/lib/select-field';
 import MenuItem from 'material-ui/lib/menus/menu-item';
-import autobind from 'autobind-decorator'
 
 export default class ClientDialog extends React.Component {
     static propTypes = {
@@ -36,8 +35,14 @@ export default class ClientDialog extends React.Component {
 
     constructor(props) {
         super(props)
-        ({Id, FullName, Passport, Sex} = this.props.object)
+        const {Id, FullName, Passport, Sex} = this.props.object
         this.state = {object: {Id, FullName, Passport, Sex}}
+        
+        this.onCreateHandler = this.onCreateHandler.bind(this); 
+        this.onIdChange = this.onIdChange.bind(this); 
+        this.onFullNameChange = this.onFullNameChange.bind(this); 
+        this.onPassportChange = this.onPassportChange.bind(this); 
+        this.onSexChange = this.onSexChange.bind(this); 
     }
 
     getCreatedObject() {
@@ -49,19 +54,16 @@ export default class ClientDialog extends React.Component {
         return {FullName, Passport, Sex}
     }
 
-    @autobind
     onIdChange(e) {
         if (e.target.value < 0)
             return;
         this.setState({Id: e.target.value})
     }
 
-    @autobind
     onFullNameChange(e) {
         this.setState({FullName: e.target.value})
     }
 
-    @autobind
     onPassportChange(e) {
         const reg = /^[0-9]{6}[-]{1}[0-9]{4}$/
         if (e.target.value.match(reg)) {
@@ -69,12 +71,11 @@ export default class ClientDialog extends React.Component {
         }
     }
 
-    @autobind
+    
     onSexChange(event, index, value) {
         this.setState({Sex: value})
     }
 
-    @autobind
     onCreateHandler() {
         this.props.onCreateObject(this.getCreatedObject());
     }

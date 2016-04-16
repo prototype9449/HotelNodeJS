@@ -6,7 +6,6 @@ import getActions from '../create-cancel-actions.jsx';
 import SelectField from 'material-ui/lib/select-field';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import DatePicker from 'material-ui/lib/date-picker/date-picker';
-import autobind from 'autobind-decorator'
 
 export default class RoomDialog extends React.Component {
     static propTypes = {
@@ -17,8 +16,8 @@ export default class RoomDialog extends React.Component {
             Term: React.PropTypes.number
         }),
         isOpen: React.PropTypes.bool,
-        currentTableName : React.PropTypes.string,
-        ownTableName : React.PropTypes.string,
+        currentTableName: React.PropTypes.string,
+        ownTableName: React.PropTypes.string,
         onCreateObject: React.PropTypes.func,
         onCloseDialog: React.PropTypes.func
     };
@@ -30,20 +29,26 @@ export default class RoomDialog extends React.Component {
             CheckInDate: '',
             Term: 5
         },
-        isOpen : false
+        isOpen: false
     }
 
     constructor(props) {
         super(props);
-        ({RoomId, ClientId, CheckInDate, Term} = this.props.object)
+        const {RoomId, ClientId, CheckInDate, Term} = this.props.object
         this.state = {object: {RoomId, ClientId, CheckInDate, Term}}
+
+        this.getCreatedObject = this.getCreatedObject.bind(this)
+        this.onRoomIdChange = this.onRoomIdChange.bind(this)
+        this.onClientIdChange = this.onClientIdChange.bind(this)
+        this.onCheckInDateChange = this.onCheckInDateChange.bind(this)
+        this.onTermChange = this.onTermChange.bind(this)
+        this.onCreateHandler = this.onCreateHandler.bind(this)
     }
 
     getCreatedObject() {
         return this.state.object
     }
 
-    @autobind
     onRoomIdChange(e) {
         if (e.target.value < 0)
             return;
@@ -51,7 +56,7 @@ export default class RoomDialog extends React.Component {
         this.setState({RoomId: e.target.value});
     }
 
-    @autobind
+
     onClientIdChange(e) {
         if (e.target.value < 0)
             return;
@@ -59,12 +64,10 @@ export default class RoomDialog extends React.Component {
         this.setState({ClientId: e.target.value});
     }
 
-    @autobind
     onCheckInDateChange(e) {
         this.setState({CheckInDate: e.target.value});
     }
 
-    @autobind
     onTermChange(e) {
         if (e.target.value < 0)
             return;
@@ -72,8 +75,7 @@ export default class RoomDialog extends React.Component {
         this.setState({Term: e.target.value});
     }
 
-    @autobind
-    onCreateHandler(){
+    onCreateHandler() {
         this.props.onCreateObject(this.getCreatedObject())
     }
 

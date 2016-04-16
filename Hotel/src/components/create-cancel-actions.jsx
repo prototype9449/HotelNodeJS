@@ -1,3 +1,6 @@
+import React from 'react';
+import FlatButton from 'material-ui/lib/flat-button';
+
 export default function(onCreate, onDelete){
     return [
         <FlatButton

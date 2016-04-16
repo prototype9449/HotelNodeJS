@@ -7,7 +7,7 @@ import CustomSet from '../helpers/customSet';
 export default class CustomTable extends React.Component {
     static propTypes = {
         nameFields: React.PropTypes.arrayOf(React.PropTypes.string),
-        areAllChecked: React.RropTypes.bool,
+        areAllChecked: React.PropTypes.bool,
         checkedRows: React.PropTypes.instanceOf(CustomSet),
         objects : React.PropTypes.instanceOf(CustomSet),
         onCheck: React.PropTypes.func,
@@ -21,9 +21,9 @@ export default class CustomTable extends React.Component {
     }
 
     render() {
-        const {objects, nameFields, areAllChecked, onCheck, onCheckAll, onShowCreateDialog, onDelete} = this.props
+        const {objects,checkedRows, nameFields, areAllChecked, onCheck, onCheckAll, onShowCreateDialog, onDelete} = this.props
 
-        let tableRows = objects.map((object, i)=> {
+        let tableRows = objects.toArray().map((object, i)=> {
             let isChecked = checkedRows.hasObject(object);
             return <Row checked={isChecked} object={object} key={i} index={i}
                         onCheck={onCheck(object)}/>
