@@ -9,20 +9,15 @@ class ClientRepository extends BaseRepository {
 
     getAll(object) {
         delete object.Id;
-        return super.getObjects(object, constants.Clients).then((clients) => {
-            clients.forEach(x => x.Sex = x.Sex ==true ? 'Man' : 'Woman');
-            return clients;
-        });
+        return super.getObjects(object, constants.Clients)
     }
 
     insert(client) {
-        client.Sex = client.Sex == 'Man';
-        return super.insertObject(client, constants.Clients);
+        return super.insertObject(client, constants.Clients)
     }
 
     delete(clients) {
-        clients.forEach(x => x.Sex = x.Sex == 'Man');
-        return super.deleteObject(clients, constants.Clients);
+        return super.deleteObject(clients, constants.Clients)
     }
 
     update(oldObject, newObject) {
@@ -30,9 +25,6 @@ class ClientRepository extends BaseRepository {
             return Promise.reject(new Error('the ids should be the same'));
         }
         delete newObject.Id;
-
-        oldObject.Sex = oldObject.Sex == 'Man';
-        newObject.Sex = newObject.Sex == 'Man';
         return super.updateObject({oldObject, newObject}, constants.Clients);
     }
 

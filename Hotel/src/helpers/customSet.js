@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 export default class CustomSet {
     constructor(array = []) {
-        this.set = [...array];
+        this.set = array.slice();
     }
 
     add(object) {
@@ -21,10 +21,18 @@ export default class CustomSet {
     }
 
     delete(deleted) {
+        const forDelete = [].concat(deleted)
         this.set = this.set.filter(x => {
-                return deleted.some(y => !_.isEqual(x, y))
+                return forDelete.some(y => !_.isEqual(x, y))
             }
         );
+        return this
+    }
+
+    update(oldObject, newObject){
+        const index = this.set.findIndex(x => _.isEqual(x, oldObject))
+        const setLength = this.size;
+        this.set = [...this.set.slice(0, index), newObject, ...this.set.slice(index + 1, setLength)]
         return this
     }
 
@@ -34,6 +42,10 @@ export default class CustomSet {
 
     toSet() {
         return new CustomSet(this.set)
+    }
+
+    get(index){
+        return this.set[index]
     }
 
     clear() {

@@ -12,43 +12,58 @@ export default class ClientDialog extends React.Component {
             Id: React.PropTypes.number,
             FullName: React.PropTypes.string,
             Passport: React.PropTypes.string,
-            Sex: React.PropTypes.string
+            Sex: React.PropTypes.bool
         }),
-        isShownId: React.PropTypes.bool,
         isOpen: React.PropTypes.bool,
         currentTableName: React.PropTypes.string,
         ownTableName: React.PropTypes.string,
         onCreateObject: React.PropTypes.func,
+        onUpdateObject : React.PropTypes.func,
         onCloseDialog: React.PropTypes.func
-    };
-
-    static defaultProps = {
-        object: {
-            Id: 0,
-            FullName: '',
-            Passport: '',
-            Sex: 'Man'
-        },
-        isOpen: false,
-        isShownId: false
     };
 
     constructor(props) {
         super(props)
-        const {Id, FullName, Passport, Sex} = this.props.object
+        const {Id, FullName, Passport, Sex} = this.getProps().object
         this.state = {object: {Id, FullName, Passport, Sex}}
 
         this.onCreateHandler = this.onCreateHandler.bind(this)
+        this.onUpdateHandler = this.onUpdateHandler.bind(this)
         this.onIdChange = this.onIdChange.bind(this)
         this.onFullNameChange = this.onFullNameChange.bind(this)
         this.onPassportChange = this.onPassportChange.bind(this)
         this.onSexChange = this.onSexChange.bind(this)
         this.isPassportValid = this.isPassportValid.bind(this)
+        this.getProps = this.getProps.bind(this)
+    }
+
+    getProps() {
+        const object = this.props.isForUpdate
+            ? this.props.object
+            : {
+            Id: 0,
+            FullName: '',
+            Passport: '',
+            Sex: false
+        }
+
+        return {
+            ...this.props,
+            object
+        }
+    };
+
+    componentWillReceiveProps(nextProps){
+        if(nextProps.isForUpdate) {
+            this.setState({object: nextProps.object})
+        } else {
+            this.setState({object: this.getProps().object})
+        }
     }
 
     getCreatedObject() {
-        if (this.props.isShownId) {
-            return this.state
+        if (this.getProps().isForUpdate) {
+            return this.state.object
         }
         const {FullName, Passport, Sex} = this.state.object
         return {FullName, Passport, Sex}
@@ -92,8 +107,12 @@ export default class ClientDialog extends React.Component {
 
     onSexChange(event, index, value) {
         this.changeState({
-            Sex: value
+            Sex: value == 1
         })
+    }
+
+    onUpdateHandler(){
+        this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
     }
 
     onCreateHandler() {
@@ -101,12 +120,15 @@ export default class ClientDialog extends React.Component {
     }
 
     render() {
-        const {isOpen, isShownId, onCloseDialog, currentTableName, ownTableName} = this.props
+        const {isOpen, isForUpdate, onCloseDialog, currentTableName, ownTableName} = this.getProps()
+        if(currentTableName !== ownTableName) return null
         const {Id, FullName, Passport, Sex} = this.state.object
 
-        const actions = getActions(this.onCreateHandler, onCloseDialog, !this.isPassportValid())
+        const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
+        const buttonText = isForUpdate ? 'Update' : 'Create'
+        const actions = getActions(buttonText, callback, onCloseDialog, !this.isPassportValid())
 
-
+        const sex = Sex ? 1 : 0
         return <Dialog className="dialog"
                        title="Create client"
                        actions={actions}
@@ -114,15 +136,15 @@ export default class ClientDialog extends React.Component {
                        open={isOpen && currentTableName == ownTableName}
                        onRequestClose={onCloseDialog}>
             <div>
-                {isShownId && <TextField type="text" value={Id} hintText="Id" onChange={this.onIdChange}/> }
+                {isForUpdate && <TextField type="text" value={Id} hintText="Id" onChange={this.onIdChange}/> }
                 <br/>
                 <TextField type="text" hintText="FullName" value={FullName} onChange={this.onFullNameChange}/>
                 <br/>
                 <TextField type="text" hintText="Passport" value={Passport} onChange={this.onPassportChange}/>
                 <br/>
-                <SelectField value={Sex} onChange={this.onSexChange} floatingLabelText="Sex">
-                    <MenuItem value="Man" primaryText="Man"/>
-                    <MenuItem value="Woman" primaryText="Woman"/>
+                <SelectField value={sex} onChange={this.onSexChange} floatingLabelText="Sex">
+                    <MenuItem value={1} primaryText="Man"/>
+                    <MenuItem value={0} primaryText="Woman"/>
                 </SelectField>
             </div>
         </Dialog>

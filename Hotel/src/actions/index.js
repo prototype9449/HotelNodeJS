@@ -32,6 +32,14 @@ export function requestToCreateSuccess(table, object) {
     return {type: types.REQUEST_CREATE_SUCCESS, table, object}
 }
 
+export function sendRequestToUpdate(table) {
+    return {type: types.REQUEST_UPDATE_SEND, table}
+}
+
+export function requestToUpdateSuccess(table, oldObject, newObject) {
+    return {type: types.REQUEST_UPDATE_SUCCESS, table, oldObject, newObject}
+}
+
 export function sendRequestToDelete(table) {
     return {type: types.REQUEST_DELETE_SEND, table}
 }

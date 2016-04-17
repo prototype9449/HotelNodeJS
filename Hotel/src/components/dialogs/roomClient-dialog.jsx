@@ -19,22 +19,29 @@ export default class RoomDialog extends React.Component {
         currentTableName: React.PropTypes.string,
         ownTableName: React.PropTypes.string,
         onCreateObject: React.PropTypes.func,
+        onUpdateObject : React.PropTypes.func,
         onCloseDialog: React.PropTypes.func
     };
 
-    static defaultProps = {
-        object: {
+    getProps() {
+        const object = this.props.isForUpdate
+            ? this.props.object
+            : {
             RoomId: 0,
             ClientId: 0,
             CheckInDate: '',
             Term: 5
-        },
-        isOpen: false
+        }
+
+        return {
+            ...this.props,
+            object
+        }
     }
 
     constructor(props) {
         super(props);
-        const {RoomId, ClientId, CheckInDate, Term} = this.props.object
+        const {RoomId, ClientId, CheckInDate, Term} = this.getProps().object
         this.state = {object: {RoomId, ClientId, CheckInDate, Term}}
 
         this.getCreatedObject = this.getCreatedObject.bind(this)
@@ -43,6 +50,15 @@ export default class RoomDialog extends React.Component {
         this.onCheckInDateChange = this.onCheckInDateChange.bind(this)
         this.onTermChange = this.onTermChange.bind(this)
         this.onCreateHandler = this.onCreateHandler.bind(this)
+        this.onUpdateHandler = this.onUpdateHandler.bind(this)
+    }
+
+    componentWillReceiveProps(nextProps){
+        if(nextProps.isForUpdate) {
+            this.setState({object: nextProps.object})
+        } else {
+            this.setState({object: this.getProps().object})
+        }
     }
 
     getCreatedObject() {
@@ -66,7 +82,7 @@ export default class RoomDialog extends React.Component {
         this.changeState({ClientId: e.target.value});
     }
 
-    onCheckInDateChange(e,date) {
+    onCheckInDateChange(e, date) {
         this.changeState({CheckInDate: date});
     }
 
@@ -75,13 +91,20 @@ export default class RoomDialog extends React.Component {
     }
 
     onCreateHandler() {
-        this.props.onCreateObject(this.getCreatedObject())
+        this.props.onCreateObject(this.getCreatedObject());
+    }
+
+    onUpdateHandler(){
+        this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
     }
 
     render() {
-        const {onCloseDialog, isOpen, currentTableName, ownTableName} = this.props
+        const {onCloseDialog, isOpen, currentTableName, ownTableName, isForUpdate} = this.getProps()
+        if(currentTableName !== ownTableName) return null
         const {RoomId, ClientId, CheckInDate, Term} = this.state.object
-        const actions = getActions(this.onCreateHandler, onCloseDialog)
+        const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
+        const buttonText = isForUpdate ? 'Update' : 'Create'
+        const actions = getActions(buttonText, callback, onCloseDialog)
 
         return <Dialog className="dialog"
                        title="Create RoomClient"

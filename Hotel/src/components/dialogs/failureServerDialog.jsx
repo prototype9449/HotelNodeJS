@@ -34,9 +34,9 @@ export default class FailureServerDialog extends React.Component {
                        open={isOpen}
                        onRequestClose={onOkHandler}>
             <div>
-                <ul>
+                <ol>
                     {errorLines}
-                </ul>
+                </ol>
             </div>
         </Dialog>
     }

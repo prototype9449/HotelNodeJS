@@ -6,14 +6,16 @@ import CustomSet from '../helpers/customSet';
 
 export default class CustomTable extends React.Component {
     static propTypes = {
+        fieldTransform: React.PropTypes.func,
         nameFields: React.PropTypes.arrayOf(React.PropTypes.string),
         areAllChecked: React.PropTypes.bool,
         checkedRows: React.PropTypes.instanceOf(CustomSet),
-        objects : React.PropTypes.instanceOf(CustomSet),
+        objects: React.PropTypes.instanceOf(CustomSet),
         onCheck: React.PropTypes.func,
         onCheckAll: React.PropTypes.func,
         onShowCreateDialog: React.PropTypes.func,
-        onDelete: React.PropTypes.func
+        onDeleteObject: React.PropTypes.func,
+        onShowUpdateDialog: React.PropTypes.func
     }
 
     constructor(props) {
@@ -21,15 +23,15 @@ export default class CustomTable extends React.Component {
     }
 
     render() {
-        const {objects,checkedRows, nameFields, areAllChecked, onCheck, onCheckAll, onShowCreateDialog, onDelete} = this.props
-
-        let tableRows = objects.toArray().map((object, i)=> {
-            let isChecked = checkedRows.hasObject(object);
+        const {objects,checkedRows, nameFields, areAllChecked, fieldTransform} = this.props
+        const {onShowUpdateDialog,  onCheck, onCheckAll, onShowCreateDialog, onDeleteObject} = this.props
+        const tableRows = objects.toArray().map((object, i)=> {
+            const isChecked = checkedRows.hasObject(object)
             return <Row isChecked={isChecked} object={object} key={i} index={i}
-                        onCheck={onCheck(i)}/>
+                        onCheck={onCheck(i)} onClick={onShowUpdateDialog(i)} fieldTransform = {fieldTransform}/>
         });
 
-        let tableHeaders = [' '].concat(nameFields).map((name, i) => {
+        const tableHeaders = [' '].concat(nameFields).map((name, i) => {
             return <th key={i}>
                 {name}
             </th>;
@@ -39,7 +41,7 @@ export default class CustomTable extends React.Component {
             <div>
                 {this.props.children}
                 <FlatButton label="Create" onClick={onShowCreateDialog}/>
-                <FlatButton label="Delete" onClick={onDelete}/>
+                <FlatButton label="Delete" onClick={onDeleteObject}/>
                 <Checkbox
                     checked={areAllChecked}
                     onCheck={onCheckAll}

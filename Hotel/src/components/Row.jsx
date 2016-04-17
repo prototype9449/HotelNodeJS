@@ -13,6 +13,7 @@ export default class Row extends React.Component {
         object: React.PropTypes.object,
         isChecked: React.PropTypes.bool,
         onCheck: React.PropTypes.func,
+        fieldTransform: React.PropTypes.func,
         onClick: React.PropTypes.func
     }
 
@@ -21,12 +22,11 @@ export default class Row extends React.Component {
     }
 
     render() {
-        const {object, isChecked, onCheck, onClick} = this.props;
-
+        const {object, isChecked, onCheck, onClick, fieldTransform} = this.props;
         const properties = getProperties(object);
         const columns = properties.map((x, i) => {
             const elem = (<td key={i} className = "tdHover">
-                <div className="divHover" key={i} href="#" onClick={onClick}>{x.value}</div>
+                <div className="divHover" key={i} href="#" onClick={onClick}>{fieldTransform(x.name, x.value)}</div>
             </td>)
             return elem;
         });

@@ -12,33 +12,24 @@ export default class RoomDialog extends React.Component {
         object: React.PropTypes.shape({
             Id: React.PropTypes.number,
             Floor: React.PropTypes.number,
-            Price: React.PropTypes.string,
+            Price: React.PropTypes.number,
             Comfort: React.PropTypes.number,
             Occupation: React.PropTypes.bool
         }),
         isOpen: React.PropTypes.bool,
-        isShownId: React.PropTypes.bool,
+        isForUpdate: React.PropTypes.bool,
         currentTableName: React.PropTypes.string,
         ownTableName: React.PropTypes.string,
         onCreateObject: React.PropTypes.func,
+        onUpdateObject: React.PropTypes.func,
         onCloseDialog: React.PropTypes.func
     };
 
-    static defaultProps = {
-        object: {
-            Id: 0,
-            Floor: 1,
-            Price: '100.00',
-            Comfort: 1,
-            Occupation: false
-        },
-        isOpen: false,
-        isShownId: false
-    }
+
 
     constructor(props) {
         super(props)
-        const {Id, Floor, Price, Comfort, Occupation} = this.props.object
+        const {Id, Floor, Price, Comfort, Occupation} = this.getProps().object
         this.state = {object: {Id, Floor, Price, Comfort, Occupation}}
 
         this.getCreatedObject = this.getCreatedObject.bind(this)
@@ -48,10 +39,36 @@ export default class RoomDialog extends React.Component {
         this.onComfortChange = this.onComfortChange.bind(this)
         this.onOccupationChange = this.onOccupationChange.bind(this)
         this.onCreateHandler = this.onCreateHandler.bind(this)
+        this.onUpdateHandler = this.onUpdateHandler.bind(this)
+        this.getProps = this.getProps.bind(this)
+    }
+
+    getProps() {
+        const object = this.props.isForUpdate
+            ? this.props.object
+            : {
+            Id: 0,
+            Floor: 1,
+            Price: '100.00',
+            Comfort: 1,
+            Occupation: false
+        }
+        return {
+            ...this.props,
+            object
+        }
+    }
+
+    componentWillReceiveProps(nextProps){
+        if(nextProps.isForUpdate) {
+            this.setState({object: nextProps.object})
+        } else {
+            this.setState({object: this.getProps().object})
+        }
     }
 
     getCreatedObject() {
-        if (this.props.isShownId) {
+        if (this.getProps().isForUpdate) {
             return this.state.object
         }
         const {Floor, Price, Comfort, Occupation} = this.state.object
@@ -87,10 +104,10 @@ export default class RoomDialog extends React.Component {
 
     isPriceValid() {
         const reg = /^ *\$?\d+(?:\.\d{2})? *$/
-        return this.state.object.Price.match(reg) !== null
+        return this.state.object.Price,toString().match(reg) !== null
     }
 
-    isComfortValid(){
+    isComfortValid() {
         const comfort = this.state.object.Comfort
         return comfort > 0 && comfort < 11
     }
@@ -99,7 +116,7 @@ export default class RoomDialog extends React.Component {
         this.changeState({Comfort: e.target.value})
     }
 
-    onOccupationChange(event, index, value) {
+    onOccupationChange(event, value) {
         this.changeState({Occupation: value})
     }
 
@@ -107,10 +124,18 @@ export default class RoomDialog extends React.Component {
         this.props.onCreateObject(this.getCreatedObject());
     }
 
+    onUpdateHandler(){
+        this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
+    }
+
     render() {
-        const {onCloseDialog, isOpen, isShownId, currentTableName, ownTableName} = this.props
+        const {onCloseDialog, isOpen, isForUpdate, currentTableName, ownTableName} = this.getProps()
+        if(currentTableName !== ownTableName) return null
+
         const {Id, Floor, Price, Comfort, Occupation} = this.state.object
-        const actions = getActions(this.onCreateHandler, onCloseDialog, !this.isPriceValid() && !this.isComfortValid())
+        const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
+        const buttonText = isForUpdate ? 'Update' : 'Create'
+        const actions = getActions(buttonText, callback, onCloseDialog, !this.isPriceValid() && !this.isComfortValid())
 
         return <Dialog className="dialog"
                        title="Create room"
@@ -119,7 +144,7 @@ export default class RoomDialog extends React.Component {
                        open={isOpen && currentTableName == ownTableName}
                        onRequestClose={onCloseDialog}>
             <div>
-                {isShownId && <TextField type="number" value={Id} hintText="Id" onChange={this.onIdChange}/>}
+                {isForUpdate && <TextField type="number" value={Id} hintText="Id" onChange={this.onIdChange}/>}
                 <br/>
                 <TextField type="number" hintText="Floor" value={Floor} onChange={this.onFloorChange}/>
                 <br/>

@@ -37,7 +37,7 @@ function reducer(state = initialState, action) {
             return {
                 ...state,
                 [action.table]: {
-                    ...(getInitialStateForTable()),
+                    ...state[action.table],
                     isIndicatorShown: true
                 }
             }
@@ -45,7 +45,7 @@ function reducer(state = initialState, action) {
             return {
                 ...state,
                 [action.table]: {
-                    ...(getInitialStateForTable()),
+                    ...state[action.table],
                     objects: new CustomSet(action.objects),
                     isIndicatorShown: false
                 }
@@ -59,11 +59,8 @@ function reducer(state = initialState, action) {
         case types.OPEN_CREATE_DIALOG :
             return {
                 ...state,
-                [action.table]: {
-                    ...[action.table],
-                    isIndicatorShown: false
-                },
                 dialogForObject: {
+                    isForUpdate: false,
                     table: action.table
                 }
             }
@@ -71,6 +68,7 @@ function reducer(state = initialState, action) {
             return {
                 ...state,
                 dialogForObject: {
+                    isForUpdate: true,
                     table: action.table,
                     object: action.object
                 }
@@ -80,7 +78,7 @@ function reducer(state = initialState, action) {
             Object.keys(urls).forEach(x => {
                 object[urls[x]] = {
                     ...state[[urls[x]]],
-                    isIndicatorShown : false
+                    isIndicatorShown: false
                 }
             })
 
@@ -99,8 +97,27 @@ function reducer(state = initialState, action) {
                     isIndicatorShown: true
                 }
             }
+        case types.REQUEST_UPDATE_SEND :
+            return {
+                ...state,
+                dialogForObject: null,
+                [action.table]: {
+                    ...state[action.table],
+                    isIndicatorShown: true
+                }
+            }
+        case types.REQUEST_UPDATE_SUCCESS :
+            const resultObjects = state[action.table].objects.update(action.oldObject, action.newObject)
+            return {
+                ...state,
+                [action.table]: {
+                    ...state[action.table],
+                    objects: resultObjects,
+                    isIndicatorShown: false
+                }
+            }
         case types.REQUEST_CREATE_SUCCESS :
-            debugger
+        {
             const resultObjects = state[action.table].objects.add(action.object)
             return {
                 ...state,
@@ -110,6 +127,7 @@ function reducer(state = initialState, action) {
                     isIndicatorShown: false
                 }
             }
+        }
         case types.REQUEST_DELETE_SEND :
             return {
                 ...state,
@@ -150,10 +168,10 @@ function reducer(state = initialState, action) {
             }
         case types.CHECK_ROW :
         {
-            const areAllChecked = state[action.table].checkedRows.size === state[action.table].objects;
             const checkedRows = state[action.table].checkedRows.add(action.object)
+            const areAllChecked = checkedRows.size === state[action.table].objects.size;
 
-            const result = {
+            return {
                 ...state,
                 [action.table]: {
                     ...state[action.table],
@@ -161,7 +179,6 @@ function reducer(state = initialState, action) {
                     areAllChecked
                 }
             }
-            return result
         }
         case types.UNCHECK_ROW :
             const checkedRows = state[action.table].checkedRows.delete(action.object)

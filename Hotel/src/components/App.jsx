@@ -13,7 +13,7 @@ import ClientDialog from './dialogs/client-dialog.jsx'
 import RoomDialog from './dialogs/room-dialog.jsx'
 import RoomClientDialog from './dialogs/roomClient-dialog.jsx'
 import RoomReservationDialog from './dialogs/roomClient-dialog.jsx'
-import {urls, fields} from '../constants/utils'
+import {urls, fields, fieldTransforms} from '../constants/utils'
 import * as service from '../helpers/service'
 
 function areEqual(firstArray, secondArray) {
@@ -35,11 +35,13 @@ class App extends React.Component {
         onCancelCreateObjectHandler: React.PropTypes.func,
         fetchObjects: React.PropTypes.func,
         onShowCreateDialog: React.PropTypes.func,
-        onDelete: React.PropTypes.func,
+        onShowUpdateDialog: React.PropTypes.func,
+        onDeleteObject: React.PropTypes.func,
         onCheckAll: React.PropTypes.func,
         onCheck: React.PropTypes.func,
         onCreateObject: React.PropTypes.func,
-        onCloseCreateDialog: React.PropTypes.func
+        onUpdateObject: React.PropTypes.func,
+        onCloseDialog: React.PropTypes.func
     }
 
     constructor() {
@@ -52,7 +54,7 @@ class App extends React.Component {
 
     componentDidMount() {
         this.props.fetchObjects()
-        //this.interval = setInterval(() => this.props.fetchObjects(), 10000)
+        this.interval = setInterval(() => this.props.fetchObjects(), 10000)
     }
 
     componentWillUnmount() {
@@ -69,7 +71,7 @@ class App extends React.Component {
     render() {
         const {onOkErrorDialogHandler, errorTexts, isErrorDialogShown} = this.props;
         const {dialogForObject} = this.props;
-        const {onCheck, onCheckAll, onShowCreateDialog, onDelete, onCreateObject, onCloseCreateDialog } = this.props
+        const {onCheck, onCheckAll, onShowCreateDialog,onShowUpdateDialog, onDeleteObject, onCreateObject, onUpdateObject, onCloseDialog } = this.props
         return (
             <div>
                 <FailureServerDialog onOkHandler={onOkErrorDialogHandler}
@@ -82,15 +84,18 @@ class App extends React.Component {
                         <div>
                             <CustomTable
                                 {...this.props[urls.clients]}
+                                fieldTransform={fieldTransforms[urls.clients]}
                                 onCheck={onCheck(urls.clients)}
                                 onCheckAll={onCheckAll(urls.clients)}
                                 onShowCreateDialog={onShowCreateDialog(urls.clients)}
-                                onDelete={onDelete(urls.clients)}
-                                fields={fields[urls.clients]}>
+                                onShowUpdateDialog={onShowUpdateDialog(urls.clients)}
+                                onDeleteObject={onDeleteObject(urls.clients)}
+                                nameFields={fields[urls.clients]}>
                                 <ClientDialog
                                     {...dialogForObject}
                                     onCreateObject={onCreateObject(urls.clients)}
-                                    onCloseDialog={onCloseCreateDialog(urls.clients)}
+                                    onUpdateObject={onUpdateObject(urls.clients)}
+                                    onCloseDialog={onCloseDialog(urls.clients)}
                                     ownTableName={urls.clients}/>
                             </CustomTable>
                         </div>
@@ -99,16 +104,20 @@ class App extends React.Component {
                         <RefreshIndicator size={50} left={200} top={0}
                                           status={ this.props[urls.rooms].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
-                            <CustomTable {...this.props[urls.rooms]}
+                            <CustomTable
+                                {...this.props[urls.rooms]}
+                                fieldTransform={fieldTransforms[urls.rooms]}
                                 onCheck={onCheck(urls.rooms)}
                                 onCheckAll={onCheckAll(urls.rooms)}
                                 onShowCreateDialog={onShowCreateDialog(urls.rooms)}
-                                onDelete={onDelete(urls.rooms)}
-                                fields={fields[urls.rooms]}>
+                                onShowUpdateDialog={onShowUpdateDialog(urls.rooms)}
+                                onDeleteObject={onDeleteObject(urls.rooms)}
+                                nameFields={fields[urls.rooms]}>
                                 <RoomDialog
                                     {...dialogForObject}
                                     ownTableName={urls.rooms}
-                                    onCloseDialog={onCloseCreateDialog(urls.rooms)}
+                                    onCloseDialog={onCloseDialog(urls.rooms)}
+                                    onUpdateObject={onUpdateObject(urls.rooms)}
                                     onCreateObject={onCreateObject(urls.rooms)}/>
                             </CustomTable>
                         </div>
@@ -117,16 +126,20 @@ class App extends React.Component {
                         <RefreshIndicator size={50} left={200} top={0}
                                           status={ this.props[urls.roomClient].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
-                            <CustomTable {...this.props[urls.roomClient]}
+                            <CustomTable
+                                {...this.props[urls.roomClient]}
+                                fieldTransform={fieldTransforms[urls.roomClient]}
                                 onCheck={onCheck(urls.roomClient)}
                                 onCheckAll={onCheckAll(urls.roomClient)}
                                 onShowCreateDialog={onShowCreateDialog(urls.roomClient)}
-                                onDelete={onDelete(urls.roomClient)}
-                                fields={fields[urls.roomClient]}>
+                                onShowUpdateDialog={onShowUpdateDialog(urls.roomClient)}
+                                onDeleteObject={onDeleteObject(urls.roomClient)}
+                                nameFields={fields[urls.roomClient]}>
                                 <RoomClientDialog
                                     {...dialogForObject}
+                                    onUpdateObject={onUpdateObject(urls.roomClient)}
                                     onCreateObject={onCreateObject(urls.roomClient)}
-                                    onCloseDialog={onCloseCreateDialog(urls.roomClient)}
+                                    onCloseDialog={onCloseDialog(urls.roomClient)}
                                     ownTableName={urls.roomClient}/>
                             </CustomTable>
                         </div>
@@ -135,16 +148,20 @@ class App extends React.Component {
                         <RefreshIndicator size={50} left={50} top={0}
                                           status={ this.props[urls.roomReservation].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
-                            <CustomTable {...this.props[urls.roomReservation]}
+                            <CustomTable
+                                fieldTransform={fieldTransforms[urls.roomReservation]}
+                                {...this.props[urls.roomReservation]}
                                 onCheck={onCheck(urls.roomReservation)}
                                 onCheckAll={onCheckAll(urls.roomReservation)}
                                 onShowCreateDialog={onShowCreateDialog(urls.roomReservation)}
-                                onDelete={onDelete(urls.roomReservation)}
-                                fields={fields[urls.roomReservation]}>
+                                onShowUpdateDialog={onShowUpdateDialog(urls.roomReservation)}
+                                onDeleteObject={onDeleteObject(urls.roomReservation)}
+                                nameFields={fields[urls.roomReservation]}>
                                 <RoomReservationDialog
                                     {...dialogForObject}
+                                    onUpdateObject={onUpdateObject(urls.roomReservation)}
                                     onCreateObject={onCreateObject(urls.roomReservation)}
-                                    onCloseDialog={onCloseCreateDialog(urls.roomReservation)}
+                                    onCloseDialog={onCloseDialog(urls.roomReservation)}
                                     ownTableName={urls.roomReservation}/>
                             </CustomTable>
                         </div>
@@ -159,17 +176,22 @@ App.childContextTypes = {
 }
 
 function mapStateToProps(state) {
-    const dialogForObject = state.dialogForObject ? {
-        isOpen: true,
-        currentTableName: state.dialogForObject.table,
-        isShownId: false
-    } : null
+    const {dialogForObject} = state
 
-    const result = {
-        ...state,
-        dialogForObject
+    const resultDialog = dialogForObject ? {
+        isOpen: true,
+        isForUpdate: dialogForObject.isForUpdate,
+        currentTableName: dialogForObject.table,
+        object: dialogForObject.object
+    } : {
+        isOpen: false,
+        isForUpdate: false
     }
-    return result
+
+    return {
+        ...state,
+        dialogForObject: resultDialog
+    }
 }
 
 import * as actions from '../actions'
@@ -183,7 +205,7 @@ const mapDispatchToProps = (dispatch) => {
             (index) =>
                 (target, isChecked) => {
                     const state = getState();
-                    const object = state[table].objects.toArray()[index]
+                    const object = state[table].objects.get(index)
                     if (isChecked) {
                         dispatch(actions.checkRow(table, object))
                     } else {
@@ -199,9 +221,18 @@ const mapDispatchToProps = (dispatch) => {
         }
     }
 
+    const onShowUpdateDialog = dispatch((dispatch, getState) =>
+        (table) =>
+            (index) =>
+                () => {
+                    const updatingObject = getState()[table].objects.get(index)
+                    dispatch(actions.openUpdateDialog(table, updatingObject))
+                }
+    )
+
     const onShowCreateDialog = (table) => () => dispatch(actions.openCreateDialog(table))
 
-    const onDelete = dispatch((dispatch, getState) =>
+    const onDeleteObject = dispatch((dispatch, getState) =>
         (table) =>
             () => {
                 const state = getState()
@@ -209,11 +240,11 @@ const mapDispatchToProps = (dispatch) => {
                 service.deleteObjects(dispatch, table, deletingObjects)
             })
 
-    const onCreateObject = (table) => (object) => {
-        service.createObject(dispatch, table, object)
-    }
+    const onCreateObject = (table) => (object) => service.createObject(dispatch, table, object)
 
-    const onCloseCreateDialog = (table) => () => dispatch(actions.closeDialog())
+    const onUpdateObject = (table) => (oldObject, newObject) => service.updateObject(dispatch, table,oldObject, newObject)
+
+    const onCloseDialog = (table) => () => dispatch(actions.closeDialog())
 
     return {
         onOkErrorDialogHandler,
@@ -221,9 +252,11 @@ const mapDispatchToProps = (dispatch) => {
         onCheck,
         onCheckAll,
         onShowCreateDialog,
-        onDelete,
+        onShowUpdateDialog,
+        onDeleteObject,
         onCreateObject,
-        onCloseCreateDialog
+        onUpdateObject,
+        onCloseDialog
     }
 }
 
