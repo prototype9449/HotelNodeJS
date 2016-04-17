@@ -63,3 +63,11 @@ export function checkRow(table, object) {
 export function uncheckRow(table, object) {
     return {type: types.UNCHECK_ROW, table, object}
 }
+
+export function sendRequestToSearch(table){
+    return {type : types.REQUEST_SEARCH_SEND, table}
+}
+
+export function requestToSearchSuccess(table, objects){
+    return {type :types.REQUEST_SEARCH_SUCCESS, table, objects}
+}

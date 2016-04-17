@@ -1,20 +1,17 @@
 import React from 'react';
 import FlatButton from 'material-ui/lib/flat-button';
+import Button from 'react-bootstrap/lib/Button'
 
 export default function(buttonText, onCreate, onDelete, disabled = false){
     return [
-        <FlatButton
-            label={buttonText}
-            primary={true}
-            keyboardFocused={true}
+        <Button
+            bsStyle="primary"
             disabled = {disabled}
-            onTouchTap={onCreate}
+            onClick ={onCreate}
         />,
-        <FlatButton
-            label="Cancel"
-            primary={true}
-            keyboardFocused={true}
-            onTouchTap={onDelete}
+        <Button
+            bsStyle="primary"
+            onClick ={onDelete}
         />
     ];
 }

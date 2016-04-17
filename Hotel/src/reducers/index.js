@@ -183,6 +183,22 @@ function reducer(state = initialState, action) {
                     checkedRows
                 }
             }
+        case types.REQUEST_SEARCH_SEND :
+            return {
+                ...state,
+                [action.table]: {
+                    ...state[action.table],
+                    isIndicatorShown: true
+                }
+            }
+        case types.REQUEST_SEARCH_SUCCESS :
+            return {
+                ...state,
+                [action.table]: {
+                    ...(getInitialStateForTable()),
+                    objects: new CustomSet(action.objects)
+                }
+            }
         default:
             return state
     }

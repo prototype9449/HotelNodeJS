@@ -3,8 +3,8 @@ import $ from 'jquery'
 import 'jquery.cookie'
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme'
 import CustomTable from './customTable.jsx'
-import Tabs from 'material-ui/lib/tabs/tabs'
-import Tab from 'material-ui/lib/tabs/tab'
+import {Tabs} from 'react-bootstrap'
+import {Tab} from 'react-bootstrap'
 import _ from 'lodash'
 import RefreshIndicator from 'material-ui/lib/refresh-indicator'
 import FailureServerDialog from './dialogs/failureServerDialog.jsx'
@@ -15,6 +15,7 @@ import RoomClientDialog from './dialogs/roomClient-dialog.jsx'
 import RoomReservationDialog from './dialogs/roomClient-dialog.jsx'
 import {urls, fields, fieldTransforms} from '../constants/utils'
 import * as service from '../helpers/service'
+import { ClientSearch, RoomSearch, RoomClientSearch, RoomReservationSearch } from  './searchs'
 
 function areEqual(firstArray, secondArray) {
     if (firstArray.length != secondArray.length) {
@@ -36,11 +37,12 @@ class App extends React.Component {
         fetchObjects: React.PropTypes.func,
         onShowCreateDialog: React.PropTypes.func,
         onShowUpdateDialog: React.PropTypes.func,
-        onDeleteObject: React.PropTypes.func,
         onCheckAll: React.PropTypes.func,
         onCheck: React.PropTypes.func,
         onCreateObject: React.PropTypes.func,
+        onSearchObject: React.PropTypes.func,
         onUpdateObject: React.PropTypes.func,
+        onDeleteObject: React.PropTypes.func,
         onCloseDialog: React.PropTypes.func
     }
 
@@ -69,16 +71,17 @@ class App extends React.Component {
     }
 
     render() {
+        debugger
         const {onOkErrorDialogHandler, errorTexts, isErrorDialogShown} = this.props;
         const {dialogForObject} = this.props;
-        const {onCheck, onCheckAll, onShowCreateDialog,onShowUpdateDialog, onDeleteObject, onCreateObject, onUpdateObject, onCloseDialog } = this.props
+        const {onCheck, onCheckAll,onSearchObject, onShowCreateDialog,onShowUpdateDialog, onDeleteObject, onCreateObject, onUpdateObject, onCloseDialog } = this.props
         return (
             <div>
                 <FailureServerDialog onOkHandler={onOkErrorDialogHandler}
                                      isOpen={isErrorDialogShown}
                                      errorTexts={errorTexts}/>
-                <Tabs className='tabs'>
-                    <Tab label="Clients">
+                <Tabs defaultActiveKey={1}>
+                    <Tab eventKey={1} title="Clients">
                         <RefreshIndicator size={50} left={200} top={0}
                                           status={ this.props[urls.clients].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
@@ -91,6 +94,7 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.clients)}
                                 onDeleteObject={onDeleteObject(urls.clients)}
                                 nameFields={fields[urls.clients]}>
+                                <ClientSearch onSearchObject={onSearchObject(urls.clients)}/>
                                 <ClientDialog
                                     {...dialogForObject}
                                     onCreateObject={onCreateObject(urls.clients)}
@@ -100,7 +104,7 @@ class App extends React.Component {
                             </CustomTable>
                         </div>
                     </Tab>
-                    <Tab label="Rooms">
+                    <Tab eventKey={2} title="Rooms">
                         <RefreshIndicator size={50} left={200} top={0}
                                           status={ this.props[urls.rooms].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
@@ -113,6 +117,7 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.rooms)}
                                 onDeleteObject={onDeleteObject(urls.rooms)}
                                 nameFields={fields[urls.rooms]}>
+                                <RoomSearch onSearchObject={onSearchObject(urls.rooms)}/>
                                 <RoomDialog
                                     {...dialogForObject}
                                     ownTableName={urls.rooms}
@@ -122,7 +127,7 @@ class App extends React.Component {
                             </CustomTable>
                         </div>
                     </Tab>
-                    <Tab label="RoomClients">
+                    <Tab eventKey={3} title="RoomClients">
                         <RefreshIndicator size={50} left={200} top={0}
                                           status={ this.props[urls.roomClient].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
@@ -135,6 +140,7 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.roomClient)}
                                 onDeleteObject={onDeleteObject(urls.roomClient)}
                                 nameFields={fields[urls.roomClient]}>
+                                <RoomClientSearch onSearchObject={onSearchObject(urls.roomClient)}/>
                                 <RoomClientDialog
                                     {...dialogForObject}
                                     onUpdateObject={onUpdateObject(urls.roomClient)}
@@ -144,7 +150,7 @@ class App extends React.Component {
                             </CustomTable>
                         </div>
                     </Tab>
-                    <Tab label="RoomReservations">
+                    <Tab eventKey={4} title="RoomReservations">
                         <RefreshIndicator size={50} left={50} top={0}
                                           status={ this.props[urls.roomReservation].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
@@ -157,6 +163,7 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.roomReservation)}
                                 onDeleteObject={onDeleteObject(urls.roomReservation)}
                                 nameFields={fields[urls.roomReservation]}>
+                                <RoomReservationSearch onSearchObject={onSearchObject(urls.roomReservation)}/>
                                 <RoomReservationDialog
                                     {...dialogForObject}
                                     onUpdateObject={onUpdateObject(urls.roomReservation)}
@@ -256,6 +263,11 @@ const mapDispatchToProps = (dispatch) => {
             () =>
                 dispatch(actions.closeDialog())
 
+    const onSearchObject = dispatch((dispatch, getState) =>
+        (table) =>
+            (object) =>
+                service.searchObject(dispatch, table, object))
+
     return {
         onOkErrorDialogHandler,
         fetchObjects,
@@ -263,8 +275,9 @@ const mapDispatchToProps = (dispatch) => {
         onCheckAll,
         onShowCreateDialog,
         onShowUpdateDialog,
-        onDeleteObject,
         onCreateObject,
+        onSearchObject,
+        onDeleteObject,
         onUpdateObject,
         onCloseDialog
     }

@@ -5,32 +5,33 @@ import TextField from '../../../node_modules/material-ui/lib/text-field';
 import SelectField from '../../../node_modules/material-ui/lib/select-field';
 import MenuItem from '../../../node_modules/material-ui/lib/menus/menu-item';
 import Checkbox from 'material-ui/lib/checkbox';
+import DatePicker from 'material-ui/lib/date-picker/date-picker';
 
-export default class ClientDialog extends React.Component {
+export default class ClientSearch extends React.Component {
     static propTypes = {
         onSearchObject: React.PropTypes.func
     };
 
     constructor(props) {
         super(props)
-
+        this.state = this.getDefaultState()
         this.onSearchHandler = this.onSearchHandler.bind(this)
         this.onResetHandler = this.onResetHandler.bind(this)
         this.onRoomIdChange = this.onRoomIdChange.bind(this)
         this.onClientIdChange = this.onClientIdChange.bind(this)
         this.onCheckInDateChange = this.onCheckInDateChange.bind(this)
         this.onTermChange = this.onTermChange.bind(this)
-        this.isPassportValid = this.isPassportValid.bind(this)
-        this.onCheck = this.onCheck.bind(this)
     }
 
-    changeState(object) {
-        this.setState({
+    getDefaultState(){
+        return {
             object: {
-                ...this.state.object,
-                ...object
+                RoomId: '',
+                ClientId: '',
+                CheckInDate: '',
+                Term: ''
             }
-        })
+        }
     }
 
     onRoomIdChange(e) {
@@ -53,21 +54,15 @@ export default class ClientDialog extends React.Component {
         this.props.onSearchObject(this.state.object);
     }
 
+
     onResetHandler() {
-        this.setState({
-            object: {
-                RoomId: '',
-                ClientId: '',
-                CheckInDate: '',
-                Term: ''
-            }
-        })
+        this.setState(this.getDefaultState())
     }
 
     render() {
         const {RoomId, ClientId, CheckInDate, Term} = this.state.object
         return (
-            <div>
+            <div className="searchFields">
                 <TextField type="number" value={RoomId} hintText="RoomId" onChange={this.onRoomIdChange}/>
                 <br/>
                 <TextField type="number" value={ClientId} hintText="ClientId" onChange={this.onClientIdChange}/>

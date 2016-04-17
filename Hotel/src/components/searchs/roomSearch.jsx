@@ -5,32 +5,37 @@ import TextField from '../../../node_modules/material-ui/lib/text-field';
 import SelectField from '../../../node_modules/material-ui/lib/select-field';
 import MenuItem from '../../../node_modules/material-ui/lib/menus/menu-item';
 import Checkbox from 'material-ui/lib/checkbox';
+import Toggle from 'material-ui/lib/toggle';
 
-export default class ClientDialog extends React.Component {
+export default class ClientSearch extends React.Component {
     static propTypes = {
         onSearchObject: React.PropTypes.func
     };
 
     constructor(props) {
         super(props)
-
+        this.state = this.getDefaultState()
         this.onSearchHandler = this.onSearchHandler.bind(this)
         this.onResetHandler = this.onResetHandler.bind(this)
         this.onIdChange = this.onIdChange.bind(this)
-        this.onFullNameChange = this.onFullNameChange.bind(this)
-        this.onPassportChange = this.onPassportChange.bind(this)
-        this.onSexChange = this.onSexChange.bind(this)
-        this.isPassportValid = this.isPassportValid.bind(this)
+        this.onFloorChange = this.onFloorChange.bind(this)
+        this.onPriceChange = this.onPriceChange.bind(this)
+        this.onComfortChange = this.onComfortChange.bind(this)
+        this.onOccupationChange = this.onOccupationChange.bind(this)
         this.onCheck = this.onCheck.bind(this)
     }
 
-    changeState(object) {
-        this.setState({
+    getDefaultState() {
+        return {
             object: {
-                ...this.state.object,
-                ...object
-            }
-        })
+                Id: '',
+                Floor: '',
+                Price: '',
+                Comfort: '',
+                Occupation: null
+            },
+            isChecked : false
+        }
     }
 
     onIdChange(e) {
@@ -78,15 +83,7 @@ export default class ClientDialog extends React.Component {
     }
 
     onResetHandler() {
-        this.setState({
-            object: {
-                Id: '',
-                Floor: '',
-                Price: '',
-                Comfort: '',
-                Occupation: null
-            }
-        })
+       this.setState(this.getDefaultState())
     }
 
     render() {
@@ -108,7 +105,7 @@ export default class ClientDialog extends React.Component {
                     label="Occupation"
                     toogle={Occupation}
                     onToggle={this.onOccupationChange}
-                    disabled = {isChecked}/>
+                    disabled={isChecked}/>
                 <FlatButton label="Search" secondary={true} onClick={this.onSearchHandler} disabled={!isFormValid}/>
                 <FlatButton label="Reset" secondary={true} onClick={this.onResetHandler}/>
             </div>)

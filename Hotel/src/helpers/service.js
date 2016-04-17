@@ -64,3 +64,14 @@ export function updateObject(dispatch, table, oldObject, newObject) {
             dispatch(actions.requestToUpdateSuccess(table, oldObject, newObject)))
         .fail(writeError(dispatch))
 }
+
+export function searchObject(dispatch, getState, table, object) {
+    dispatch(actions.sendRequestToSearch(table))
+    sqlContext[table].getAll(object)
+        .done((objects) => {
+            if (!areEqual(getState(), table, objects)) {
+                dispatch(actions.requestToSearchSuccess(table, objects))
+            }
+        })
+        .fail(writeError(dispatch))
+}

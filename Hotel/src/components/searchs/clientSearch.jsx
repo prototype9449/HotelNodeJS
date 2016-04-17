@@ -6,7 +6,7 @@ import SelectField from '../../../node_modules/material-ui/lib/select-field';
 import MenuItem from '../../../node_modules/material-ui/lib/menus/menu-item';
 import Checkbox from 'material-ui/lib/checkbox';
 
-export default class ClientDialog extends React.Component {
+export default class ClientSearch extends React.Component {
     static propTypes = {
         onSearchObject: React.PropTypes.func
     };
@@ -22,15 +22,19 @@ export default class ClientDialog extends React.Component {
         this.onSexChange = this.onSexChange.bind(this)
         this.isPassportValid = this.isPassportValid.bind(this)
         this.onCheck = this.onCheck.bind(this)
+        this.state = this.getDefaultState()
     }
 
-    changeState(object) {
-        this.setState({
+    getDefaultState() {
+        return {
             object: {
-                ...this.state.object,
-                ...object
-            }
-        })
+                FullName: '',
+                Id: '',
+                Passport: '',
+                Sex: null
+            },
+            isChecked: false
+        }
     }
 
     onIdChange(e) {
@@ -75,14 +79,7 @@ export default class ClientDialog extends React.Component {
     }
 
     onResetHandler() {
-        this.setState({
-            object: {
-                FullName: '',
-                Id: '',
-                Passport: '',
-                Sex: null
-            }
-        })
+        this.setState(this.getDefaultState())
     }
 
     render() {
