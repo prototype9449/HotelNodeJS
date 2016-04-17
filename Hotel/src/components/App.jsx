@@ -199,7 +199,8 @@ import * as actions from '../actions'
 const mapDispatchToProps = (dispatch) => {
     const onOkErrorDialogHandler = () => dispatch(actions.closeDialog())
 
-    const fetchObjects = () => service.fetchObjects(dispatch)
+    const fetchObjects = dispatch((dispatch, getState) => () => service.fetchObjects(dispatch, getState))
+
     const onCheck = dispatch((dispatch, getState) =>
         (table) =>
             (index) =>
@@ -240,11 +241,20 @@ const mapDispatchToProps = (dispatch) => {
                 service.deleteObjects(dispatch, table, deletingObjects)
             })
 
-    const onCreateObject = (table) => (object) => service.createObject(dispatch, table, object)
+    const onCreateObject =
+        (table) =>
+            (object) =>
+                service.createObject(dispatch, table, object)
 
-    const onUpdateObject = (table) => (oldObject, newObject) => service.updateObject(dispatch, table,oldObject, newObject)
+    const onUpdateObject =
+        (table) =>
+            (oldObject, newObject) =>
+                service.updateObject(dispatch, table, oldObject, newObject)
 
-    const onCloseDialog = (table) => () => dispatch(actions.closeDialog())
+    const onCloseDialog =
+        (table) =>
+            () =>
+                dispatch(actions.closeDialog())
 
     return {
         onOkErrorDialogHandler,

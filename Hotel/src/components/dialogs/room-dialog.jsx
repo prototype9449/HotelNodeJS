@@ -25,8 +25,6 @@ export default class RoomDialog extends React.Component {
         onCloseDialog: React.PropTypes.func
     };
 
-
-
     constructor(props) {
         super(props)
         const {Id, Floor, Price, Comfort, Occupation} = this.getProps().object
@@ -155,8 +153,7 @@ export default class RoomDialog extends React.Component {
                 <Toggle
                     label="Occupation"
                     toogle={Occupation}
-                    onToggle={this.onOccupationChange}
-                />
+                    onToggle={this.onOccupationChange}/>
             </div>
         </Dialog>
     }

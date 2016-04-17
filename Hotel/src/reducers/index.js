@@ -116,18 +116,7 @@ function reducer(state = initialState, action) {
                     isIndicatorShown: false
                 }
             }
-        case types.REQUEST_CREATE_SUCCESS :
-        {
-            const resultObjects = state[action.table].objects.add(action.object)
-            return {
-                ...state,
-                [action.table]: {
-                    ...(getInitialStateForTable()),
-                    objects: resultObjects,
-                    isIndicatorShown: false
-                }
-            }
-        }
+
         case types.REQUEST_DELETE_SEND :
             return {
                 ...state,
@@ -137,17 +126,21 @@ function reducer(state = initialState, action) {
                 }
             }
         case types.REQUEST_DELETE_SUCCESS :
+        {
             const deleted = state[action.table].checkedRows.toArray();
             const current = state[action.table].objects;
+            debugger
+            const resultObjects = current.delete(deleted)
 
             return {
                 ...state,
                 [action.table]: {
                     ...(getInitialStateForTable()),
-                    objects: current.delete(deleted),
+                    objects: resultObjects,
                     isIndicatorShown: false
                 }
             }
+        }
         case types.CHECK_ALL_ROWS :
             return {
                 ...state,

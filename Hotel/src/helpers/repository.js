@@ -11,7 +11,7 @@ function getAjaxRequest(verb, data, restUrl) {
         data: JSON.stringify(data),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        url: `http://localhost:3000/${restUrl}`
+        url: `http://localhost:3001/${restUrl}`
     });
 }
 
