@@ -1,13 +1,8 @@
 import React from 'react';
-import Dialog from '../../../node_modules/material-ui/lib/dialog';
-import FlatButton from '../../../node_modules/material-ui/lib/flat-button';
-import TextField from '../../../node_modules/material-ui/lib/text-field';
-import SelectField from '../../../node_modules/material-ui/lib/select-field';
-import MenuItem from '../../../node_modules/material-ui/lib/menus/menu-item';
-import Checkbox from 'material-ui/lib/checkbox';
-import Toggle from 'material-ui/lib/toggle';
+import { Button, Input} from 'react-bootstrap'
+import Toggle from 'react-toggle'
 
-export default class ClientSearch extends React.Component {
+export default class RoomSearch extends React.Component {
     static propTypes = {
         onSearchObject: React.PropTypes.func
     };
@@ -34,8 +29,17 @@ export default class ClientSearch extends React.Component {
                 Comfort: '',
                 Occupation: null
             },
-            isChecked : false
+            isChecked: false
         }
+    }
+
+    changeState(obj) {
+        this.setState({
+            object: {
+                ...this.state.object,
+                ...obj
+            }
+        })
     }
 
     onIdChange(e) {
@@ -83,7 +87,7 @@ export default class ClientSearch extends React.Component {
     }
 
     onResetHandler() {
-       this.setState(this.getDefaultState())
+        this.setState(this.getDefaultState())
     }
 
     render() {
@@ -91,23 +95,22 @@ export default class ClientSearch extends React.Component {
         const {Id, Floor, Price, Comfort, Occupation} = this.state.object
         const isFormValid = this.isComfortValid() && this.isPriceValid()
         return (
-            <div>
-                <TextField type="number" value={Id} hintText="Id" onChange={this.onIdChange}/>
+            <div className="search">
+                <Input type="number" value={Id} placeholder="Id" onChange={this.onIdChange}/>
                 <br/>
-                <TextField type="number" hintText="Floor" value={Floor} onChange={this.onFloorChange}/>
+                <Input type="number" placeholder="Floor" value={Floor} onChange={this.onFloorChange}/>
                 <br/>
-                <TextField type="text" hintText="Price" value={Price} onChange={this.onPriceChange}/>
+                <Input type="text" placeholder="Price" value={Price} onChange={this.onPriceChange}/>
                 <br/>
-                <TextField type="number" hintText="Comfort" value={Comfort} onChange={this.onComfortChange}/>
+                <Input type="number" placeholder="Comfort" value={Comfort} onChange={this.onComfortChange}/>
                 <br/>
-                <Checkbox checked={isChecked} onCheck={this.onCheck}/>
+                <Input checked={isChecked} onChange={this.onCheck}/>
                 <Toggle
-                    label="Occupation"
-                    toogle={Occupation}
-                    onToggle={this.onOccupationChange}
+                    checked={Occupation}
+                    onChange={this.onOccupationChange}
                     disabled={isChecked}/>
-                <FlatButton label="Search" secondary={true} onClick={this.onSearchHandler} disabled={!isFormValid}/>
-                <FlatButton label="Reset" secondary={true} onClick={this.onResetHandler}/>
+                <Button onClick={this.onSearchHandler} disabled={!isFormValid}>Search</Button>
+                <Button onClick={this.onResetHandler}>Reset</Button>
             </div>)
     }
 }

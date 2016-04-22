@@ -1,30 +1,15 @@
 import React from 'react'
 import $ from 'jquery'
 import 'jquery.cookie'
-import getMuiTheme from 'material-ui/lib/styles/getMuiTheme'
 import CustomTable from './customTable.jsx'
-import {Tabs} from 'react-bootstrap'
-import {Tab} from 'react-bootstrap'
+import {Tab, Tabs} from 'react-bootstrap'
 import _ from 'lodash'
-import RefreshIndicator from 'material-ui/lib/refresh-indicator'
 import FailureServerDialog from './dialogs/failureServerDialog.jsx'
 import {connect} from 'react-redux'
-import ClientDialog from './dialogs/client-dialog.jsx'
-import RoomDialog from './dialogs/room-dialog.jsx'
-import RoomClientDialog from './dialogs/roomClient-dialog.jsx'
-import RoomReservationDialog from './dialogs/roomClient-dialog.jsx'
+import {ClientDialog, RoomDialog, RoomClientDialog, RoomReservationDialog} from './dialogs'
 import {urls, fields, fieldTransforms} from '../constants/utils'
 import * as service from '../helpers/service'
-import { ClientSearch, RoomSearch, RoomClientSearch, RoomReservationSearch } from  './searchs'
-
-function areEqual(firstArray, secondArray) {
-    if (firstArray.length != secondArray.length) {
-        return false
-    }
-
-    let intersectedArray = _.intersectionWith(firstArray, secondArray, _.isEqual)
-    return firstArray.length == intersectedArray.length
-}
+import { ClientSearch, RoomSearch, RoomClientSearch, RoomReservationSearch } from  './searchs/index'
 
 class App extends React.Component {
     static propTypes = {
@@ -63,15 +48,7 @@ class App extends React.Component {
         clearInterval(this.interval)
     }
 
-
-    getChildContext() {
-        return {
-            muiTheme: getMuiTheme()
-        }
-    }
-
     render() {
-        debugger
         const {onOkErrorDialogHandler, errorTexts, isErrorDialogShown} = this.props;
         const {dialogForObject} = this.props;
         const {onCheck, onCheckAll,onSearchObject, onShowCreateDialog,onShowUpdateDialog, onDeleteObject, onCreateObject, onUpdateObject, onCloseDialog } = this.props
@@ -80,10 +57,8 @@ class App extends React.Component {
                 <FailureServerDialog onOkHandler={onOkErrorDialogHandler}
                                      isOpen={isErrorDialogShown}
                                      errorTexts={errorTexts}/>
-                <Tabs defaultActiveKey={1}>
+                <Tabs defaultActiveKey={1} className="tabs">
                     <Tab eventKey={1} title="Clients">
-                        <RefreshIndicator size={50} left={200} top={0}
-                                          status={ this.props[urls.clients].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
                             <CustomTable
                                 {...this.props[urls.clients]}
@@ -105,8 +80,6 @@ class App extends React.Component {
                         </div>
                     </Tab>
                     <Tab eventKey={2} title="Rooms">
-                        <RefreshIndicator size={50} left={200} top={0}
-                                          status={ this.props[urls.rooms].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
                             <CustomTable
                                 {...this.props[urls.rooms]}
@@ -128,8 +101,6 @@ class App extends React.Component {
                         </div>
                     </Tab>
                     <Tab eventKey={3} title="RoomClients">
-                        <RefreshIndicator size={50} left={200} top={0}
-                                          status={ this.props[urls.roomClient].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
                             <CustomTable
                                 {...this.props[urls.roomClient]}
@@ -151,8 +122,6 @@ class App extends React.Component {
                         </div>
                     </Tab>
                     <Tab eventKey={4} title="RoomReservations">
-                        <RefreshIndicator size={50} left={50} top={0}
-                                          status={ this.props[urls.roomReservation].isIndicatorShown ? "loading" :"hide"}/>
                         <div>
                             <CustomTable
                                 fieldTransform={fieldTransforms[urls.roomReservation]}

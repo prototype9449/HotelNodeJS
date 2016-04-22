@@ -4,9 +4,7 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import configureStore from './store/configureStore'
 require('./main.scss');
-
-var injectTapEventPlugin = require("react-tap-event-plugin");
-injectTapEventPlugin();
+require('./less/input-moment.less');
 
 const store = configureStore();
 

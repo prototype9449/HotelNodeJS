@@ -3,7 +3,7 @@ import RoomSearch from './roomSearch.jsx'
 import RoomClientSearch from './roomClientSearch.jsx'
 import RoomReservationSearch from './roomClientSearch.jsx'
 
-export {
+export default {
     ClientSearch,
     RoomSearch,
     RoomClientSearch,

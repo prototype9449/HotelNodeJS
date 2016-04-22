@@ -1,5 +1,5 @@
 import React from 'react';
-import Checkbox from 'material-ui/lib/checkbox';
+import {Input} from 'react-bootstrap';
 
 function getProperties(object) {
     let names = Object.getOwnPropertyNames(object);
@@ -33,7 +33,7 @@ export default class Row extends React.Component {
 
         return <tr className='tableRow'>
             <td>
-                <Checkbox checked={isChecked} onCheck={onCheck}/>
+                <Input checked={isChecked} onChange={onCheck}/>
             </td>
             {columns}
         </tr>;

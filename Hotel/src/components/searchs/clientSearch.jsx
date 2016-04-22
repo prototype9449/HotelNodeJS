@@ -1,10 +1,5 @@
 import React from 'react';
-import Dialog from '../../../node_modules/material-ui/lib/dialog';
-import FlatButton from '../../../node_modules/material-ui/lib/flat-button';
-import TextField from '../../../node_modules/material-ui/lib/text-field';
-import SelectField from '../../../node_modules/material-ui/lib/select-field';
-import MenuItem from '../../../node_modules/material-ui/lib/menus/menu-item';
-import Checkbox from 'material-ui/lib/checkbox';
+import { DropdownButton, MenuItem, Button, Input} from 'react-bootstrap'
 
 export default class ClientSearch extends React.Component {
     static propTypes = {
@@ -35,6 +30,15 @@ export default class ClientSearch extends React.Component {
             },
             isChecked: false
         }
+    }
+
+    changeState(obj){
+        this.setState({
+            object:{
+                ...this.state.object,
+                ...obj
+            }
+        })
     }
 
     onIdChange(e) {
@@ -87,21 +91,20 @@ export default class ClientSearch extends React.Component {
         const {Id, FullName, Passport, Sex} = this.state.object
 
         const sex = Sex ? 1 : 0
-        return (
-            <div>
-                <TextField type="text" value={Id} hintText="Id" onChange={this.onIdChange}/> }
-                <br/>
-                <TextField type="text" hintText="FullName" value={FullName} onChange={this.onFullNameChange}/>
-                <br/>
-                <TextField type="text" hintText="Passport" value={Passport} onChange={this.onPassportChange}/>
-                <br/>
-                <Checkbox checked={isChecked} onCheck={this.onCheck}/>
-                <SelectField value={sex} onChange={this.onSexChange} floatingLabelText="Sex" disabled={isChecked}>
-                    <MenuItem value={1} primaryText="Man"/>
-                    <MenuItem value={0} primaryText="Woman"/>
-                </SelectField>
-                <FlatButton label="Search" secondary={true} onClick={this.onSearchHandler}/>
-                <FlatButton label="Reset" secondary={true} onClick={this.onResetHandler}/>
-            </div>)
+        return <div className="search">
+            <Input type="text" value={Id} placeholder="Id" onChange={this.onIdChange}/>
+            <br/>
+            <Input type="text" placeholder="FullName" value={FullName} onChange={this.onFullNameChange}/>
+            <br/>
+            <Input type="text" placeholder="Passport" value={Passport} onChange={this.onPassportChange}/>
+            <br/>
+            <Input type="checkbox" checked={isChecked} onChange={this.onCheck}/>
+            <DropdownButton id="fdsf" value={sex} onSelect={this.onSexChange} title="Sex" disabled={isChecked}>
+                <MenuItem value={1}>Man</MenuItem>>
+                <MenuItem value={0}>Woman</MenuItem>
+            </DropdownButton>
+            <Button onClick={this.onSearchHandler}>Search</Button>
+            <Button onClick={this.onResetHandler}>Reset</Button>
+        </div>
     }
 }

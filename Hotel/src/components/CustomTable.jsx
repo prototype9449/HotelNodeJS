@@ -1,7 +1,6 @@
 import React from 'react';
 import Row from './row.jsx';
-import Checkbox from 'material-ui/lib/checkbox';
-import FlatButton from 'material-ui/lib/flat-button';
+import {Button, Input} from 'react-bootstrap'
 import CustomSet from '../helpers/customSet';
 import _ from 'lodash'
 
@@ -41,14 +40,14 @@ export default class CustomTable extends React.Component {
 
         return (
             <div>
-                {this.props.children}
-                <FlatButton label="Create" onClick={onShowCreateDialog}/>
-                <FlatButton label="Delete" onClick={onDeleteObject}/>
-                <Checkbox
+                <div>
+                    <Button onClick={onShowCreateDialog}>Create</Button>
+                    <Button onClick={onDeleteObject}>Delete</Button>
+                </div>
+                <div> {this.props.children}</div>
+                <Input
                     checked={areAllChecked}
-                    onCheck={onCheckAll}
-                    label="Select All"
-                    labelPosition="right"
+                    onChange={onCheckAll}
                 />
 
                 <table className="customTable table-hover">

@@ -1,6 +1,5 @@
 import React from 'react';
-import FlatButton from 'material-ui/lib/flat-button';
-import Button from 'react-bootstrap/lib/Button'
+import {Button} from 'react-bootstrap'
 
 export default function(buttonText, onCreate, onDelete, disabled = false){
     return [

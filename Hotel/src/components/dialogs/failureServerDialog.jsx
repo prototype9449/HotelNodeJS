@@ -1,6 +1,5 @@
 import React from 'react';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
+import {Button, Modal} from 'react-bootstrap';
 
 export default class FailureServerDialog extends React.Component {
     static propTypes = {
@@ -20,24 +19,22 @@ export default class FailureServerDialog extends React.Component {
             return <li>{x}</li>
         })
 
-        const actions = [
-            <FlatButton
-                label="Ok"
-                secondary={true}
-                onTouchTap={onOkHandler}
-            />]
-
-        return <Dialog className="dialog"
-                       title="Error"
-                       actions={actions}
-                       modal={false}
-                       open={isOpen}
-                       onRequestClose={onOkHandler}>
-            <div>
-                <ol>
-                    {errorLines}
-                </ol>
-            </div>
-        </Dialog>
+        return <div>
+            <Modal show={isOpen} onHide={onOkHandler}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Error</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div>
+                        <ol>
+                            {errorLines}
+                        </ol>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={onOkHandler}>Close</Button>
+                </Modal.Footer>
+            </Modal>
+        </div>
     }
 }

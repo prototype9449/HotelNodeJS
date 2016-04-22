@@ -10,9 +10,6 @@ body {
   padding: 8px;
 }
 
-.dialog{
-  width: 100px;
-}
 table {
   width: 100%
 }
@@ -25,6 +22,11 @@ table {
       }
     }
   }
+}
+
+.search {
+  float: right;
+  display: inline-flex;
 }
 
 .tabs {

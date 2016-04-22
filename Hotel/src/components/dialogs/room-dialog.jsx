@@ -1,11 +1,6 @@
 import React from 'react';
-import Toggle from 'material-ui/lib/toggle';
-import Dialog from 'material-ui/lib/dialog'
-import FlatButton from 'material-ui/lib/flat-button'
-import TextField from 'material-ui/lib/text-field'
-import getActions from '../create-cancel-actions.jsx'
-import SelectField from 'material-ui/lib/select-field'
-import MenuItem from 'material-ui/lib/menus/menu-item'
+import {Modal, Button, Input} from 'react-bootstrap'
+import Toggle from 'react-toggle'
 
 export default class RoomDialog extends React.Component {
     static propTypes = {
@@ -57,8 +52,8 @@ export default class RoomDialog extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps){
-        if(nextProps.isForUpdate) {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.isForUpdate) {
             this.setState({object: nextProps.object})
         } else {
             this.setState({object: this.getProps().object})
@@ -102,7 +97,7 @@ export default class RoomDialog extends React.Component {
 
     isPriceValid() {
         const reg = /^ *\$?\d+(?:\.\d{2})? *$/
-        return this.state.object.Price,toString().match(reg) !== null
+        return this.state.object.Price, toString().match(reg) !== null
     }
 
     isComfortValid() {
@@ -122,39 +117,43 @@ export default class RoomDialog extends React.Component {
         this.props.onCreateObject(this.getCreatedObject());
     }
 
-    onUpdateHandler(){
+    onUpdateHandler() {
         this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
     }
 
     render() {
         const {onCloseDialog, isOpen, isForUpdate, currentTableName, ownTableName} = this.getProps()
-        if(currentTableName !== ownTableName) return null
+        if (currentTableName !== ownTableName) return null
 
         const {Id, Floor, Price, Comfort, Occupation} = this.state.object
-        const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
-        const buttonText = isForUpdate ? 'Update' : 'Create'
-        const actions = getActions(buttonText, callback, onCloseDialog, !this.isPriceValid() && !this.isComfortValid())
+        //const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
+        //const buttonText = isForUpdate ? 'Update' : 'Create'
+        //const actions = getActions(buttonText, callback, onCloseDialog, !this.isPriceValid() && !this.isComfortValid())
 
-        return <Dialog className="dialog"
-                       title="Create room"
-                       actions={actions}
-                       modal={false}
-                       open={isOpen && currentTableName == ownTableName}
-                       onRequestClose={onCloseDialog}>
-            <div>
-                {isForUpdate && <TextField type="number" value={Id} hintText="Id" onChange={this.onIdChange}/>}
-                <br/>
-                <TextField type="number" hintText="Floor" value={Floor} onChange={this.onFloorChange}/>
-                <br/>
-                <TextField type="text" hintText="Price" value={Price} onChange={this.onPriceChange}/>
-                <br/>
-                <TextField type="number" hintText="Comfort" value={Comfort} onChange={this.onComfortChange}/>
-                <br/>
-                <Toggle
-                    label="Occupation"
-                    toogle={Occupation}
-                    onToggle={this.onOccupationChange}/>
-            </div>
-        </Dialog>
+        return <div>
+            <Modal show={isOpen && currentTableName == ownTableName} onHide={onCloseDialog}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Create room</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div>
+                        {isForUpdate && <TextField type="number" value={Id} hintText="Id" onChange={this.onIdChange}/>}
+                        <br/>
+                        <Input type="number" placeholder="Floor" value={Floor} onChange={this.onFloorChange}/>
+                        <br/>
+                        <Input type="text" placeholder="Price" value={Price} onChange={this.onPriceChange}/>
+                        <br/>
+                        <Input type="number" placeholder="Comfort" value={Comfort} onChange={this.onComfortChange}/>
+                        <br/>
+                        <Toggle
+                            checked={Occupation}
+                            onCheck={this.onOccupationChange}/>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={onCloseDialog}>Close</Button>
+                </Modal.Footer>
+            </Modal>
+        </div>
     }
 }

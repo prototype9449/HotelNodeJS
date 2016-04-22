@@ -1,10 +1,6 @@
 import React from 'react';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import TextField from 'material-ui/lib/text-field';
 import getActions from '../create-cancel-actions.jsx';
-import SelectField from 'material-ui/lib/select-field';
-import MenuItem from 'material-ui/lib/menus/menu-item';
+import {Modal, DropdownButton, MenuItem, Button, Input} from 'react-bootstrap'
 
 export default class ClientDialog extends React.Component {
     static propTypes = {
@@ -18,7 +14,7 @@ export default class ClientDialog extends React.Component {
         currentTableName: React.PropTypes.string,
         ownTableName: React.PropTypes.string,
         onCreateObject: React.PropTypes.func,
-        onUpdateObject : React.PropTypes.func,
+        onUpdateObject: React.PropTypes.func,
         onCloseDialog: React.PropTypes.func
     };
 
@@ -53,8 +49,8 @@ export default class ClientDialog extends React.Component {
         }
     };
 
-    componentWillReceiveProps(nextProps){
-        if(nextProps.isForUpdate) {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.isForUpdate) {
             this.setState({object: nextProps.object})
         } else {
             this.setState({object: this.getProps().object})
@@ -105,13 +101,13 @@ export default class ClientDialog extends React.Component {
         return this.state.object.Passport.match(reg) !== null
     }
 
-    onSexChange(event, index, value) {
+    onSexChange(value, event) {
         this.changeState({
             Sex: value == 1
         })
     }
 
-    onUpdateHandler(){
+    onUpdateHandler() {
         this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
     }
 
@@ -121,7 +117,7 @@ export default class ClientDialog extends React.Component {
 
     render() {
         const {isOpen, isForUpdate, onCloseDialog, currentTableName, ownTableName} = this.getProps()
-        if(currentTableName !== ownTableName) return null
+        if (currentTableName !== ownTableName) return null
         const {Id, FullName, Passport, Sex} = this.state.object
 
         const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
@@ -129,24 +125,32 @@ export default class ClientDialog extends React.Component {
         const actions = getActions(buttonText, callback, onCloseDialog, !this.isPassportValid())
 
         const sex = Sex ? 1 : 0
-        return <Dialog className="dialog"
-                       title="Create client"
-                       actions={actions}
-                       modal={false}
-                       open={isOpen && currentTableName == ownTableName}
-                       onRequestClose={onCloseDialog}>
-            <div>
-                {isForUpdate && <TextField type="text" value={Id} hintText="Id" onChange={this.onIdChange}/> }
-                <br/>
-                <TextField type="text" hintText="FullName" value={FullName} onChange={this.onFullNameChange}/>
-                <br/>
-                <TextField type="text" hintText="Passport" value={Passport} onChange={this.onPassportChange}/>
-                <br/>
-                <SelectField value={sex} onChange={this.onSexChange} floatingLabelText="Sex">
-                    <MenuItem value={1} primaryText="Man"/>
-                    <MenuItem value={0} primaryText="Woman"/>
-                </SelectField>
-            </div>
-        </Dialog>
+        return <div>
+            <Modal show={isOpen && currentTableName == ownTableName} onHide={onCloseDialog}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Create client</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div>
+                        {isForUpdate && <Input type="text" value={Id} placeholder="Id"
+                                               onChange={this.onIdChange}/> }
+                        <br/>
+                        <Input type="text" placeholder="FullName" value={FullName}
+                               onChange={this.onFullNameChange}/>
+                        <br/>
+                        <Input type="text" placeholder="Passport" value={Passport}
+                               onChange={this.onPassportChange}/>
+                        <br/>
+                        <DropdownButton value={sex} onSelect={this.onSexChange} title="Sex">
+                            <MenuItem eventKey={1}>Man</MenuItem>
+                            <MenuItem eventKey={0}>Woman</MenuItem>
+                        </DropdownButton>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={onCloseDialog}>Close</Button>
+                </Modal.Footer>
+            </Modal>
+        </div>
     }
 }
