@@ -17,7 +17,7 @@ export default class RoomClientSearch extends React.Component {
         this.onClientIdChange = this.onClientIdChange.bind(this)
         this.onCheckInDateChange = this.onCheckInDateChange.bind(this)
         this.onTermChange = this.onTermChange.bind(this)
-        this.toggleInputMoment = this.toggleInputMoment.bind(this)
+        this.toggleDatePicker = this.toggleDatePicker.bind(this)
     }
 
     getDefaultState() {
@@ -50,7 +50,7 @@ export default class RoomClientSearch extends React.Component {
     }
 
     onCheckInDateChange(e) {
-        this.changeState({CheckInDate: e._d});
+        this.changeState({CheckInDate: e.target.value});
     }
 
     onTermChange(e) {
@@ -65,35 +65,42 @@ export default class RoomClientSearch extends React.Component {
         this.setState(this.getDefaultState())
     }
 
-    toggleInputMoment() {
+    toggleDatePicker(event) {
         this.setState({
-            showInputMoment: !this.state.showInputMoment
+            showInputMoment: event.currentTarget.checked
         })
     }
 
     render() {
         const {RoomId, ClientId, CheckInDate, Term} = this.state.object
+        const {showInputMoment} = this.state
 
-        const style = this.state.showInputMoment ? 'block' : 'none'
-
-        return (
-            <div className="search">
-                <Input type="number" value={RoomId} placeholder="RoomId" onChange={this.onRoomIdChange}/>
-                <br/>
-                <Input type="number" value={ClientId} placeholder="ClientId" onChange={this.onClientIdChange}/>
-                <br/>
-                <Input type="text" value={moment(CheckInDate).format('llll')} readOnly
-                       onFocus={this.toggleInputMoment}/>
-                <div style={{display : style}}>
-                    <InputMoment moment={moment(CheckInDate)} onChange={this.onCheckInDateChange}
-                                 onSave={this.toggleInputMoment}/>
-                </div>
-                <br/>
-                <Input type="number" value={Term} placeholder="Term" onChange={this.onTermChange}/>
-                <br/>
-                <Button onClick={this.onSearchHandler}>Search</Button>
-                <Button onClick={this.onResetHandler}>Reset</Button>
-            </div>)
+        return (<form className="form-inline">
+            <div className="form-group">
+                <input className="form-control" type="number" value={RoomId} placeholder="RoomId"
+                       onChange={this.onRoomIdChange}/>
+            </div>
+            <div className="form-group">
+                <input className="form-control" type="number" placeholder="ClientId" value={ClientId}
+                       onChange={this.onClientIdChange}/>
+            </div>
+            <div className="checkbox">
+                <input className="form-control" type="checkbox" checked={showInputMoment}
+                       onChange={this.toggleDatePicker}/>
+            </div>
+            <div className="form-group">
+                <input className="form-control" type="datetime-local" value={CheckInDate}
+                       onChange={this.onCheckInDateChange}/>
+            </div>
+            <div className="form-group">
+                <input className="form-control" type="number" max="10" min="0" placeholder="Term" value={Term}
+                       onChange={this.onTermChange}/>
+            </div>
+            <div className="form-group search-reset">
+                <button className="btn btn-primary" onClick={this.onSearchHandler}>Search</button>
+                <button className="btn btn-primary" onClick={this.onResetHandler}>Reset</button>
+            </div>
+        </form>)
     }
 }
 

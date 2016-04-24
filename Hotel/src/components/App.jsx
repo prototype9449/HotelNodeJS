@@ -180,18 +180,18 @@ const mapDispatchToProps = (dispatch) => {
     const onCheck = dispatch((dispatch, getState) =>
         (table) =>
             (index) =>
-                (target, isChecked) => {
+                (event) => {
                     const state = getState();
                     const object = state[table].objects.get(index)
-                    if (isChecked) {
+                    if (event.currentTarget.checked) {
                         dispatch(actions.checkRow(table, object))
                     } else {
                         dispatch(actions.uncheckRow(table, object))
                     }
                 })
 
-    const onCheckAll = (table) => (target, areAllChecked) => {
-        if (areAllChecked) {
+    const onCheckAll = (table) => (event) => {
+        if (event.currentTarget.checked) {
             dispatch(actions.checkAllRows(table))
         } else {
             dispatch(actions.uncheckAllRows(table))

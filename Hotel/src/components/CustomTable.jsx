@@ -39,18 +39,19 @@ export default class CustomTable extends React.Component {
         })
 
         return (
-            <div>
-                <div>
-                    <Button onClick={onShowCreateDialog}>Create</Button>
-                    <Button onClick={onDeleteObject}>Delete</Button>
+            <div className="page">
+                <div className="CreateDelete">
+                    <button onClick={onShowCreateDialog} className="btn btn-default">Create</button>
+                    <button onClick={onDeleteObject} className="btn btn-default">Delete</button>
                 </div>
                 <div> {this.props.children}</div>
-                <Input
-                    checked={areAllChecked}
-                    onChange={onCheckAll}
-                />
+                <div className="checkbox">
+                    <label>
+                        <input type="checkbox" className="areAllChecked" checked={areAllChecked} onChange={onCheckAll}/> Check all rows
+                    </label>
+                </div>
 
-                <table className="customTable table-hover">
+                <table className="table customTable">
                     <thead>
                     <tr>
                         {tableHeaders}

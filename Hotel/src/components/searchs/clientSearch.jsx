@@ -1,5 +1,5 @@
 import React from 'react';
-import { DropdownButton, MenuItem, Button, Input} from 'react-bootstrap'
+import { DropdownButton, MenuItem } from 'react-bootstrap'
 
 export default class ClientSearch extends React.Component {
     static propTypes = {
@@ -32,9 +32,9 @@ export default class ClientSearch extends React.Component {
         }
     }
 
-    changeState(obj){
+    changeState(obj) {
         this.setState({
-            object:{
+            object: {
                 ...this.state.object,
                 ...obj
             }
@@ -91,20 +91,32 @@ export default class ClientSearch extends React.Component {
         const {Id, FullName, Passport, Sex} = this.state.object
 
         const sex = Sex ? 1 : 0
-        return <div className="search">
-            <Input type="text" value={Id} placeholder="Id" onChange={this.onIdChange}/>
-            <br/>
-            <Input type="text" placeholder="FullName" value={FullName} onChange={this.onFullNameChange}/>
-            <br/>
-            <Input type="text" placeholder="Passport" value={Passport} onChange={this.onPassportChange}/>
-            <br/>
-            <Input type="checkbox" checked={isChecked} onChange={this.onCheck}/>
-            <DropdownButton id="fdsf" value={sex} onSelect={this.onSexChange} title="Sex" disabled={isChecked}>
-                <MenuItem value={1}>Man</MenuItem>>
-                <MenuItem value={0}>Woman</MenuItem>
-            </DropdownButton>
-            <Button onClick={this.onSearchHandler}>Search</Button>
-            <Button onClick={this.onResetHandler}>Reset</Button>
-        </div>
+        return <form className="form-inline">
+            <div className="form-group">
+                <input className="form-control" type="text" value={Id} placeholder="Id" onChange={this.onIdChange}/>
+            </div>
+            <div className="form-group">
+                <input className="form-control" type="text" placeholder="FullName" value={FullName}
+                       onChange={this.onFullNameChange}/>
+            </div>
+            <div className="form-group">
+                <input className="form-control" type="text" placeholder="Passport" value={Passport}
+                       onChange={this.onPassportChange}/>
+            </div>
+            <div className="checkbox">
+                <input className="form-control" type="checkbox" checked={isChecked} onChange={this.onCheck}/>
+            </div>
+            <div className="form-group">
+                <DropdownButton className="searchInput" id="fdsf" value={sex} onSelect={this.onSexChange} title="Sex"
+                                disabled={isChecked}>
+                    <MenuItem value={1}>Man</MenuItem>>
+                    <MenuItem value={0}>Woman</MenuItem>
+                </DropdownButton>
+            </div>
+            <div className="form-group search-reset">
+                <button className="btn btn-primary" onClick={this.onSearchHandler}>Search</button>
+                <button className="btn btn-primary" onClick={this.onResetHandler}>Reset</button>
+            </div>
+        </form>
     }
 }

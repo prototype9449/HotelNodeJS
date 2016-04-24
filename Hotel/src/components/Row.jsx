@@ -25,15 +25,18 @@ export default class Row extends React.Component {
         const {object, isChecked, onCheck, onClick, fieldTransform} = this.props;
         const properties = getProperties(object);
         const columns = properties.map((x, i) => {
-            const elem = (<td key={i} className = "tdHover">
-                <div className="divHover" key={i} href="#" onClick={onClick}>{fieldTransform(x.name, x.value)}</div>
+            const elem = (<td key={i} className="td-row">
+                <div className="div-inside-td" key={i} href="#"
+                     onClick={onClick}>{fieldTransform(x.name, x.value)}</div>
             </td>)
             return elem;
         });
 
         return <tr className='tableRow'>
-            <td>
-                <Input checked={isChecked} onChange={onCheck}/>
+            <td className="row-check-box">
+                <div className="checkbox checkbox-primary div-inside-td">
+                    <input type="checkbox" className="row-checkbox" checked={isChecked} onChange={onCheck}/>
+                </div>
             </td>
             {columns}
         </tr>;

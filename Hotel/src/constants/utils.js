@@ -13,7 +13,7 @@ export const verbs = {
 };
 
 export const fields = {
-    [urls.clients]: ['FullName', 'Passport', 'Sex'],
+    [urls.clients]: ['Id', 'FullName', 'Passport', 'Sex'],
     [urls.rooms]: ['Id', 'Floor', 'Price', 'Comfort', 'Occupation'],
     [urls.roomClient]: ['RoomId', 'ClientId', 'CheckInDate', 'Term'],
     [urls.roomReservation]: ['RoomId', 'ClientId', 'CheckInDate', 'Term']

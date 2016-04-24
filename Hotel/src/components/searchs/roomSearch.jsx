@@ -94,23 +94,31 @@ export default class RoomSearch extends React.Component {
         const {isChecked} = this.state
         const {Id, Floor, Price, Comfort, Occupation} = this.state.object
         const isFormValid = this.isComfortValid() && this.isPriceValid()
-        return (
-            <div className="search">
-                <Input type="number" value={Id} placeholder="Id" onChange={this.onIdChange}/>
-                <br/>
-                <Input type="number" placeholder="Floor" value={Floor} onChange={this.onFloorChange}/>
-                <br/>
-                <Input type="text" placeholder="Price" value={Price} onChange={this.onPriceChange}/>
-                <br/>
-                <Input type="number" placeholder="Comfort" value={Comfort} onChange={this.onComfortChange}/>
-                <br/>
-                <Input checked={isChecked} onChange={this.onCheck}/>
-                <Toggle
-                    checked={Occupation}
-                    onChange={this.onOccupationChange}
-                    disabled={isChecked}/>
-                <Button onClick={this.onSearchHandler} disabled={!isFormValid}>Search</Button>
-                <Button onClick={this.onResetHandler}>Reset</Button>
-            </div>)
+
+        return (<form className="form-inline">
+            <div className="form-group">
+                <input className="form-control" type="number" value={Id} placeholder="Id" onChange={this.onIdChange}/>
+            </div>
+            <div className="form-group">
+                <input className="form-control" type="number" placeholder="Floor" value={Floor}
+                       onChange={this.onFloorChange}/>
+            </div>
+            <div className="form-group">
+                <input className="form-control" type="text" placeholder="Price" value={Price}
+                       onChange={this.onPriceChange}/>
+            </div>
+            <div className="form-group">
+                <input className="form-control" type="number" placeholder="Comfort" value={Comfort}
+                       onChange={this.onComfortChange}/>
+            </div>
+            <div className="form-group">
+                <input className="form-control" type="checkbox" placeholder="Comfort" value={Occupation}
+                       onChange={this.onOccupationChange}/>
+            </div>
+            <div className="form-group search-reset">
+                <button className="btn btn-primary" onClick={this.onSearchHandler}>Search</button>
+                <button className="btn btn-primary" onClick={this.onResetHandler}>Reset</button>
+            </div>
+        </form>)
     }
 }
