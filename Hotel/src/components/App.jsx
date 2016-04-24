@@ -41,11 +41,11 @@ class App extends React.Component {
 
     componentDidMount() {
         this.props.fetchObjects()
-        this.interval = setInterval(() => this.props.fetchObjects(), 10000)
+        //this.interval = setInterval(() => this.props.fetchObjects(), 10000)
     }
 
     componentWillUnmount() {
-        clearInterval(this.interval)
+        //clearInterval(this.interval)
     }
 
     render() {
@@ -234,8 +234,9 @@ const mapDispatchToProps = (dispatch) => {
 
     const onSearchObject = dispatch((dispatch, getState) =>
         (table) =>
-            (object) =>
-                service.searchObject(dispatch, table, object))
+            (object) => {
+                service.searchObject(dispatch, getState, table, object)
+            })
 
     return {
         onOkErrorDialogHandler,

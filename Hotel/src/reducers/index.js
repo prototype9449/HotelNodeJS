@@ -195,7 +195,8 @@ function reducer(state = initialState, action) {
             return {
                 ...state,
                 [action.table]: {
-                    ...(getInitialStateForTable()),
+                    ...state[action.table],
+                    isIndicatorShown: false,
                     objects: new CustomSet(action.objects)
                 }
             }

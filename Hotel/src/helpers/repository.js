@@ -34,7 +34,7 @@ class Repository {
     }
 
     getAll(object) {
-        return getAjaxRequest(verbs.get, object, this.tableName + getQuery(object));
+        return getAjaxRequest(verbs.get, undefined, this.tableName + getQuery(object));
     }
 
     insert(object) {

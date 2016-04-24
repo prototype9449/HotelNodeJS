@@ -78,8 +78,8 @@ export default class RoomDialog extends React.Component {
         this.changeState({ClientId: e.target.value});
     }
 
-    onCheckInDateChange(e, date) {
-        this.changeState({CheckInDate: date});
+    onCheckInDateChange(e) {
+        this.changeState({CheckInDate: e.target.value});
     }
 
     onTermChange(e) {
@@ -109,13 +109,13 @@ export default class RoomDialog extends React.Component {
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-                        <Input type="number" value={RoomId} placeholder="RoomId" onChange={this.onRoomIdChange}/>
+                        <input type="number" value={RoomId} placeholder="RoomId" onChange={this.onRoomIdChange}/>
                         <br/>
-                        <Input type="number" value={ClientId} placeholder="ClientId" onChange={this.onClientIdChange}/>
+                        <input type="number" value={ClientId} placeholder="ClientId" onChange={this.onClientIdChange}/>
                         <br/>
-                        <InputMoment moment={moment(CheckInDate)} onChange={this.onCheckInDateChange}/>
+                        <input type="datetime-local" onChange={this.onCheckInDateChange}/>
                         <br/>
-                        <Input type="number" value={Term} placeholder="Term" onChange={this.onTermChange}/>
+                        <input type="number" value={Term} placeholder="Term" onChange={this.onTermChange}/>
                         <br/>
                     </div>
                 </Modal.Body>

@@ -23,9 +23,9 @@ export default class ClientSearch extends React.Component {
     getDefaultState() {
         return {
             object: {
-                FullName: '',
-                Id: '',
-                Passport: '',
+                FullName: null,
+                Id: null,
+                Passport: null,
                 Sex: null
             },
             isChecked: false
@@ -48,7 +48,6 @@ export default class ClientSearch extends React.Component {
         this.changeState({
             Id: e.target.value
         })
-
     }
 
     onFullNameChange(e) {
@@ -74,8 +73,20 @@ export default class ClientSearch extends React.Component {
         })
     }
 
-    onSearchHandler() {
-        this.props.onSearchObject(this.state.object);
+    onSearchHandler(e) {
+        const {object} = this.state
+        const result = Object.keys(object).reduce((obj, x) => {
+            if (object[x] == null) {
+                return obj
+            } else {
+                return {
+                    ...obj,
+                    [x]: object[x]
+                }
+            }
+        }, {})
+        this.props.onSearchObject(result);
+        e.preventDefault()
     }
 
     onCheck(target, isChecked) {
@@ -84,13 +95,18 @@ export default class ClientSearch extends React.Component {
 
     onResetHandler() {
         this.setState(this.getDefaultState())
+        e.preventDefault()
     }
 
     render() {
         const {isChecked} = this.state
-        const {Id, FullName, Passport, Sex} = this.state.object
+        let {Id, FullName, Passport, Sex} = this.state.object
 
-        const sex = Sex ? 1 : 0
+        Id = Id == null ? '' : Id
+        FullName == null ? '' : FullName
+        Passport == null ? '' : Passport
+        Sex == Sex == 0 ? 0 : Sex
+
         return <form className="form-inline">
             <div className="form-group">
                 <input className="form-control" type="text" value={Id} placeholder="Id" onChange={this.onIdChange}/>
@@ -107,10 +123,11 @@ export default class ClientSearch extends React.Component {
                 <input className="form-control" type="checkbox" checked={isChecked} onChange={this.onCheck}/>
             </div>
             <div className="form-group">
-                <DropdownButton className="searchInput" id="fdsf" value={sex} onSelect={this.onSexChange} title="Sex"
+                <DropdownButton className="searchInput" id="fdsf" value={Sex} onSelect={this.onSexChange} title="Sex"
                                 disabled={isChecked}>
+                    <MenuItem value={0}>Doesn't matter</MenuItem>>
                     <MenuItem value={1}>Man</MenuItem>>
-                    <MenuItem value={0}>Woman</MenuItem>
+                    <MenuItem value={2}>Woman</MenuItem>
                 </DropdownButton>
             </div>
             <div className="form-group search-reset">

@@ -137,21 +137,19 @@ export default class RoomDialog extends React.Component {
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-                        {isForUpdate && <TextField type="number" value={Id} hintText="Id" onChange={this.onIdChange}/>}
+                        {isForUpdate && <input type="number" value={Id} placeholder="Id" onChange={this.onIdChange}/>}
                         <br/>
-                        <Input type="number" placeholder="Floor" value={Floor} onChange={this.onFloorChange}/>
+                        <input type="number" placeholder="Floor" value={Floor} onChange={this.onFloorChange}/>
                         <br/>
-                        <Input type="text" placeholder="Price" value={Price} onChange={this.onPriceChange}/>
+                        <input type="text" placeholder="Price" value={Price} onChange={this.onPriceChange}/>
                         <br/>
-                        <Input type="number" placeholder="Comfort" value={Comfort} onChange={this.onComfortChange}/>
+                        <input type="number" placeholder="Comfort" value={Comfort} onChange={this.onComfortChange}/>
                         <br/>
-                        <Toggle
-                            checked={Occupation}
-                            onCheck={this.onOccupationChange}/>
+                        <input type="checkbox" checked={Occupation} onChange={this.onOccupationChange}/>
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={onCloseDialog}>Close</Button>
+                    <button onClick={onCloseDialog}>Close</button>
                 </Modal.Footer>
             </Modal>
         </div>
