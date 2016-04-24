@@ -14,32 +14,36 @@ function createSelectQuery(sqlInstance, object, tableName) {
             return request.query(queryString);
         }
 
-        let equalString = properties.map(x => `${x.name} like '%' + @${x.name} + '%'`).join(' and ');
+        let equalString = []
+        properties.forEach(x => {
+            if (typeof x.value == 'boolean') {
+                equalString.push(`${x.name} = @${x.name}`)
+            } else {
+                equalString.push(`${x.name} like '%' + @${x.name} + '%'`)
+            }
+
+        })
         queryString = queryString + ` where ${equalString}`;
         return request.query(queryString);
     });
 }
 
 function getPropertyCollection(object) {
-    let properties = [];
-    for (let propName in object) {
-        let data = {
-            name: `${propName}`,
-            value: `${object[propName]}`
-        };
-        properties.push(data);
-    }
-
-    return properties;
+    return Object.keys(object).map(x => {
+        return {
+            name: x,
+            value: object[x]
+        }
+    })
 }
 
 function getFilledParamsRequest(connection, properties) {
     let request = connection.request();
+    let sqlType;
     properties.forEach(x => {
-        let sqlType;
-        switch (typeof x.value){
+        switch (typeof x.value) {
             case 'boolean':
-                sqlType = sql.boolean;
+                sqlType = sql.Bit;
                 break;
             case 'number' :
                 sqlType = sql.Int;

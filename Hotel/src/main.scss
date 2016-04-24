@@ -33,6 +33,11 @@ td > div {
   width: 20%;
 }
 
+input[type=text].form-control{
+  width: 150px;
+  margin: 10px;
+}
+
 .checkbox input[type=checkbox] {
   margin-left: 0;
 }

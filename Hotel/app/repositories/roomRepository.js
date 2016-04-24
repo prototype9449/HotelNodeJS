@@ -8,11 +8,11 @@ class RoomRepository extends BaseRepository {
     }
 
     getAll(object) {
-        delete object.Id;
         return super.getObjects(object, constants.Rooms)
     }
 
     insert(room) {
+        delete room.Id;
         return super.insertObject(room, constants.Rooms)
     }
 

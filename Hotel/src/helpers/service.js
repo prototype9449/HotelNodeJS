@@ -69,7 +69,6 @@ export function searchObject(dispatch, getState, table, object) {
     dispatch(actions.sendRequestToSearch(table))
     sqlContext[table].getAll(object)
         .done((objects) => {
-            debugger
             if (!areEqual(getState(), table, objects)) {
                 dispatch(actions.requestToSearchSuccess(table, objects))
             }

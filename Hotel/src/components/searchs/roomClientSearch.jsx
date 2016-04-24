@@ -5,7 +5,8 @@ import moment from 'moment'
 
 export default class RoomClientSearch extends React.Component {
     static propTypes = {
-        onSearchObject: React.PropTypes.func
+        onSearchObject: React.PropTypes.func,
+        onReset: React.PropTypes.func
     };
 
     constructor(props) {
@@ -23,10 +24,10 @@ export default class RoomClientSearch extends React.Component {
     getDefaultState() {
         return {
             object: {
-                RoomId: '',
-                ClientId: '',
+                RoomId: null,
+                ClientId: null,
                 CheckInDate: new Date(),
-                Term: ''
+                Term: null
             },
             showInputMoment: false
         }
@@ -57,12 +58,26 @@ export default class RoomClientSearch extends React.Component {
         this.changeState({Term: e.target.value});
     }
 
-    onSearchHandler() {
-        this.props.onSearchObject(this.state.object);
+    onSearchHandler(e) {
+        const {object} = this.state
+        const result = Object.keys(object).reduce((obj, x) => {
+            if (object[x] == null) {
+                return obj
+            } else {
+                return {
+                    ...obj,
+                    [x]: object[x]
+                }
+            }
+        }, {})
+        this.props.onSearchObject(result);
+        e.preventDefault()
     }
 
-    onResetHandler() {
+    onResetHandler(e) {
         this.setState(this.getDefaultState())
+        this.props.onReset()
+        e.preventDefault()
     }
 
     toggleDatePicker(event) {
@@ -77,23 +92,25 @@ export default class RoomClientSearch extends React.Component {
 
         return (<form className="form-inline">
             <div className="form-group">
-                <input className="form-control" type="number" value={RoomId} placeholder="RoomId"
+                <input className="form-control" type="text" value={RoomId} placeholder="RoomId"
                        onChange={this.onRoomIdChange}/>
             </div>
             <div className="form-group">
-                <input className="form-control" type="number" placeholder="ClientId" value={ClientId}
+                <input className="form-control" type="text" placeholder="ClientId" value={ClientId}
                        onChange={this.onClientIdChange}/>
             </div>
             <div className="checkbox">
-                <input className="form-control" type="checkbox" checked={showInputMoment}
-                       onChange={this.toggleDatePicker}/>
+                <label>
+                    <input className="form-control" type="checkbox" checked={showInputMoment}
+                           onChange={this.toggleDatePicker}/>Include CheckInDate
+                </label>
             </div>
             <div className="form-group">
                 <input className="form-control" type="datetime-local" value={CheckInDate}
                        onChange={this.onCheckInDateChange}/>
             </div>
             <div className="form-group">
-                <input className="form-control" type="number" max="10" min="0" placeholder="Term" value={Term}
+                <input className="form-control" type="text" placeholder="Term" value={Term}
                        onChange={this.onTermChange}/>
             </div>
             <div className="form-group search-reset">

@@ -4,7 +4,8 @@ import Toggle from 'react-toggle'
 
 export default class RoomSearch extends React.Component {
     static propTypes = {
-        onSearchObject: React.PropTypes.func
+        onSearchObject: React.PropTypes.func,
+        onReset: React.PropTypes.func
     };
 
     constructor(props) {
@@ -23,10 +24,10 @@ export default class RoomSearch extends React.Component {
     getDefaultState() {
         return {
             object: {
-                Id: '',
-                Floor: '',
-                Price: '',
-                Comfort: '',
+                Id: null,
+                Floor: null,
+                Price: null,
+                Comfort: null,
                 Occupation: null
             },
             isChecked: false
@@ -78,16 +79,30 @@ export default class RoomSearch extends React.Component {
         this.changeState({Occupation: value})
     }
 
-    onSearchHandler() {
-        this.props.onSearchObject(this.state.object);
+    onSearchHandler(e) {
+        const {object} = this.state
+        const result = Object.keys(object).reduce((obj, x) => {
+            if (object[x] == null) {
+                return obj
+            } else {
+                return {
+                    ...obj,
+                    [x]: object[x]
+                }
+            }
+        }, {})
+        this.props.onSearchObject(result);
+        e.preventDefault()
     }
 
-    onCheck(target, isChecked) {
-        this.setState({isChecked})
+    onCheck(e) {
+        this.setState({isChecked: e.target.value})
     }
 
-    onResetHandler() {
+    onResetHandler(e) {
         this.setState(this.getDefaultState())
+        this.props.onReset()
+        e.preventDefault()
     }
 
     render() {
@@ -97,10 +112,10 @@ export default class RoomSearch extends React.Component {
 
         return (<form className="form-inline">
             <div className="form-group">
-                <input className="form-control" type="number" value={Id} placeholder="Id" onChange={this.onIdChange}/>
+                <input className="form-control" type="text" value={Id} placeholder="Id" onChange={this.onIdChange}/>
             </div>
             <div className="form-group">
-                <input className="form-control" type="number" placeholder="Floor" value={Floor}
+                <input className="form-control" type="text" placeholder="Floor" value={Floor}
                        onChange={this.onFloorChange}/>
             </div>
             <div className="form-group">
@@ -108,12 +123,14 @@ export default class RoomSearch extends React.Component {
                        onChange={this.onPriceChange}/>
             </div>
             <div className="form-group">
-                <input className="form-control" type="number" placeholder="Comfort" value={Comfort}
+                <input className="form-control" type="text" placeholder="Comfort" value={Comfort}
                        onChange={this.onComfortChange}/>
             </div>
             <div className="form-group">
-                <input className="form-control" type="checkbox" placeholder="Comfort" value={Occupation}
-                       onChange={this.onOccupationChange}/>
+                <label>
+                    <input className="form-control" type="checkbox" placeholder="Comfort" value={Occupation}
+                           onChange={this.onOccupationChange}/>Occupation
+                </label>
             </div>
             <div className="form-group search-reset">
                 <button className="btn btn-primary" onClick={this.onSearchHandler}>Search</button>

@@ -8,15 +8,20 @@ class ClientRepository extends BaseRepository {
     }
 
     getAll(object) {
-        delete object.Id;
+        if (Object.keys(object).length !== 0) {
+            object.Sex = object.Sex ==='true'
+        }
         return super.getObjects(object, constants.Clients)
     }
 
-    insert(client) {
-        return super.insertObject(client, constants.Clients)
+    insert(object) {
+        delete object.Id;
+        object.Sex = object.Sex ==='true'
+        return super.insertObject(object, constants.Clients)
     }
 
     delete(clients) {
+        clients.forEach(x=> x.Sex = x.Sex ==='true')
         return super.deleteObject(clients, constants.Clients)
     }
 
@@ -24,6 +29,8 @@ class ClientRepository extends BaseRepository {
         if (oldObject.Id !== newObject.Id) {
             return Promise.reject(new Error('the ids should be the same'));
         }
+        oldObject.Sex = oldObject.Sex ==='true'
+        newObject.Sex = newObject.Sex ==='true'
         delete newObject.Id;
         return super.updateObject({oldObject, newObject}, constants.Clients);
     }

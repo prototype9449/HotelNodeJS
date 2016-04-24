@@ -51,7 +51,7 @@ class App extends React.Component {
     render() {
         const {onOkErrorDialogHandler, errorTexts, isErrorDialogShown} = this.props;
         const {dialogForObject} = this.props;
-        const {onCheck, onCheckAll,onSearchObject, onShowCreateDialog,onShowUpdateDialog, onDeleteObject, onCreateObject, onUpdateObject, onCloseDialog } = this.props
+        const {onCheck, onCheckAll,onSearchObject, onShowCreateDialog,onShowUpdateDialog, onDeleteObject, onCreateObject, onUpdateObject, onCloseDialog, fetchObjects } = this.props
         return (
             <div>
                 <FailureServerDialog onOkHandler={onOkErrorDialogHandler}
@@ -69,7 +69,7 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.clients)}
                                 onDeleteObject={onDeleteObject(urls.clients)}
                                 nameFields={fields[urls.clients]}>
-                                <ClientSearch onSearchObject={onSearchObject(urls.clients)}/>
+                                <ClientSearch onSearchObject={onSearchObject(urls.clients)} onReset={fetchObjects}/>
                                 <ClientDialog
                                     {...dialogForObject}
                                     onCreateObject={onCreateObject(urls.clients)}
@@ -90,7 +90,7 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.rooms)}
                                 onDeleteObject={onDeleteObject(urls.rooms)}
                                 nameFields={fields[urls.rooms]}>
-                                <RoomSearch onSearchObject={onSearchObject(urls.rooms)}/>
+                                <RoomSearch onSearchObject={onSearchObject(urls.rooms)} onReset={fetchObjects}/>
                                 <RoomDialog
                                     {...dialogForObject}
                                     ownTableName={urls.rooms}
@@ -111,7 +111,7 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.roomClient)}
                                 onDeleteObject={onDeleteObject(urls.roomClient)}
                                 nameFields={fields[urls.roomClient]}>
-                                <RoomClientSearch onSearchObject={onSearchObject(urls.roomClient)}/>
+                                <RoomClientSearch onSearchObject={onSearchObject(urls.roomClient)} onReset={fetchObjects}/>
                                 <RoomClientDialog
                                     {...dialogForObject}
                                     onUpdateObject={onUpdateObject(urls.roomClient)}
@@ -132,7 +132,7 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.roomReservation)}
                                 onDeleteObject={onDeleteObject(urls.roomReservation)}
                                 nameFields={fields[urls.roomReservation]}>
-                                <RoomReservationSearch onSearchObject={onSearchObject(urls.roomReservation)}/>
+                                <RoomReservationSearch onSearchObject={onSearchObject(urls.roomReservation)} onReset={fetchObjects}/>
                                 <RoomReservationDialog
                                     {...dialogForObject}
                                     onUpdateObject={onUpdateObject(urls.roomReservation)}

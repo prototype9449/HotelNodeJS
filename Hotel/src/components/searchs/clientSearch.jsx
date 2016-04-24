@@ -1,9 +1,22 @@
 import React from 'react';
 import { DropdownButton, MenuItem } from 'react-bootstrap'
 
+function isNumber(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function getSexName(value){
+    if(value === null){
+        return "Doesn't matter"
+    } else {
+        return value ? 'Man' : 'Woman'
+    }
+}
+
 export default class ClientSearch extends React.Component {
     static propTypes = {
-        onSearchObject: React.PropTypes.func
+        onSearchObject: React.PropTypes.func,
+        onReset: React.PropTypes.func
     };
 
     constructor(props) {
@@ -15,7 +28,7 @@ export default class ClientSearch extends React.Component {
         this.onFullNameChange = this.onFullNameChange.bind(this)
         this.onPassportChange = this.onPassportChange.bind(this)
         this.onSexChange = this.onSexChange.bind(this)
-        this.isPassportValid = this.isPassportValid.bind(this)
+        this.isFormValid = this.isFormValid.bind(this)
         this.onCheck = this.onCheck.bind(this)
         this.state = this.getDefaultState()
     }
@@ -42,34 +55,57 @@ export default class ClientSearch extends React.Component {
     }
 
     onIdChange(e) {
-        if (e.target.value < 0)
+        const result = e.target.value == '' ? null : e.target.value
+        if(result == null){
+            this.changeState({
+                Id:null
+            })
+            return;
+        }
+
+        if (!isNumber(result) || +result < 0)
             return;
 
         this.changeState({
-            Id: e.target.value
+            Id: result
         })
     }
 
     onFullNameChange(e) {
+        const result = e.target.value == '' ? null : e.target.value
+
         this.changeState({
-            FullName: e.target.value
+            FullName: result
         })
     }
 
     onPassportChange(e) {
+        const result = e.target.value == '' ? null : e.target.value
+
         this.changeState({
-            Passport: e.target.value
+            Passport: result
         })
     }
 
-    isPassportValid() {
+    isFormValid() {
+        if (this.state.object.Passport === null) {
+            return true
+        }
+
         const reg = /^[0-9]{6}[-]{1}[0-9]{4}$/
         return this.state.object.Passport.match(reg) !== null
     }
 
-    onSexChange(event, index, value) {
+    onSexChange(e, key) {
+        let sex
+        if(key === 0) {
+            sex = null
+        } else{
+            sex = key === 1
+        }
+
         this.changeState({
-            Sex: value == 1
+            Sex: sex
         })
     }
 
@@ -89,12 +125,13 @@ export default class ClientSearch extends React.Component {
         e.preventDefault()
     }
 
-    onCheck(target, isChecked) {
-        this.setState({isChecked})
+    onCheck(e) {
+        this.setState({isChecked : e.target.checked})
     }
 
-    onResetHandler() {
+    onResetHandler(e) {
         this.setState(this.getDefaultState())
+        this.props.onReset()
         e.preventDefault()
     }
 
@@ -105,33 +142,40 @@ export default class ClientSearch extends React.Component {
         Id = Id == null ? '' : Id
         FullName == null ? '' : FullName
         Passport == null ? '' : Passport
-        Sex == Sex == 0 ? 0 : Sex
+        const sexTitle = getSexName(Sex)
 
         return <form className="form-inline">
             <div className="form-group">
-                <input className="form-control" type="text" value={Id} placeholder="Id" onChange={this.onIdChange}/>
+                <input className="form-control ownInput" type="text" value={Id} placeholder="Id" onChange={this.onIdChange}/>
             </div>
             <div className="form-group">
-                <input className="form-control" type="text" placeholder="FullName" value={FullName}
+                <input className="form-control ownInput" type="text" placeholder="FullName" value={FullName}
                        onChange={this.onFullNameChange}/>
             </div>
             <div className="form-group">
-                <input className="form-control" type="text" placeholder="Passport" value={Passport}
+                <input className="form-control ownInput" type="text" placeholder="Passport" value={Passport}
                        onChange={this.onPassportChange}/>
             </div>
             <div className="checkbox">
-                <input className="form-control" type="checkbox" checked={isChecked} onChange={this.onCheck}/>
+                <label>
+                    <input className="form-control" type="checkbox" checked={isChecked} onChange={this.onCheck}/>Include
+                    sex?
+                </label>
             </div>
             <div className="form-group">
-                <DropdownButton className="searchInput" id="fdsf" value={Sex} onSelect={this.onSexChange} title="Sex"
-                                disabled={isChecked}>
-                    <MenuItem value={0}>Doesn't matter</MenuItem>>
-                    <MenuItem value={1}>Man</MenuItem>>
-                    <MenuItem value={2}>Woman</MenuItem>
+                Sex :
+                <DropdownButton className="searchInput" id="dropDownButton" onSelect={this.onSexChange}
+                                title={sexTitle}
+                                disabled={!isChecked}>
+                    <MenuItem eventKey={0}>Doesn't matter</MenuItem>>
+                    <MenuItem eventKey={1}>Man</MenuItem>>
+                    <MenuItem eventKey={2}>Woman</MenuItem>
                 </DropdownButton>
             </div>
             <div className="form-group search-reset">
-                <button className="btn btn-primary" onClick={this.onSearchHandler}>Search</button>
+                <button className="btn btn-primary" onClick={this.onSearchHandler} disabled={!this.isFormValid()}>
+                    Search
+                </button>
                 <button className="btn btn-primary" onClick={this.onResetHandler}>Reset</button>
             </div>
         </form>
