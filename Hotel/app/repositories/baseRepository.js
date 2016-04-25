@@ -1,8 +1,8 @@
 'use strict';
 
-let sql = require('mssql');
-
-let tablesInfo = require('../constants');
+const sql = require('mssql');
+const tablesInfo = require('../constants');
+const moment = require('moment')
 
 function createSelectQuery(sqlInstance, object, tableName) {
     return sqlInstance.connect().then((connection) => {
@@ -16,14 +16,16 @@ function createSelectQuery(sqlInstance, object, tableName) {
 
         let equalString = []
         properties.forEach(x => {
-            if (typeof x.value == 'boolean') {
+            if (typeof x.value == 'boolean' || moment(new Date(x.value)).isValid()) {
                 equalString.push(`${x.name} = @${x.name}`)
             } else {
                 equalString.push(`${x.name} like '%' + @${x.name} + '%'`)
             }
 
         })
-        queryString = queryString + ` where ${equalString}`;
+
+
+        queryString = queryString + ` where ${equalString.join(' and ')}`;
         return request.query(queryString);
     });
 }

@@ -57,7 +57,7 @@ export default class RoomClientSearch extends React.Component {
     }
 
 
-    onNumberFieldChange(e, fieldName) {
+    onNumberFieldChange = (fieldName) => (e) => {
         const result = e.target.value == '' ? null : e.target.value
         if (result == null) {
             this.changeState({
@@ -86,12 +86,19 @@ export default class RoomClientSearch extends React.Component {
                 }
             }
         }, {})
+
+        if(result.CheckInDate) {
+            result.CheckInDate = moment(result.CheckInDate).utc().add(3, 'hour').format().replace('Z','.000Z')
+        }
         this.props.onSearchObject(result);
         e.preventDefault()
     }
 
     onResetHandler(e) {
-        this.setState(this.getDefaultState())
+        const defaultState = this.getDefaultState()
+        this.setState({
+            ...defaultState
+        })
         this.props.onReset()
         e.preventDefault()
     }
@@ -112,11 +119,11 @@ export default class RoomClientSearch extends React.Component {
         return (<form className="form-inline">
             <div className="form-group">
                 <input className="form-control" type="text" value={RoomId} placeholder="RoomId"
-                       onChange={this.onNumberFieldChange.bind('RoomId')}/>
+                       onChange={this.onNumberFieldChange('RoomId')}/>
             </div>
             <div className="form-group">
                 <input className="form-control" type="text" placeholder="ClientId" value={ClientId}
-                       onChange={this.onNumberFieldChange.bind('ClientId')}/>
+                       onChange={this.onNumberFieldChange('ClientId')}/>
             </div>
             <div className="checkbox">
                 <label>
@@ -130,7 +137,7 @@ export default class RoomClientSearch extends React.Component {
             </div>
             <div className="form-group">
                 <input className="form-control" type="text" placeholder="Term" value={Term}
-                       onChange={this.onNumberFieldChange.bind('Term')}/>
+                       onChange={this.onNumberFieldChange('Term')}/>
             </div>
             <div className="form-group search-reset">
                 <button className="btn btn-primary" onClick={this.onSearchHandler}>Search</button>

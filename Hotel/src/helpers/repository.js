@@ -19,12 +19,10 @@ function getQuery(object) {
     if (!object)
         return '';
 
-    let query = '?';
-    for (let prop in object) {
-        query += `${prop}=${object[prop]}`;
-    }
-
-    return query;
+    const props = Object.keys(object).map(x => {
+        return `${x}=${object[x]}`
+    })
+    return `?${props.join('&')}`;
 }
 
 

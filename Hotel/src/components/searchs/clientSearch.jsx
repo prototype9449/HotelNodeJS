@@ -132,7 +132,10 @@ export default class ClientSearch extends React.Component {
     }
 
     onResetHandler(e) {
-        this.setState(this.getDefaultState())
+        const defaultState = this.getDefaultState()
+        this.setState({
+            ...defaultState
+        })
         this.props.onReset()
         e.preventDefault()
     }
@@ -164,7 +167,7 @@ export default class ClientSearch extends React.Component {
                 </DropdownButton>
             </div>
             <div className="form-group search-reset">
-                <button className="btn btn-primary" onClick={this.onSearchHandler} disabled={!this.isFormValid()}>
+                <button className="btn btn-primary" onClick={this.onSearchHandler}>
                     Search
                 </button>
                 <button className="btn btn-primary" onClick={this.onResetHandler}>Reset</button>

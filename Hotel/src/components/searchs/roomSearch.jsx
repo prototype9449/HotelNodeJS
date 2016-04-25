@@ -3,8 +3,8 @@ import { DropdownButton, MenuItem } from 'react-bootstrap'
 import Toggle from 'react-toggle'
 import {isNumber} from '../../helpers/commonHelper'
 
-function getOccupationTitle(value){
-    if(value === null){
+function getOccupationTitle(value) {
+    if (value === null) {
         return "Doesn't matter"
     } else {
         return value ? 'Occupied' : 'Free'
@@ -123,9 +123,9 @@ export default class RoomSearch extends React.Component {
 
     onOccupationChange(e, key) {
         let occupation
-        if(key === 0) {
+        if (key === 0) {
             occupation = null
-        } else{
+        } else {
             occupation = key === 1
         }
 
@@ -156,7 +156,10 @@ export default class RoomSearch extends React.Component {
     }
 
     onResetHandler(e) {
-        this.setState(this.getDefaultState())
+        const defaultState = this.getDefaultState()
+        this.setState({
+            ...defaultState
+        })
         this.props.onReset()
         e.preventDefault()
     }
@@ -185,8 +188,7 @@ export default class RoomSearch extends React.Component {
             <div className="form-group">
                 Occupation :
                 <DropdownButton className="dropDownMenu" id="dropDownButtonRoom" onSelect={this.onOccupationChange}
-                                title={occupationTitle}
-                                disabled={!isChecked}>
+                                title={occupationTitle}>
                     <MenuItem eventKey={0}>Doesn't matter</MenuItem>>
                     <MenuItem eventKey={1}>Occupied</MenuItem>>
                     <MenuItem eventKey={2}>Free</MenuItem>
