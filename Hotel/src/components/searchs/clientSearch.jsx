@@ -1,16 +1,24 @@
 import React from 'react';
+
 import { DropdownButton, MenuItem } from 'react-bootstrap'
+import {isNumber} from '../../helpers/commonHelper'
 
-function isNumber(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
-function getSexName(value){
-    if(value === null){
+function getSexName(value) {
+    if (value === null) {
         return "Doesn't matter"
     } else {
         return value ? 'Man' : 'Woman'
     }
+}
+
+function transformForView(object) {
+    let {Id, FullName, Passport, Sex} = object
+
+    Id = Id == null ? '' : Id
+    FullName == null ? '' : FullName
+    Passport == null ? '' : Passport
+
+    return {Id, FullName, Passport, Sex}
 }
 
 export default class ClientSearch extends React.Component {
@@ -29,7 +37,6 @@ export default class ClientSearch extends React.Component {
         this.onPassportChange = this.onPassportChange.bind(this)
         this.onSexChange = this.onSexChange.bind(this)
         this.isFormValid = this.isFormValid.bind(this)
-        this.onCheck = this.onCheck.bind(this)
         this.state = this.getDefaultState()
     }
 
@@ -40,8 +47,7 @@ export default class ClientSearch extends React.Component {
                 Id: null,
                 Passport: null,
                 Sex: null
-            },
-            isChecked: false
+            }
         }
     }
 
@@ -56,9 +62,9 @@ export default class ClientSearch extends React.Component {
 
     onIdChange(e) {
         const result = e.target.value == '' ? null : e.target.value
-        if(result == null){
+        if (result == null) {
             this.changeState({
-                Id:null
+                Id: null
             })
             return;
         }
@@ -98,9 +104,9 @@ export default class ClientSearch extends React.Component {
 
     onSexChange(e, key) {
         let sex
-        if(key === 0) {
+        if (key === 0) {
             sex = null
-        } else{
+        } else {
             sex = key === 1
         }
 
@@ -125,10 +131,6 @@ export default class ClientSearch extends React.Component {
         e.preventDefault()
     }
 
-    onCheck(e) {
-        this.setState({isChecked : e.target.checked})
-    }
-
     onResetHandler(e) {
         this.setState(this.getDefaultState())
         this.props.onReset()
@@ -136,17 +138,13 @@ export default class ClientSearch extends React.Component {
     }
 
     render() {
-        const {isChecked} = this.state
-        let {Id, FullName, Passport, Sex} = this.state.object
-
-        Id = Id == null ? '' : Id
-        FullName == null ? '' : FullName
-        Passport == null ? '' : Passport
+        let {Id, FullName, Passport, Sex} = transformForView(this.state.object)
         const sexTitle = getSexName(Sex)
 
         return <form className="form-inline">
             <div className="form-group">
-                <input className="form-control ownInput" type="text" value={Id} placeholder="Id" onChange={this.onIdChange}/>
+                <input className="form-control ownInput" type="text" value={Id} placeholder="Id"
+                       onChange={this.onIdChange}/>
             </div>
             <div className="form-group">
                 <input className="form-control ownInput" type="text" placeholder="FullName" value={FullName}
@@ -156,19 +154,12 @@ export default class ClientSearch extends React.Component {
                 <input className="form-control ownInput" type="text" placeholder="Passport" value={Passport}
                        onChange={this.onPassportChange}/>
             </div>
-            <div className="checkbox">
-                <label>
-                    <input className="form-control" type="checkbox" checked={isChecked} onChange={this.onCheck}/>Include
-                    sex?
-                </label>
-            </div>
             <div className="form-group">
                 Sex :
-                <DropdownButton className="searchInput" id="dropDownButton" onSelect={this.onSexChange}
-                                title={sexTitle}
-                                disabled={!isChecked}>
-                    <MenuItem eventKey={0}>Doesn't matter</MenuItem>>
-                    <MenuItem eventKey={1}>Man</MenuItem>>
+                <DropdownButton className="dropDownMenu" id="dropDownButtonClient" onSelect={this.onSexChange}
+                                title={sexTitle}>
+                    <MenuItem eventKey={0}>Doesn't matter</MenuItem>
+                    <MenuItem eventKey={1}>Man</MenuItem>
                     <MenuItem eventKey={2}>Woman</MenuItem>
                 </DropdownButton>
             </div>

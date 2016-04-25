@@ -1,6 +1,25 @@
 import React from 'react';
-import { Button, Input} from 'react-bootstrap'
+import { DropdownButton, MenuItem } from 'react-bootstrap'
 import Toggle from 'react-toggle'
+import {isNumber} from '../../helpers/commonHelper'
+
+function getOccupationTitle(value){
+    if(value === null){
+        return "Doesn't matter"
+    } else {
+        return value ? 'Occupied' : 'Free'
+    }
+}
+
+function transformForView(object) {
+    let {Id, Floor, Price, Comfort, Occupation} = object
+    Id = Id == null ? '' : Id
+    Floor = Floor == null ? '' : Floor
+    Price = Price == null ? '' : Price
+    Comfort = Comfort == null ? '' : Comfort
+
+    return {Id, Floor, Price, Comfort, Occupation}
+}
 
 export default class RoomSearch extends React.Component {
     static propTypes = {
@@ -19,6 +38,7 @@ export default class RoomSearch extends React.Component {
         this.onComfortChange = this.onComfortChange.bind(this)
         this.onOccupationChange = this.onOccupationChange.bind(this)
         this.onCheck = this.onCheck.bind(this)
+        this.isFormValid = this.isFormValid.bind(this)
     }
 
     getDefaultState() {
@@ -44,39 +64,75 @@ export default class RoomSearch extends React.Component {
     }
 
     onIdChange(e) {
-        if (e.target.value < 0)
+        const result = e.target.value == '' ? null : e.target.value
+        if (result == null) {
+            this.changeState({
+                Id: null
+            })
+            return;
+        }
+
+        if (!isNumber(result) || +result < 0)
             return;
 
-        this.changeState({Id: e.target.value})
+        this.changeState({
+            Id: result
+        })
     }
 
     onFloorChange(e) {
-        if (e.target.value < 1 || e.target.value > 10)
+        const result = e.target.value == '' ? null : e.target.value
+        if (result == null) {
+            this.changeState({
+                Floor: null
+            })
+            return;
+        }
+        if (!isNumber(result) || +result < 0 || +result > 10)
             return;
 
-        this.changeState({Floor: e.target.value})
+        this.changeState({Floor: result})
     }
 
     onPriceChange(e) {
         this.changeState({Price: e.target.value})
     }
 
-    isPriceValid() {
-        const reg = /^ *\$?\d+(?:\.\d{2})? *$/
-        return this.state.object.Price, toString().match(reg) !== null
-    }
+    isFormValid() {
+        if (this.state.object.Price === null) {
+            return true
+        }
 
-    isComfortValid() {
-        const comfort = this.state.object.Comfort
-        return comfort > 0 && comfort < 11
+        const reg = /^ *\$?\d+(?:\.\d{2})? *$/
+        return this.state.object.Price.match(reg) !== null
     }
 
     onComfortChange(e) {
-        this.changeState({Comfort: e.target.value})
+        const result = e.target.value == '' ? null : e.target.value
+        if (result == null) {
+            this.changeState({
+                Comfort: null
+            })
+            return;
+        }
+        if (!isNumber(result) || +result < 0 || +result > 10)
+            return;
+
+        this.changeState({Comfort: result})
     }
 
-    onOccupationChange(event, value) {
-        this.changeState({Occupation: value})
+    onOccupationChange(e, key) {
+        let occupation
+        if(key === 0) {
+            occupation = null
+        } else{
+            occupation = key === 1
+        }
+
+        this.changeState({
+            Occupation: occupation
+        })
+        this.changeState({Occupation: occupation})
     }
 
     onSearchHandler(e) {
@@ -107,8 +163,8 @@ export default class RoomSearch extends React.Component {
 
     render() {
         const {isChecked} = this.state
-        const {Id, Floor, Price, Comfort, Occupation} = this.state.object
-        const isFormValid = this.isComfortValid() && this.isPriceValid()
+        let {Id, Floor, Price, Comfort, Occupation} = transformForView(this.state.object)
+        const occupationTitle = getOccupationTitle(Occupation)
 
         return (<form className="form-inline">
             <div className="form-group">
@@ -127,13 +183,19 @@ export default class RoomSearch extends React.Component {
                        onChange={this.onComfortChange}/>
             </div>
             <div className="form-group">
-                <label>
-                    <input className="form-control" type="checkbox" placeholder="Comfort" value={Occupation}
-                           onChange={this.onOccupationChange}/>Occupation
-                </label>
+                Occupation :
+                <DropdownButton className="dropDownMenu" id="dropDownButtonRoom" onSelect={this.onOccupationChange}
+                                title={occupationTitle}
+                                disabled={!isChecked}>
+                    <MenuItem eventKey={0}>Doesn't matter</MenuItem>>
+                    <MenuItem eventKey={1}>Occupied</MenuItem>>
+                    <MenuItem eventKey={2}>Free</MenuItem>
+                </DropdownButton>
             </div>
             <div className="form-group search-reset">
-                <button className="btn btn-primary" onClick={this.onSearchHandler}>Search</button>
+                <button className="btn btn-primary" onClick={this.onSearchHandler} disabled={!this.isFormValid()}>
+                    Search
+                </button>
                 <button className="btn btn-primary" onClick={this.onResetHandler}>Reset</button>
             </div>
         </form>)

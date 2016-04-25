@@ -2,6 +2,18 @@ import React from 'react';
 import {  Button, Input} from 'react-bootstrap'
 import InputMoment from '../../datePicker/input-moment.jsx'
 import moment from 'moment'
+import {isNumber} from '../../helpers/commonHelper'
+
+function transformForView(object) {
+    let {RoomId, ClientId, CheckInDate, Term} = object
+
+    RoomId = RoomId === null ? '' : RoomId
+    ClientId = ClientId === null ? '' : ClientId
+    CheckInDate = CheckInDate === null ? '' : CheckInDate
+    Term = Term === null ? '' : Term
+
+    return {RoomId, ClientId, CheckInDate, Term}
+}
 
 export default class RoomClientSearch extends React.Component {
     static propTypes = {
@@ -14,10 +26,8 @@ export default class RoomClientSearch extends React.Component {
         this.state = this.getDefaultState()
         this.onSearchHandler = this.onSearchHandler.bind(this)
         this.onResetHandler = this.onResetHandler.bind(this)
-        this.onRoomIdChange = this.onRoomIdChange.bind(this)
-        this.onClientIdChange = this.onClientIdChange.bind(this)
+        this.onNumberFieldChange = this.onNumberFieldChange.bind(this)
         this.onCheckInDateChange = this.onCheckInDateChange.bind(this)
-        this.onTermChange = this.onTermChange.bind(this)
         this.toggleDatePicker = this.toggleDatePicker.bind(this)
     }
 
@@ -26,7 +36,7 @@ export default class RoomClientSearch extends React.Component {
             object: {
                 RoomId: null,
                 ClientId: null,
-                CheckInDate: new Date(),
+                CheckInDate: null,
                 Term: null
             },
             showInputMoment: false
@@ -42,20 +52,26 @@ export default class RoomClientSearch extends React.Component {
         })
     }
 
-    onRoomIdChange(e) {
-        this.changeState({RoomId: e.target.value});
-    }
-
-    onClientIdChange(e) {
-        this.changeState({ClientId: e.target.value});
-    }
-
     onCheckInDateChange(e) {
         this.changeState({CheckInDate: e.target.value});
     }
 
-    onTermChange(e) {
-        this.changeState({Term: e.target.value});
+
+    onNumberFieldChange(e, fieldName) {
+        const result = e.target.value == '' ? null : e.target.value
+        if (result == null) {
+            this.changeState({
+                [fieldName]: null
+            })
+            return;
+        }
+
+        if (!isNumber(result) || +result < 0)
+            return;
+
+        this.changeState({
+            [fieldName]: result
+        })
     }
 
     onSearchHandler(e) {
@@ -81,8 +97,11 @@ export default class RoomClientSearch extends React.Component {
     }
 
     toggleDatePicker(event) {
+        const isChecked = event.currentTarget.checked
+        !isChecked && this.changeState({CheckInDate: null})
+        isChecked && this.changeState({CheckInDate: new Date()})
         this.setState({
-            showInputMoment: event.currentTarget.checked
+            showInputMoment: isChecked
         })
     }
 
@@ -93,11 +112,11 @@ export default class RoomClientSearch extends React.Component {
         return (<form className="form-inline">
             <div className="form-group">
                 <input className="form-control" type="text" value={RoomId} placeholder="RoomId"
-                       onChange={this.onRoomIdChange}/>
+                       onChange={this.onNumberFieldChange.bind('RoomId')}/>
             </div>
             <div className="form-group">
                 <input className="form-control" type="text" placeholder="ClientId" value={ClientId}
-                       onChange={this.onClientIdChange}/>
+                       onChange={this.onNumberFieldChange.bind('ClientId')}/>
             </div>
             <div className="checkbox">
                 <label>
@@ -107,11 +126,11 @@ export default class RoomClientSearch extends React.Component {
             </div>
             <div className="form-group">
                 <input className="form-control" type="datetime-local" value={CheckInDate}
-                       onChange={this.onCheckInDateChange}/>
+                       onChange={this.onCheckInDateChange} disabled={!showInputMoment}/>
             </div>
             <div className="form-group">
                 <input className="form-control" type="text" placeholder="Term" value={Term}
-                       onChange={this.onTermChange}/>
+                       onChange={this.onNumberFieldChange.bind('Term')}/>
             </div>
             <div className="form-group search-reset">
                 <button className="btn btn-primary" onClick={this.onSearchHandler}>Search</button>

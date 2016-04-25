@@ -8,11 +8,15 @@ class RoomRepository extends BaseRepository {
     }
 
     getAll(object) {
+        if (object.Occupation) {
+            object.Occupation = object.Occupation ==='true'
+        }
         return super.getObjects(object, constants.Rooms)
     }
 
-    insert(room) {
-        delete room.Id;
+    insert(object) {
+        delete object.Id;
+        object.Occupation = object.Occupation ==='true'
         return super.insertObject(room, constants.Rooms)
     }
 
@@ -25,6 +29,8 @@ class RoomRepository extends BaseRepository {
             return Promise.reject(new Error('the ids should be the same'));
         }
         delete newObject.Id;
+        oldObject.Occupation = oldObject.Occupation ==='true'
+        newObject.Occupation = newObject.Occupation ==='true'
         return super.updateObject({oldObject, newObject}, constants.Rooms);
     }
 }
