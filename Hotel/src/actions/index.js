@@ -28,10 +28,6 @@ export function sendRequestToCreate(table) {
     return {type: types.REQUEST_CREATE_SEND, table}
 }
 
-export function requestToCreateSuccess(table, object) {
-    return {type: types.REQUEST_CREATE_SUCCESS, table, object}
-}
-
 export function sendRequestToUpdate(table) {
     return {type: types.REQUEST_UPDATE_SEND, table}
 }

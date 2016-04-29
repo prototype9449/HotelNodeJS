@@ -16,7 +16,7 @@ function createSelectQuery(sqlInstance, object, tableName) {
 
         let equalString = []
         properties.forEach(x => {
-            if (typeof x.value == 'boolean' || moment(new Date(x.value)).isValid()) {
+            if (typeof x.value == 'boolean' || x.value.match(/\b[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0]{3}Z\b/)) {
                 equalString.push(`${x.name} = @${x.name}`)
             } else {
                 equalString.push(`${x.name} like '%' + @${x.name} + '%'`)

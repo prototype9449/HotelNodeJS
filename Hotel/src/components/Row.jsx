@@ -1,5 +1,4 @@
 import React from 'react';
-import {Input} from 'react-bootstrap';
 
 function getProperties(object) {
     let names = Object.getOwnPropertyNames(object);

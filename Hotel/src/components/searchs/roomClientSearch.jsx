@@ -1,19 +1,8 @@
 import React from 'react';
-import {  Button, Input} from 'react-bootstrap'
-import InputMoment from '../../datePicker/input-moment.jsx'
 import moment from 'moment'
+import { DropdownButton, MenuItem } from 'react-bootstrap'
+
 import {isNumber} from '../../helpers/commonHelper'
-
-function transformForView(object) {
-    let {RoomId, ClientId, CheckInDate, Term} = object
-
-    RoomId = RoomId === null ? '' : RoomId
-    ClientId = ClientId === null ? '' : ClientId
-    CheckInDate = CheckInDate === null ? '' : CheckInDate
-    Term = Term === null ? '' : Term
-
-    return {RoomId, ClientId, CheckInDate, Term}
-}
 
 export default class RoomClientSearch extends React.Component {
     static propTypes = {
@@ -24,14 +13,9 @@ export default class RoomClientSearch extends React.Component {
     constructor(props) {
         super(props)
         this.state = this.getDefaultState()
-        this.onSearchHandler = this.onSearchHandler.bind(this)
-        this.onResetHandler = this.onResetHandler.bind(this)
-        this.onNumberFieldChange = this.onNumberFieldChange.bind(this)
-        this.onCheckInDateChange = this.onCheckInDateChange.bind(this)
-        this.toggleDatePicker = this.toggleDatePicker.bind(this)
     }
 
-    getDefaultState() {
+    getDefaultState = () => {
         return {
             object: {
                 RoomId: null,
@@ -39,11 +23,11 @@ export default class RoomClientSearch extends React.Component {
                 CheckInDate: null,
                 Term: null
             },
-            showInputMoment: false
+            isShownDatePicker: false
         }
     }
 
-    changeState(obj) {
+    changeState = (obj) => {
         this.setState({
             object: {
                 ...this.state.object,
@@ -52,29 +36,9 @@ export default class RoomClientSearch extends React.Component {
         })
     }
 
-    onCheckInDateChange(e) {
-        this.changeState({CheckInDate: e.target.value});
-    }
+    onFieldChange = (field) => ({target : {value}}) => this.changeState({[field]: value === '' ? null : value})
 
-
-    onNumberFieldChange = (fieldName) => (e) => {
-        const result = e.target.value == '' ? null : e.target.value
-        if (result == null) {
-            this.changeState({
-                [fieldName]: null
-            })
-            return;
-        }
-
-        if (!isNumber(result) || +result < 0)
-            return;
-
-        this.changeState({
-            [fieldName]: result
-        })
-    }
-
-    onSearchHandler(e) {
+    onSearchHandler = (e)  => {
         const {object} = this.state
         const result = Object.keys(object).reduce((obj, x) => {
             if (object[x] == null) {
@@ -87,14 +51,23 @@ export default class RoomClientSearch extends React.Component {
             }
         }, {})
 
-        if(result.CheckInDate) {
-            result.CheckInDate = moment(result.CheckInDate).utc().add(3, 'hour').format().replace('Z','.000Z')
+        if (result.CheckInDate) {
+            result.CheckInDate = moment(result.CheckInDate).utc().add(3, 'hour').format().replace('Z', '.000Z')
         }
         this.props.onSearchObject(result);
         e.preventDefault()
     }
 
-    onResetHandler(e) {
+    isFormValid = () => {
+        const {ClientId, RoomId, Term} = this.state.object
+        const isClientIdValid = ClientId === null || isNumber(ClientId) && +ClientId >= 0
+        const isRoomIdValid = RoomId === null || isNumber(RoomId) && +RoomId >= 0
+        const isTermValid = Term === null || isNumber(Term) && +Term >= 0
+
+        return isClientIdValid && isRoomIdValid && isTermValid
+    }
+
+    onResetHandler = (e)  => {
         const defaultState = this.getDefaultState()
         this.setState({
             ...defaultState
@@ -103,44 +76,45 @@ export default class RoomClientSearch extends React.Component {
         e.preventDefault()
     }
 
-    toggleDatePicker(event) {
-        const isChecked = event.currentTarget.checked
-        !isChecked && this.changeState({CheckInDate: null})
-        isChecked && this.changeState({CheckInDate: new Date()})
-        this.setState({
-            showInputMoment: isChecked
-        })
+    onToggleDatePicked = (e, key) => {
+        const isShownDatePicker = key === 1
+        !isShownDatePicker && this.changeState({CheckInDate: null})
+        isShownDatePicker && this.changeState({CheckInDate: new Date()})
+        this.setState({isShownDatePicker})
     }
 
     render() {
         const {RoomId, ClientId, CheckInDate, Term} = this.state.object
-        const {showInputMoment} = this.state
+        const {isShownDatePicker} = this.state
+        const dateTimeTitle = isShownDatePicker ? 'Inclide' : "Don't include"
 
         return (<form className="form-inline">
             <div className="form-group">
                 <input className="form-control" type="text" value={RoomId} placeholder="RoomId"
-                       onChange={this.onNumberFieldChange('RoomId')}/>
+                       onChange={this.onFieldChange('RoomId')}/>
             </div>
             <div className="form-group">
                 <input className="form-control" type="text" placeholder="ClientId" value={ClientId}
-                       onChange={this.onNumberFieldChange('ClientId')}/>
-            </div>
-            <div className="checkbox">
-                <label>
-                    <input className="form-control" type="checkbox" checked={showInputMoment}
-                           onChange={this.toggleDatePicker}/>Include CheckInDate
-                </label>
+                       onChange={this.onFieldChange('ClientId')}/>
             </div>
             <div className="form-group">
-                <input className="form-control" type="datetime-local" value={CheckInDate}
-                       onChange={this.onCheckInDateChange} disabled={!showInputMoment}/>
+                <DropdownButton className="dropDownMenu" id="dropDownButtonDateTime" onSelect={this.onToggleDatePicked}
+                                title={dateTimeTitle}>
+                    <MenuItem eventKey={1}>Include</MenuItem>>
+                    <MenuItem eventKey={0}>Don't include</MenuItem>>
+                </DropdownButton>
+            </div>
+            <div className="form-group">
+                <input className="form-control" type="datetime-local" step="1" value={CheckInDate}
+                       onChange={this.onFieldChange('CheckInDate')} disabled={!isShownDatePicker}/>
             </div>
             <div className="form-group">
                 <input className="form-control" type="text" placeholder="Term" value={Term}
-                       onChange={this.onNumberFieldChange('Term')}/>
+                       onChange={this.onFieldChange('Term')}/>
             </div>
             <div className="form-group search-reset">
-                <button className="btn btn-primary" onClick={this.onSearchHandler}>Search</button>
+                <button disabled={!this.isFormValid()} className="btn btn-primary" onClick={this.onSearchHandler}>Search
+                </button>
                 <button className="btn btn-primary" onClick={this.onResetHandler}>Reset</button>
             </div>
         </form>)

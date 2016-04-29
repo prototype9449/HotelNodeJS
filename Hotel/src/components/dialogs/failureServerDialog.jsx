@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Modal} from 'react-bootstrap';
+import {Modal} from 'react-bootstrap';
 
 export default class FailureServerDialog extends React.Component {
     static propTypes = {
@@ -32,7 +32,7 @@ export default class FailureServerDialog extends React.Component {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={onOkHandler}>Close</Button>
+                    <button onClick={onOkHandler} className="btn btn-primary">Close</button>
                 </Modal.Footer>
             </Modal>
         </div>

@@ -1,15 +1,15 @@
 import React from 'react'
 import $ from 'jquery'
 import 'jquery.cookie'
-import CustomTable from './customTable.jsx'
-import {Tab, Tabs} from 'react-bootstrap'
 import _ from 'lodash'
-import FailureServerDialog from './dialogs/failureServerDialog.jsx'
+import {Tab, Tabs} from 'react-bootstrap'
 import {connect} from 'react-redux'
-import {ClientDialog, RoomDialog, RoomClientDialog, RoomReservationDialog} from './dialogs'
+
+import CustomTable from './customTable.jsx'
 import {urls, fields, fieldTransforms} from '../constants/utils'
 import * as service from '../helpers/service'
-import { ClientSearch, RoomSearch, RoomClientSearch, RoomReservationSearch } from  './searchs/index'
+import {ClientDialog, RoomDialog, RoomClientDialog, RoomReservationDialog, FailureServerDialog} from './dialogs'
+import {ClientSearch, RoomSearch, RoomClientSearch, RoomReservationSearch } from  './searchs'
 
 class App extends React.Component {
     static propTypes = {
@@ -35,17 +35,10 @@ class App extends React.Component {
         super()
         $.cookie('login', 'admin')
         $.cookie('password', 'admin')
-
-        this.interval = null
     }
 
-    componentDidMount() {
+    componentDidMount(){
         this.props.fetchObjects()
-        //this.interval = setInterval(() => this.props.fetchObjects(), 10000)
-    }
-
-    componentWillUnmount() {
-        //clearInterval(this.interval)
     }
 
     render() {
@@ -111,7 +104,8 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.roomClient)}
                                 onDeleteObject={onDeleteObject(urls.roomClient)}
                                 nameFields={fields[urls.roomClient]}>
-                                <RoomClientSearch onSearchObject={onSearchObject(urls.roomClient)} onReset={fetchObjects}/>
+                                <RoomClientSearch onSearchObject={onSearchObject(urls.roomClient)}
+                                                  onReset={fetchObjects}/>
                                 <RoomClientDialog
                                     {...dialogForObject}
                                     onUpdateObject={onUpdateObject(urls.roomClient)}
@@ -132,7 +126,8 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.roomReservation)}
                                 onDeleteObject={onDeleteObject(urls.roomReservation)}
                                 nameFields={fields[urls.roomReservation]}>
-                                <RoomReservationSearch onSearchObject={onSearchObject(urls.roomReservation)} onReset={fetchObjects}/>
+                                <RoomReservationSearch onSearchObject={onSearchObject(urls.roomReservation)}
+                                                       onReset={fetchObjects}/>
                                 <RoomReservationDialog
                                     {...dialogForObject}
                                     onUpdateObject={onUpdateObject(urls.roomReservation)}
@@ -214,13 +209,13 @@ const mapDispatchToProps = (dispatch) => {
             () => {
                 const state = getState()
                 const deletingObjects = state[table].checkedRows.toArray()
-                service.deleteObjects(dispatch, table, deletingObjects)
+                deletingObjects.length && service.deleteObjects(dispatch, table, deletingObjects).then(() => fetchObjects())
             })
 
     const onCreateObject =
         (table) =>
             (object) =>
-                service.createObject(dispatch, table, object)
+                service.createObject(dispatch, table, object).then(() => fetchObjects())
 
     const onUpdateObject =
         (table) =>

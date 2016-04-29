@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { DropdownButton, MenuItem } from 'react-bootstrap'
+
 import {isNumber} from '../../helpers/commonHelper'
 
 function getSexName(value) {
@@ -11,16 +11,6 @@ function getSexName(value) {
     }
 }
 
-function transformForView(object) {
-    let {Id, FullName, Passport, Sex} = object
-
-    Id = Id == null ? '' : Id
-    FullName == null ? '' : FullName
-    Passport == null ? '' : Passport
-
-    return {Id, FullName, Passport, Sex}
-}
-
 export default class ClientSearch extends React.Component {
     static propTypes = {
         onSearchObject: React.PropTypes.func,
@@ -29,18 +19,10 @@ export default class ClientSearch extends React.Component {
 
     constructor(props) {
         super(props)
-
-        this.onSearchHandler = this.onSearchHandler.bind(this)
-        this.onResetHandler = this.onResetHandler.bind(this)
-        this.onIdChange = this.onIdChange.bind(this)
-        this.onFullNameChange = this.onFullNameChange.bind(this)
-        this.onPassportChange = this.onPassportChange.bind(this)
-        this.onSexChange = this.onSexChange.bind(this)
-        this.isFormValid = this.isFormValid.bind(this)
         this.state = this.getDefaultState()
     }
 
-    getDefaultState() {
+    getDefaultState = () => {
         return {
             object: {
                 FullName: null,
@@ -51,7 +33,7 @@ export default class ClientSearch extends React.Component {
         }
     }
 
-    changeState(obj) {
+    changeState = (obj) => {
         this.setState({
             object: {
                 ...this.state.object,
@@ -60,49 +42,15 @@ export default class ClientSearch extends React.Component {
         })
     }
 
-    onIdChange(e) {
-        const result = e.target.value == '' ? null : e.target.value
-        if (result == null) {
-            this.changeState({
-                Id: null
-            })
-            return;
-        }
-
-        if (!isNumber(result) || +result < 0)
-            return;
-
-        this.changeState({
-            Id: result
-        })
+    isFormValid = () => {
+        const {Id} = this.state.object
+        const isIdValid = Id === null || isNumber(+Id) && +Id >= 0
+        return isIdValid
     }
 
-    onFullNameChange(e) {
-        const result = e.target.value == '' ? null : e.target.value
+    onFieldChange = (field) => ({target : {value}}) => this.changeState({[field]: value == '' ? null : value})
 
-        this.changeState({
-            FullName: result
-        })
-    }
-
-    onPassportChange(e) {
-        const result = e.target.value == '' ? null : e.target.value
-
-        this.changeState({
-            Passport: result
-        })
-    }
-
-    isFormValid() {
-        if (this.state.object.Passport === null) {
-            return true
-        }
-
-        const reg = /^[0-9]{6}[-]{1}[0-9]{4}$/
-        return this.state.object.Passport.match(reg) !== null
-    }
-
-    onSexChange(e, key) {
+    onSexChange = (e, key) => {
         let sex
         if (key === 0) {
             sex = null
@@ -115,7 +63,7 @@ export default class ClientSearch extends React.Component {
         })
     }
 
-    onSearchHandler(e) {
+    onSearchHandler = (e) => {
         const {object} = this.state
         const result = Object.keys(object).reduce((obj, x) => {
             if (object[x] == null) {
@@ -131,7 +79,7 @@ export default class ClientSearch extends React.Component {
         e.preventDefault()
     }
 
-    onResetHandler(e) {
+    onResetHandler = (e) => {
         const defaultState = this.getDefaultState()
         this.setState({
             ...defaultState
@@ -141,21 +89,21 @@ export default class ClientSearch extends React.Component {
     }
 
     render() {
-        let {Id, FullName, Passport, Sex} = transformForView(this.state.object)
+        let {Id, FullName, Passport, Sex} = this.state.object
         const sexTitle = getSexName(Sex)
 
         return <form className="form-inline">
             <div className="form-group">
                 <input className="form-control ownInput" type="text" value={Id} placeholder="Id"
-                       onChange={this.onIdChange}/>
+                       onChange={this.onFieldChange('Id')}/>
             </div>
             <div className="form-group">
                 <input className="form-control ownInput" type="text" placeholder="FullName" value={FullName}
-                       onChange={this.onFullNameChange}/>
+                       onChange={this.onFieldChange('FullName')}/>
             </div>
             <div className="form-group">
                 <input className="form-control ownInput" type="text" placeholder="Passport" value={Passport}
-                       onChange={this.onPassportChange}/>
+                       onChange={this.onFieldChange('Passport')}/>
             </div>
             <div className="form-group">
                 Sex :
@@ -167,7 +115,7 @@ export default class ClientSearch extends React.Component {
                 </DropdownButton>
             </div>
             <div className="form-group search-reset">
-                <button className="btn btn-primary" onClick={this.onSearchHandler}>
+                <button className="btn btn-primary" disabled={!this.isFormValid()} onClick={this.onSearchHandler}>
                     Search
                 </button>
                 <button className="btn btn-primary" onClick={this.onResetHandler}>Reset</button>

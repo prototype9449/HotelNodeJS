@@ -1,7 +1,8 @@
 import React from 'react';
-import {Modal, Button, Input} from 'react-bootstrap'
-import InputMoment from '../../datePicker/input-moment.jsx'
+import {Modal} from 'react-bootstrap'
 import moment from 'moment'
+
+import {isNumber} from '../../helpers/commonHelper'
 
 export default class RoomDialog extends React.Component {
     static propTypes = {
@@ -23,10 +24,10 @@ export default class RoomDialog extends React.Component {
         const object = this.props.isForUpdate
             ? this.props.object
             : {
-            RoomId: 0,
-            ClientId: 0,
-            CheckInDate: '',
-            Term: 5
+            RoomId: '',
+            ClientId: '',
+            CheckInDate: moment(new Date()).format('YYYY-MM-DDTHH:mm:ss'),
+            Term: ''
         }
 
         return {
@@ -38,15 +39,7 @@ export default class RoomDialog extends React.Component {
     constructor(props) {
         super(props);
         const {RoomId, ClientId, CheckInDate, Term} = this.getProps().object
-        this.state = {object: {RoomId, ClientId, CheckInDate, Term}}
-
-        this.getCreatedObject = this.getCreatedObject.bind(this)
-        this.onRoomIdChange = this.onRoomIdChange.bind(this)
-        this.onClientIdChange = this.onClientIdChange.bind(this)
-        this.onCheckInDateChange = this.onCheckInDateChange.bind(this)
-        this.onTermChange = this.onTermChange.bind(this)
-        this.onCreateHandler = this.onCreateHandler.bind(this)
-        this.onUpdateHandler = this.onUpdateHandler.bind(this)
+        this.state = {object: {RoomId, ClientId, CheckInDate: new Date(CheckInDate), Term}}
     }
 
     componentWillReceiveProps(nextProps) {
@@ -57,8 +50,32 @@ export default class RoomDialog extends React.Component {
         }
     }
 
-    getCreatedObject() {
-        return this.state.object
+    isFormValid = () => {
+        const {RoomId, ClientId, Term} = this.state.object
+        const isTermValid = isNumber(Term) && Term > 0
+        const isRoomIdValid = isNumber(RoomId) && RoomId >= 0
+        const isClientIdValid = isNumber(ClientId) && ClientId >= 0
+
+        return isTermValid && isRoomIdValid && isClientIdValid
+    }
+
+    getCreatedObject = () => {
+        const {object} = this.state
+        const result = Object.keys(object).reduce((obj, x) => {
+            if (object[x] == null) {
+                return obj
+            } else {
+                return {
+                    ...obj,
+                    [x]: object[x]
+                }
+            }
+        }, {})
+
+        if (result.CheckInDate) {
+            result.CheckInDate = moment(result.CheckInDate).utc().add(3, 'hour').format().replace('Z', '.000Z')
+        }
+        return result
     }
 
     changeState(object) {
@@ -70,37 +87,18 @@ export default class RoomDialog extends React.Component {
         })
     }
 
-    onRoomIdChange(e) {
-        this.changeState({RoomId: e.target.value});
-    }
+    onFieldChange = (field) => ({target : {value}}) =>  this.changeState({[field]: value})
 
-    onClientIdChange(e) {
-        this.changeState({ClientId: e.target.value});
-    }
+    onCreateHandler = () => this.props.onCreateObject(this.getCreatedObject());
 
-    onCheckInDateChange(e) {
-        this.changeState({CheckInDate: e.target.value});
-    }
-
-    onTermChange(e) {
-        this.changeState({Term: e.target.value});
-    }
-
-    onCreateHandler() {
-        this.props.onCreateObject(this.getCreatedObject());
-    }
-
-    onUpdateHandler() {
-        this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
-    }
+    onUpdateHandler = () => this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
 
     render() {
         const {onCloseDialog, isOpen, currentTableName, ownTableName, isForUpdate} = this.getProps()
         if (currentTableName !== ownTableName) return null
         const {RoomId, ClientId, CheckInDate, Term} = this.state.object
-        //const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
-        //const buttonText = isForUpdate ? 'Update' : 'Create'
-       // const actions = getActions(buttonText, callback, onCloseDialog)
+        const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
+        const buttonText = isForUpdate ? 'Update' : 'Create'
 
         return <div>
             <Modal show={isOpen && currentTableName == ownTableName} onHide={onCloseDialog}>
@@ -108,19 +106,35 @@ export default class RoomDialog extends React.Component {
                     <Modal.Title>Create roomClient</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div>
-                        <input type="number" value={RoomId} placeholder="RoomId" onChange={this.onRoomIdChange}/>
-                        <br/>
-                        <input type="number" value={ClientId} placeholder="ClientId" onChange={this.onClientIdChange}/>
-                        <br/>
-                        <input type="datetime-local" onChange={this.onCheckInDateChange}/>
-                        <br/>
-                        <input type="number" value={Term} placeholder="Term" onChange={this.onTermChange}/>
-                        <br/>
-                    </div>
+                    <form>
+                        {isForUpdate &&
+                        <div class="form-group">
+                            <label className="dialog-label">RoomId</label>
+                            <input type="text" value={RoomId} placeholder="RoomId" onChange={this.onFieldChange('RoomId')}
+                                   className="form-control"/>
+                        </div>}
+                        <div class="form-group">
+                            <label className="dialog-label">ClientId</label>
+                            <input type="text" value={ClientId} placeholder="ClientId" onChange={this.onFieldChange('ClientId')}
+                                   className="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label className="dialog-label">CheckInDate</label>
+                            <input type="datetime-local" step="1"
+                                   value={moment(CheckInDate).format('YYYY-MM-DDTHH:mm:ss')}
+                                   onChange={this.onFieldChange('CheckInDate')}/>
+                        </div>
+                        <div class="form-group">
+                            <label className="dialog-label">Term</label>
+                            <input type="text" value={Term} placeholder="Term" onChange={this.onFieldChange('Term')}
+                                   className="form-control"/>
+                        </div>
+                    </form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={onCloseDialog}>Close</Button>
+                    <button disabled={!this.isFormValid()} onClick={callback}
+                            className="btn btn-success">{buttonText}</button>
+                    <button onClick={onCloseDialog} className="btn btn-primary">Close</button>
                 </Modal.Footer>
             </Modal>
         </div>

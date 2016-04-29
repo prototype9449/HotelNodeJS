@@ -1,8 +1,8 @@
 import React from 'react';
-import Row from './row.jsx';
-import {Button, Input} from 'react-bootstrap'
-import CustomSet from '../helpers/customSet';
 import _ from 'lodash'
+
+import Row from './row.jsx';
+import CustomSet from '../helpers/customSet';
 
 export default class CustomTable extends React.Component {
     static propTypes = {

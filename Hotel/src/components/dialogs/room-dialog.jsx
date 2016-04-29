@@ -1,6 +1,7 @@
 import React from 'react';
-import {Modal, Button, Input} from 'react-bootstrap'
-import Toggle from 'react-toggle'
+import {Modal, DropdownButton, MenuItem} from 'react-bootstrap'
+
+import {isNumber} from '../../helpers/commonHelper'
 
 export default class RoomDialog extends React.Component {
     static propTypes = {
@@ -24,26 +25,16 @@ export default class RoomDialog extends React.Component {
         super(props)
         const {Id, Floor, Price, Comfort, Occupation} = this.getProps().object
         this.state = {object: {Id, Floor, Price, Comfort, Occupation}}
-
-        this.getCreatedObject = this.getCreatedObject.bind(this)
-        this.onIdChange = this.onIdChange.bind(this)
-        this.onFloorChange = this.onFloorChange.bind(this)
-        this.onPriceChange = this.onPriceChange.bind(this)
-        this.onComfortChange = this.onComfortChange.bind(this)
-        this.onOccupationChange = this.onOccupationChange.bind(this)
-        this.onCreateHandler = this.onCreateHandler.bind(this)
-        this.onUpdateHandler = this.onUpdateHandler.bind(this)
-        this.getProps = this.getProps.bind(this)
     }
 
-    getProps() {
+    getProps = () => {
         const object = this.props.isForUpdate
             ? this.props.object
             : {
-            Id: 0,
-            Floor: 1,
-            Price: '100.00',
-            Comfort: 1,
+            Id: '',
+            Floor: '',
+            Price: '',
+            Comfort: '',
             Occupation: false
         }
         return {
@@ -60,7 +51,7 @@ export default class RoomDialog extends React.Component {
         }
     }
 
-    getCreatedObject() {
+    getCreatedObject = () => {
         if (this.getProps().isForUpdate) {
             return this.state.object
         }
@@ -77,79 +68,74 @@ export default class RoomDialog extends React.Component {
         })
     }
 
-    onIdChange(e) {
-        if (e.target.value < 0)
-            return;
-
-        this.changeState({Id: e.target.value})
-    }
-
-    onFloorChange(e) {
-        if (e.target.value < 1 || e.target.value > 10)
-            return;
-
-        this.changeState({Floor: e.target.value})
-    }
-
-    onPriceChange(e) {
-        this.changeState({Price: e.target.value})
-    }
-
-    isPriceValid() {
+    isFormValid = () => {
         const reg = /^ *\$?\d+(?:\.\d{2})? *$/
-        return this.state.object.Price, toString().match(reg) !== null
+        const {Price} = this.state.object
+
+        return Price.toString().match(reg) !== null
     }
 
-    isComfortValid() {
-        const comfort = this.state.object.Comfort
-        return comfort > 0 && comfort < 11
-    }
+    onFieldChange = (field) => ({target : {value}}) => this.changeState({[field]: value})
 
-    onComfortChange(e) {
-        this.changeState({Comfort: e.target.value})
-    }
+    onOccupationChange = (e, key) =>  this.changeState({Occupation: key === 1})
 
-    onOccupationChange(event, value) {
-        this.changeState({Occupation: value})
-    }
+    onCreateHandler = () =>  this.props.onCreateObject(this.getCreatedObject());
 
-    onCreateHandler() {
-        this.props.onCreateObject(this.getCreatedObject());
-    }
-
-    onUpdateHandler() {
-        this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
-    }
+    onUpdateHandler = () => this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
 
     render() {
-        const {onCloseDialog, isOpen, isForUpdate, currentTableName, ownTableName} = this.getProps()
+        const {isOpen,onCloseDialog, isForUpdate, currentTableName, ownTableName} = this.getProps()
         if (currentTableName !== ownTableName) return null
 
         const {Id, Floor, Price, Comfort, Occupation} = this.state.object
-        //const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
-        //const buttonText = isForUpdate ? 'Update' : 'Create'
-        //const actions = getActions(buttonText, callback, onCloseDialog, !this.isPriceValid() && !this.isComfortValid())
+        const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
+        const buttonText = isForUpdate ? 'Update' : 'Create'
 
+        const occupationTitle = Occupation ? 'Occupied' : 'Free'
         return <div>
             <Modal show={isOpen && currentTableName == ownTableName} onHide={onCloseDialog}>
                 <Modal.Header closeButton>
                     <Modal.Title>Create room</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div>
-                        {isForUpdate && <input type="number" value={Id} placeholder="Id" onChange={this.onIdChange}/>}
-                        <br/>
-                        <input type="number" placeholder="Floor" value={Floor} onChange={this.onFloorChange}/>
-                        <br/>
-                        <input type="text" placeholder="Price" value={Price} onChange={this.onPriceChange}/>
-                        <br/>
-                        <input type="number" placeholder="Comfort" value={Comfort} onChange={this.onComfortChange}/>
-                        <br/>
-                        <input type="checkbox" checked={Occupation} onChange={this.onOccupationChange}/>
-                    </div>
+                    <form>
+                        {isForUpdate &&
+                        <div class="form-group">
+                            <label className="dialog-label">Id</label>
+                            <input type="text" value={Id} placeholder="Id" onChange={this.onFieldChange('Id')}
+                                   className="form-control"/>
+                        </div>}
+                        <div class="form-group">
+                            <label className="dialog-label">Floor</label>
+                            <input type="text" value={Floor} placeholder="Floor" onChange={this.onFieldChange('Floor')}
+                                   className="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label className="dialog-label">Price</label>
+                            <input type="text" value={Price} placeholder="Price" onChange={this.onFieldChange('Price')}
+                                   className="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label className="dialog-label">Comfort</label>
+                            <input type="text" value={Comfort} placeholder="Comfort"
+                                   onChange={this.onFieldChange('Comfort')}
+                                   className="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label className="checkbox-label">Occupation</label>
+                            <DropdownButton id="dropDownButtonRoom"
+                                            onSelect={this.onOccupationChange}
+                                            title={occupationTitle}>
+                                <MenuItem eventKey={1}>Occupied</MenuItem>>
+                                <MenuItem eventKey={0}>Free</MenuItem>
+                            </DropdownButton>
+                        </div>
+                    </form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <button onClick={onCloseDialog}>Close</button>
+                    <button disabled={!this.isFormValid()} className="btn btn-success"
+                            onClick={callback}>{buttonText}</button>
+                    <button onClick={onCloseDialog} className="btn btn-primary">Close</button>
                 </Modal.Footer>
             </Modal>
         </div>

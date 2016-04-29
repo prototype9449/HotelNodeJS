@@ -1,6 +1,6 @@
 import React from 'react';
-import { DropdownButton, MenuItem } from 'react-bootstrap'
-import Toggle from 'react-toggle'
+import {DropdownButton, MenuItem} from 'react-bootstrap'
+
 import {isNumber} from '../../helpers/commonHelper'
 
 function getOccupationTitle(value) {
@@ -9,16 +9,6 @@ function getOccupationTitle(value) {
     } else {
         return value ? 'Occupied' : 'Free'
     }
-}
-
-function transformForView(object) {
-    let {Id, Floor, Price, Comfort, Occupation} = object
-    Id = Id == null ? '' : Id
-    Floor = Floor == null ? '' : Floor
-    Price = Price == null ? '' : Price
-    Comfort = Comfort == null ? '' : Comfort
-
-    return {Id, Floor, Price, Comfort, Occupation}
 }
 
 export default class RoomSearch extends React.Component {
@@ -30,18 +20,9 @@ export default class RoomSearch extends React.Component {
     constructor(props) {
         super(props)
         this.state = this.getDefaultState()
-        this.onSearchHandler = this.onSearchHandler.bind(this)
-        this.onResetHandler = this.onResetHandler.bind(this)
-        this.onIdChange = this.onIdChange.bind(this)
-        this.onFloorChange = this.onFloorChange.bind(this)
-        this.onPriceChange = this.onPriceChange.bind(this)
-        this.onComfortChange = this.onComfortChange.bind(this)
-        this.onOccupationChange = this.onOccupationChange.bind(this)
-        this.onCheck = this.onCheck.bind(this)
-        this.isFormValid = this.isFormValid.bind(this)
     }
 
-    getDefaultState() {
+    getDefaultState = () => {
         return {
             object: {
                 Id: null,
@@ -49,12 +30,11 @@ export default class RoomSearch extends React.Component {
                 Price: null,
                 Comfort: null,
                 Occupation: null
-            },
-            isChecked: false
+            }
         }
     }
 
-    changeState(obj) {
+    changeState = (obj) => {
         this.setState({
             object: {
                 ...this.state.object,
@@ -63,65 +43,16 @@ export default class RoomSearch extends React.Component {
         })
     }
 
-    onIdChange(e) {
-        const result = e.target.value == '' ? null : e.target.value
-        if (result == null) {
-            this.changeState({
-                Id: null
-            })
-            return;
-        }
+    isFormValid = () => {
+        const {Id, Floor, Comfort} = this.state.object
+        const isIdValid = Id === null || isNumber(Id) || +Id >= 0
+        const isFloorValid = Floor === null || isNumber(Floor) || +Floor >= 0 || +Floor <= 10
+        const isComfortValid = Comfort === null || isNumber(Comfort) || +Comfort >= 0 || +Comfort <= 10
 
-        if (!isNumber(result) || +result < 0)
-            return;
-
-        this.changeState({
-            Id: result
-        })
+        return isIdValid && isFloorValid && isComfortValid
     }
 
-    onFloorChange(e) {
-        const result = e.target.value == '' ? null : e.target.value
-        if (result == null) {
-            this.changeState({
-                Floor: null
-            })
-            return;
-        }
-        if (!isNumber(result) || +result < 0 || +result > 10)
-            return;
-
-        this.changeState({Floor: result})
-    }
-
-    onPriceChange(e) {
-        this.changeState({Price: e.target.value})
-    }
-
-    isFormValid() {
-        if (this.state.object.Price === null) {
-            return true
-        }
-
-        const reg = /^ *\$?\d+(?:\.\d{2})? *$/
-        return this.state.object.Price.match(reg) !== null
-    }
-
-    onComfortChange(e) {
-        const result = e.target.value == '' ? null : e.target.value
-        if (result == null) {
-            this.changeState({
-                Comfort: null
-            })
-            return;
-        }
-        if (!isNumber(result) || +result < 0 || +result > 10)
-            return;
-
-        this.changeState({Comfort: result})
-    }
-
-    onOccupationChange(e, key) {
+    onOccupationChange = (e, key) => {
         let occupation
         if (key === 0) {
             occupation = null
@@ -129,13 +60,10 @@ export default class RoomSearch extends React.Component {
             occupation = key === 1
         }
 
-        this.changeState({
-            Occupation: occupation
-        })
         this.changeState({Occupation: occupation})
     }
 
-    onSearchHandler(e) {
+    onSearchHandler = (e) => {
         const {object} = this.state
         const result = Object.keys(object).reduce((obj, x) => {
             if (object[x] == null) {
@@ -151,11 +79,9 @@ export default class RoomSearch extends React.Component {
         e.preventDefault()
     }
 
-    onCheck(e) {
-        this.setState({isChecked: e.target.value})
-    }
+    onFieldChange = (field) => ({target : {value}}) => this.changeState({[field]: value === '' ? null : value})
 
-    onResetHandler(e) {
+    onResetHandler = (e) => {
         const defaultState = this.getDefaultState()
         this.setState({
             ...defaultState
@@ -165,25 +91,25 @@ export default class RoomSearch extends React.Component {
     }
 
     render() {
-        const {isChecked} = this.state
-        let {Id, Floor, Price, Comfort, Occupation} = transformForView(this.state.object)
+        let {Id, Floor, Price, Comfort, Occupation} = this.state.object
         const occupationTitle = getOccupationTitle(Occupation)
 
         return (<form className="form-inline">
             <div className="form-group">
-                <input className="form-control" type="text" value={Id} placeholder="Id" onChange={this.onIdChange}/>
+                <input className="form-control" type="text" value={Id} placeholder="Id"
+                       onChange={this.onFieldChange('Id')}/>
             </div>
             <div className="form-group">
                 <input className="form-control" type="text" placeholder="Floor" value={Floor}
-                       onChange={this.onFloorChange}/>
+                       onChange={this.onFieldChange('Floor')}/>
             </div>
             <div className="form-group">
                 <input className="form-control" type="text" placeholder="Price" value={Price}
-                       onChange={this.onPriceChange}/>
+                       onChange={this.onFieldChange('Price')}/>
             </div>
             <div className="form-group">
                 <input className="form-control" type="text" placeholder="Comfort" value={Comfort}
-                       onChange={this.onComfortChange}/>
+                       onChange={this.onFieldChange('Comfort')}/>
             </div>
             <div className="form-group">
                 Occupation :

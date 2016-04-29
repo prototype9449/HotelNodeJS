@@ -129,7 +129,6 @@ function reducer(state = initialState, action) {
         {
             const deleted = state[action.table].checkedRows.toArray();
             const current = state[action.table].objects;
-            debugger
             const resultObjects = current.delete(deleted)
 
             return {

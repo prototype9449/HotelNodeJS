@@ -1,6 +1,7 @@
 import React from 'react';
-import getActions from '../create-cancel-actions.jsx';
-import {Modal, DropdownButton, MenuItem, Button, Input} from 'react-bootstrap'
+import {Modal, DropdownButton, MenuItem} from 'react-bootstrap'
+
+import {isNumber} from '../../helpers/commonHelper'
 
 export default class ClientDialog extends React.Component {
     static propTypes = {
@@ -22,22 +23,13 @@ export default class ClientDialog extends React.Component {
         super(props)
         const {Id, FullName, Passport, Sex} = this.getProps().object
         this.state = {object: {Id, FullName, Passport, Sex}}
-
-        this.onCreateHandler = this.onCreateHandler.bind(this)
-        this.onUpdateHandler = this.onUpdateHandler.bind(this)
-        this.onIdChange = this.onIdChange.bind(this)
-        this.onFullNameChange = this.onFullNameChange.bind(this)
-        this.onPassportChange = this.onPassportChange.bind(this)
-        this.onSexChange = this.onSexChange.bind(this)
-        this.isPassportValid = this.isPassportValid.bind(this)
-        this.getProps = this.getProps.bind(this)
     }
 
-    getProps() {
+    getProps = () => {
         const object = this.props.isForUpdate
             ? this.props.object
             : {
-            Id: 0,
+            Id: '',
             FullName: '',
             Passport: '',
             Sex: false
@@ -47,7 +39,7 @@ export default class ClientDialog extends React.Component {
             ...this.props,
             object
         }
-    };
+    }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.isForUpdate) {
@@ -57,7 +49,7 @@ export default class ClientDialog extends React.Component {
         }
     }
 
-    getCreatedObject() {
+    getCreatedObject = () => {
         if (this.getProps().isForUpdate) {
             return this.state.object
         }
@@ -65,7 +57,7 @@ export default class ClientDialog extends React.Component {
         return {FullName, Passport, Sex}
     }
 
-    changeState(object) {
+    changeState = (object) => {
         this.setState({
             object: {
                 ...this.state.object,
@@ -74,46 +66,21 @@ export default class ClientDialog extends React.Component {
         })
     }
 
-    onIdChange(e) {
-        if (e.target.value < 0)
-            return;
+    isFormValid = () => {
+        const {Id, Passport} = this.state.object
 
-        this.changeState({
-            Id: e.target.value
-        })
-
+        const isPassportValid = Passport.match(/^[0-9]{6}[-]{1}[0-9]{4}$/) !== null
+        const isIdValid = isNumber(Id) && Id >= 0
+        return isIdValid && isPassportValid
     }
 
-    onFullNameChange(e) {
-        this.changeState({
-            FullName: e.target.value
-        })
-    }
+    onSexChange = (e, key) => this.changeState({Sex: key === 1})
 
-    onPassportChange(e) {
-        this.changeState({
-            Passport: e.target.value
-        })
-    }
+    onFieldChange = (field) => ({target : {value}}) => this.changeState({[field]: value})
 
-    isPassportValid() {
-        const reg = /^[0-9]{6}[-]{1}[0-9]{4}$/
-        return this.state.object.Passport.match(reg) !== null
-    }
+    onUpdateHandler = () => this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
 
-    onSexChange(value, event) {
-        this.changeState({
-            Sex: value == 1
-        })
-    }
-
-    onUpdateHandler() {
-        this.props.onUpdateObject(this.getProps().object, this.getCreatedObject());
-    }
-
-    onCreateHandler() {
-        this.props.onCreateObject(this.getCreatedObject());
-    }
+    onCreateHandler = () => this.props.onCreateObject(this.getCreatedObject());
 
     render() {
         const {isOpen, isForUpdate, onCloseDialog, currentTableName, ownTableName} = this.getProps()
@@ -122,7 +89,7 @@ export default class ClientDialog extends React.Component {
 
         const callback = isForUpdate ? this.onUpdateHandler : this.onCreateHandler
         const buttonText = isForUpdate ? 'Update' : 'Create'
-        const actions = getActions(buttonText, callback, onCloseDialog, !this.isPassportValid())
+        const sexTitle = Sex ? 'Man' : 'Woman'
 
         const sex = Sex ? 1 : 0
         return <div>
@@ -131,24 +98,39 @@ export default class ClientDialog extends React.Component {
                     <Modal.Title>Create client</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div>
-                        {isForUpdate && <Input type="text" value={Id} placeholder="Id"
-                                               onChange={this.onIdChange}/> }
-                        <br/>
-                        <Input type="text" placeholder="FullName" value={FullName}
-                               onChange={this.onFullNameChange}/>
-                        <br/>
-                        <Input type="text" placeholder="Passport" value={Passport}
-                               onChange={this.onPassportChange}/>
-                        <br/>
-                        <DropdownButton value={sex} onSelect={this.onSexChange} title="Sex">
-                            <MenuItem eventKey={1}>Man</MenuItem>
-                            <MenuItem eventKey={0}>Woman</MenuItem>
-                        </DropdownButton>
-                    </div>
+                    <form>
+                        {isForUpdate &&
+                        <div class="form-group">
+                            <label className="dialog-label">Id</label>
+                            <input type="text" value={Id} placeholder="Id" onChange={this.onFieldChange('Id')}
+                                   className="form-control"/>
+                        </div>}
+                        <div class="form-group">
+                            <label className="dialog-label">FullName</label>
+                            <input type="text" value={FullName} placeholder="FullName"
+                                   className="form-control"
+                                   onChange={this.onFieldChange('FullName')}/>
+
+                        </div>
+                        <div class="form-group">
+                            <label className="dialog-label">Passport</label>
+                            <input type="text" value={Passport} placeholder="Passport"
+                                   onChange={this.onFieldChange('Passport')} className="form-control"/>
+                        </div>
+                        <div>
+                            <label className="checkbox-label">Sex</label>
+                            <DropdownButton value={sex} onSelect={this.onSexChange} title={sexTitle}
+                                            id="dropDownButtonClient">
+                                <MenuItem eventKey={0}>Woman</MenuItem>
+                                <MenuItem eventKey={1}>Man</MenuItem>
+                            </DropdownButton>
+                        </div>
+                    </form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={onCloseDialog}>Close</Button>
+                    <button disabled={!this.isFormValid()} className="btn btn-success"
+                            onClick={callback}>{buttonText}</button>
+                    <button className="btn btn-primary" onClick={onCloseDialog}>Close</button>
                 </Modal.Footer>
             </Modal>
         </div>

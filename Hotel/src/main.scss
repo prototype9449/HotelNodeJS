@@ -28,25 +28,75 @@ td > div {
 }
 
 .search-reset {
+  margin-top: 10px;
   margin-right: 2px;
   float: right;
-  width: 20%;
+  width: 30%;
 }
 
-input[type=text].form-control{
+input[type].form-control {
   width: 150px;
   margin: 10px;
 }
 
-.checkbox input[type=checkbox] {
-  margin-left: 0;
+input[placeholder=Id].form-control {
+  width: 60px;
 }
 
-.checkbox input[type=checkbox].areAllChecked {
-  margin-left: -20px;
+input[placeholder=RoomId].form-control {
+  width: 80px;
 }
 
-.checkbox{
+input[placeholder=ClientId].form-control {
+  width: 80px;
+}
+
+input[placeholder=Comfort].form-control {
+  width: 80px;
+}
+
+input[placeholder=Floor].form-control {
+  width: 80px;
+}
+
+input[placeholder=Price].form-control {
+  width: 80px;
+}
+
+input[placeholder=Term].form-control {
+  width: 80px;
+}
+
+input[type=datetime-local].form-control {
+  width: 220px;
+}
+
+.checkbox input[type=checkbox]{
+  margin-left: 10px;
+}
+
+.checkbox input[type=checkbox].areAllChecked{
+  margin-left: -15px;
+}
+
+.CreateDelete button{
+  margin: 5px;
+  width: 140px;
+}
+
+.dialog-label {
+  margin: 5px;
+  margin-left: 10px;
+  display: block;
+}
+
+.checkbox-label {
+  margin: 5px;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.checkbox {
   display: inline-block;
 }
 
