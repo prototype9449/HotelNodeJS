@@ -52,9 +52,9 @@ export default class RoomDialog extends React.Component {
 
     isFormValid = () => {
         const {RoomId, ClientId, Term} = this.state.object
-        const isTermValid = isNumber(Term) && Term > 0
-        const isRoomIdValid = isNumber(RoomId) && RoomId >= 0
-        const isClientIdValid = isNumber(ClientId) && ClientId >= 0
+        const isTermValid = isNumber(Term) && +Term > 0
+        const isRoomIdValid = isNumber(RoomId) && +RoomId >= 0
+        const isClientIdValid = isNumber(ClientId) && +ClientId >= 0
 
         return isTermValid && isRoomIdValid && isClientIdValid
     }
@@ -107,12 +107,11 @@ export default class RoomDialog extends React.Component {
                 </Modal.Header>
                 <Modal.Body>
                     <form>
-                        {isForUpdate &&
                         <div class="form-group">
                             <label className="dialog-label">RoomId</label>
                             <input type="text" value={RoomId} placeholder="RoomId" onChange={this.onFieldChange('RoomId')}
                                    className="form-control"/>
-                        </div>}
+                        </div>
                         <div class="form-group">
                             <label className="dialog-label">ClientId</label>
                             <input type="text" value={ClientId} placeholder="ClientId" onChange={this.onFieldChange('ClientId')}
