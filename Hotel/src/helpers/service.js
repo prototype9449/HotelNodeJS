@@ -4,7 +4,6 @@ import {urls} from '../constants/utils'
 import _ from 'lodash'
 
 const writeError = (dispatch) => (err) => {
-    debugger
     dispatch(actions.openErrorDialog(err.responseJSON.message))
 }
 
