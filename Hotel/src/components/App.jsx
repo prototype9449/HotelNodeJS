@@ -6,6 +6,7 @@ import {Tab, Tabs} from 'react-bootstrap'
 import {connect} from 'react-redux'
 
 import CustomTable from './customTable.jsx'
+import DeleteBestClientInfo from './delete-best-client-info.jsx'
 import {urls, fields, fieldTransforms} from '../constants/utils'
 import * as service from '../helpers/service'
 import {ClientDialog, RoomDialog, RoomClientDialog, RoomReservationDialog, FailureServerDialog} from './dialogs'
@@ -37,14 +38,15 @@ class App extends React.Component {
         $.cookie('password', 'admin')
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.props.fetchObjects()
     }
 
     render() {
         const {onOkErrorDialogHandler, errorTexts, isErrorDialogShown} = this.props;
         const {dialogForObject} = this.props;
-        const {onCheck, onCheckAll,onSearchObject, onShowCreateDialog,onShowUpdateDialog, onDeleteObject, onCreateObject, onUpdateObject, onCloseDialog, fetchObjects } = this.props
+        const {onDeleteBestClientInfo, onCheck, onCheckAll,onSearchObject, onShowCreateDialog,
+            onShowUpdateDialog, onDeleteObject, onCreateObject, onUpdateObject, onCloseDialog, fetchObjects } = this.props
         return (
             <div>
                 <FailureServerDialog onOkHandler={onOkErrorDialogHandler}
@@ -62,7 +64,10 @@ class App extends React.Component {
                                 onShowUpdateDialog={onShowUpdateDialog(urls.clients)}
                                 onDeleteObject={onDeleteObject(urls.clients)}
                                 nameFields={fields[urls.clients]}>
-                                <ClientSearch onSearchObject={onSearchObject(urls.clients)} onReset={fetchObjects}/>
+                                <div>
+                                    <ClientSearch onSearchObject={onSearchObject(urls.clients)} onReset={fetchObjects}/>
+                                    <DeleteBestClientInfo {...{onDeleteBestClientInfo}}/>
+                                </div>
                                 <ClientDialog
                                     {...dialogForObject}
                                     onCreateObject={onCreateObject(urls.clients)}
@@ -204,6 +209,9 @@ const mapDispatchToProps = (dispatch) => {
 
     const onShowCreateDialog = (table) => () => dispatch(actions.openCreateDialog(table))
 
+    const onDeleteBestClientInfo = dispatch((dispatch, getState) =>
+        (year) => service.deleteBestClientsInfo(dispatch, year).then(() => fetchObjects()))
+
     const onDeleteObject = dispatch((dispatch, getState) =>
         (table) =>
             () => {
@@ -244,7 +252,8 @@ const mapDispatchToProps = (dispatch) => {
         onSearchObject,
         onDeleteObject,
         onUpdateObject,
-        onCloseDialog
+        onCloseDialog,
+        onDeleteBestClientInfo
     }
 }
 
