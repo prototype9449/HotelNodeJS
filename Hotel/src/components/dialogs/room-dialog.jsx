@@ -69,10 +69,17 @@ export default class RoomDialog extends React.Component {
     }
 
     isFormValid = () => {
-        const reg = /^ *\$?\d+(?:\.\d{2})? *$/
-        const {Price} = this.state.object
+        const reg = /^[1-9]\d{0,7}(?:\.\d{1,2})?|\.\d{1,2}$/
+        const {Id, Floor, Price, Comfort} = this.state.object
+        const {isForUpdate} = this.props
 
-        return Price.toString().match(reg) !== null
+        const isIdValid = isForUpdate ? isNumber(Id) && Id >= 0 : Id === '' || isNumber(Id) && Id >= 0
+        const matchedString = Price.toString().match(reg)
+        const isPriceValid = matchedString !== null && matchedString[0] === Price
+        const isFloorValid = Floor !== '' && isNumber(+Floor) && +Floor < 11 && +Floor > 0
+        const isComfortValid = Comfort !== '' && isNumber(+Comfort) && +Comfort < 11 && +Comfort > 0
+
+        return isIdValid && isPriceValid && isFloorValid && isComfortValid
     }
 
     onFieldChange = (field) => ({target : {value}}) => this.changeState({[field]: value})

@@ -67,3 +67,11 @@ export function sendRequestToSearch(table){
 export function requestToSearchSuccess(table, objects){
     return {type :types.REQUEST_SEARCH_SUCCESS, table, objects}
 }
+
+export function sendRequestToDeleteBestClientsInfo(){
+    return {type :types.REQUEST_DELETE_BCI}
+}
+
+export function requestToDeleteBestClientsInfoSuccess(){
+    return {type :types.REQUEST_DELETE_BCI_SUCCESS}
+}

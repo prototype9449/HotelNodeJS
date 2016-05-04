@@ -1,6 +1,20 @@
 'use strict';
-let BaseRepository = require('./baseRepository');
-let constants = require('../constants.json');
+const sql = require('mssql');
+const BaseRepository = require('./baseRepository');
+const constants = require('../constants.json');
+const types = {
+    RoomId: sql.NVarChar(10),
+    ClientId: sql.NVarChar(10),
+    Term: sql.NVarChar(10),
+    CheckInDate: sql.DateTime,
+    strongEqual: ['CheckInDate']
+}
+
+const transformObject = (object) => {
+    if(object.CheckInDate)
+        object.CheckInDate = new Date(object.CheckInDate)
+}
+
 
 class RoomReservationRepository extends BaseRepository {
     constructor(user) {
@@ -8,19 +22,24 @@ class RoomReservationRepository extends BaseRepository {
     }
 
     getAll(object) {
-        return super.getObjects(object, constants.RoomReservation);
+        transformObject(object)
+        return super.getObjects({types, object}, constants.RoomReservation);
     }
 
-    insert(roomReservation) {
-        return super.insertObject(roomReservation, constants.RoomReservation);
+    insert(object) {
+        transformObject(object)
+        return super.insertObject({types, object}, constants.RoomReservation);
     }
 
-    delete(rooms) {
-        return super.deleteObject(rooms, constants.RoomReservation);
+    delete(objects) {
+        objects.forEach(x => transformObject(x))
+        return super.deleteObject({types, objects}, constants.RoomReservation);
     }
 
     update(oldObject, newObject) {
-        return super.updateObject({oldObject, newObject}, constants.RoomReservation);
+        transformObject(oldObject)
+        transformObject(newObject)
+        return super.updateObject({types, oldObject, newObject}, constants.RoomReservation);
     }
 }
 

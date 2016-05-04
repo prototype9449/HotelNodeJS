@@ -3,8 +3,9 @@ import sqlContext from '../helpers/repository'
 import {urls} from '../constants/utils'
 import _ from 'lodash'
 
-const writeError = (dispatch) => ({responseJSON}) => {
-    dispatch(actions.openErrorDialog(responseJSON.message))
+const writeError = (dispatch) => (err) => {
+    debugger
+    dispatch(actions.openErrorDialog(err.responseJSON.message))
 }
 
 const areEqual = (state, table, objects) => {
@@ -46,6 +47,13 @@ export function deleteObjects(dispatch, table, deletingObjects) {
     dispatch(actions.sendRequestToDelete(table))
     return sqlContext[table].delete(...deletingObjects).done(() => {
         dispatch(actions.requestToDeleteSuccess(table));
+    }).fail(writeError(dispatch))
+}
+
+export function deleteBestClientsInfo(dispatch, year) {
+    dispatch(actions.sendRequestToDeleteBestClientsInfo())
+    return sqlContext['Clients'].deleteBestClientsInfo(year).done(() => {
+        dispatch(actions.requestToDeleteBestClientsInfoSuccess());
     }).fail(writeError(dispatch))
 }
 

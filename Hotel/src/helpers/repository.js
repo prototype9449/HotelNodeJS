@@ -48,9 +48,15 @@ class Repository {
     }
 }
 
+const deleteBestClientsInfo = (year) => {
+    return getAjaxRequest(verbs.post, {year}, 'Clients/DeleteBestClientInfo')
+}
+
 export default class SqlContext {
     static get [urls.clients]() {
-        return new Repository(urls.clients);
+        const clientRepository = new Repository(urls.clients);
+        clientRepository.deleteBestClientsInfo = deleteBestClientsInfo
+        return clientRepository
     }
 
     static get [urls.rooms]() {

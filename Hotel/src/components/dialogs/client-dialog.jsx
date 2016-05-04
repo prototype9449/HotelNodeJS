@@ -12,6 +12,7 @@ export default class ClientDialog extends React.Component {
             Sex: React.PropTypes.bool
         }),
         isOpen: React.PropTypes.bool,
+        isForUpdate: React.PropTypes.bool,
         currentTableName: React.PropTypes.string,
         ownTableName: React.PropTypes.string,
         onCreateObject: React.PropTypes.func,
@@ -67,11 +68,14 @@ export default class ClientDialog extends React.Component {
     }
 
     isFormValid = () => {
-        const {Id, Passport} = this.state.object
+        const {Id, Passport, FullName} = this.state.object
+        const {isForUpdate} = this.props
 
         const isPassportValid = Passport.match(/^[0-9]{6}[-]{1}[0-9]{4}$/) !== null
-        const isIdValid = isNumber(Id) && Id >= 0
-        return isIdValid && isPassportValid
+        const isIdValid = isForUpdate ? isNumber(Id) && Id >= 0 : Id === '' || isNumber(Id) && Id >= 0
+        const isFullNameValid = FullName !== ''
+        
+        return isIdValid && isPassportValid && isFullNameValid
     }
 
     onSexChange = (e, key) => this.changeState({Sex: key === 1})

@@ -1,6 +1,15 @@
 'use strict';
-let BaseRepository = require('./baseRepository');
-let constants = require('../constants.json');
+const BaseRepository = require('./baseRepository');
+const constants = require('../constants.json');
+const sql = require('mssql');
+
+const types = {
+    Id: sql.NVarChar(10),
+    FullName: sql.NVarChar(100),
+    Passport: sql.NVarChar(100),
+    Sex: sql.Bit,
+    strongEqual: ['Sex']
+}
 
 class ClientRepository extends BaseRepository {
     constructor(user) {
@@ -11,18 +20,18 @@ class ClientRepository extends BaseRepository {
         if (object.Sex) {
             object.Sex = object.Sex === 'true'
         }
-        return super.getObjects(object, constants.Clients)
+        return super.getObjects({types, object}, constants.Clients)
     }
 
     insert(object) {
         delete object.Id;
         object.Sex = object.Sex === 'true'
-        return super.insertObject(object, constants.Clients)
+        return super.insertObject({types, object}, constants.Clients)
     }
 
-    delete(clients) {
-        clients.forEach(x=> x.Sex = x.Sex === 'true')
-        return super.deleteObject(clients, constants.Clients)
+    delete(objects) {
+        objects.forEach(x=> x.Sex = x.Sex === 'true')
+        return super.deleteObject({types, objects}, constants.Clients)
     }
 
     update(oldObject, newObject) {
@@ -32,15 +41,15 @@ class ClientRepository extends BaseRepository {
         oldObject.Sex = oldObject.Sex === 'true'
         newObject.Sex = newObject.Sex === 'true'
         delete newObject.Id;
-        return super.updateObject({oldObject, newObject}, constants.Clients);
+        return super.updateObject({types, oldObject, newObject}, constants.Clients);
     }
 
     deleteBestClientInfo(year) {
-        return this.sqlInstance.connect().then(() => {
-            let request = this.sqlInstance.createRequest();
+        return this.sqlInstance.connect().then((connection) => {
+            const request = connection.request();
 
             return request
-                .input('year', year)
+                .input('year', +year)
                 .execute('DeleteBestClientInfo');
         });
     }

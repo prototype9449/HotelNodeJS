@@ -3,12 +3,53 @@
 const sql = require('mssql');
 const tablesInfo = require('../constants');
 const moment = require('moment')
+const isNumeric = require('../helpers').isNumeric
 
-function createSelectQuery(sqlInstance, object, tableName) {
+function getPropertyCollection(object) {
+    return Object.keys(object).map(x => {
+        return {
+            name: x,
+            value: object[x]
+        }
+    })
+}
+
+function getFilledParamsRequest(connection, properties, types) {
+    let request = connection.request()
+    const getTypeName = (name) => {
+        const symbols = name.split('')
+        let typeName = ''
+        symbols.forEach(x => {
+            if (!isNumeric(x)) {
+                typeName += x
+            } else {
+                return;
+            }
+        })
+
+        return typeName
+    }
+
+    properties.forEach(x => {
+        request = request.input(x.name, types[getTypeName(x.name)], x.value)
+    })
+    return request
+}
+
+function getConnectionString(user) {
+    return tablesInfo.ConnectionString
+        .replace('@login', user.login)
+        .replace('@password', user.password);
+}
+
+function createSelectQuery(sqlInstance, data, tableName) {
+    const object = data.object
+    const types = data.types
+
     return sqlInstance.connect().then((connection) => {
         let properties = getPropertyCollection(object);
         let queryString = `select * from ${tableName}`;
-        let request = getFilledParamsRequest(connection, properties);
+        let request = getFilledParamsRequest(connection, properties, types);
 
         if (properties.length == 0) {
             return request.query(queryString);
@@ -16,7 +57,7 @@ function createSelectQuery(sqlInstance, object, tableName) {
 
         let equalString = []
         properties.forEach(x => {
-            if (typeof x.value == 'boolean' || x.value.match(/\b[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0]{3}Z\b/)) {
+            if (types.strongEqual.indexOf(x.name) !== -1) {
                 equalString.push(`${x.name} = @${x.name}`)
             } else {
                 equalString.push(`${x.name} like '%' + @${x.name} + '%'`)
@@ -30,47 +71,24 @@ function createSelectQuery(sqlInstance, object, tableName) {
     });
 }
 
-function getPropertyCollection(object) {
-    return Object.keys(object).map(x => {
-        return {
-            name: x,
-            value: object[x]
-        }
-    })
-}
+function getInsertPreparedQuery(sqlInstance, data, tableName) {
+    const object = data.object
+    const types = data.types
 
-function getFilledParamsRequest(connection, properties) {
-    let request = connection.request();
-    let sqlType;
-    properties.forEach(x => {
-        switch (typeof x.value) {
-            case 'boolean':
-                sqlType = sql.Bit;
-                break;
-            case 'number' :
-                sqlType = sql.Int;
-                break;
-            case 'string' :
-                sqlType = sql.NVarChar(100);
-                break;
-        }
-        request = request.input(x.name, sqlType, x.value);
-    });
-    return request;
-}
-
-function getInsertPreparedQuery(sqlInstance, object, tableName) {
     return sqlInstance.connect().then((connection) => {
         let properties = getPropertyCollection(object);
         let propNames = properties.map(x => x.name).join(',');
         let propSpecialNames = properties.map(x => '@' + x.name).join(',');
         let queryString = `insert into ${tableName} (${propNames}) values (${propSpecialNames})`;
-        let request = getFilledParamsRequest(connection, properties);
+        let request = getFilledParamsRequest(connection, properties, types);
         return request.query(queryString);
     });
 }
 
-function getDeletePreparedQuery(sqlInstance, objects, tableName) {
+function getDeletePreparedQuery(sqlInstance, data, tableName) {
+    const objects = data.objects
+    const types = data.types
+
     return sqlInstance.connect().then((connection) => {
         let resultEqualString = '';
         let nameAndValues = [];
@@ -91,18 +109,14 @@ function getDeletePreparedQuery(sqlInstance, objects, tableName) {
 
         });
         const queryString = `delete from ${tableName} where ${resultEqualString}`;
-        const request = getFilledParamsRequest(connection, nameAndValues);
+        const request = getFilledParamsRequest(connection, nameAndValues, types);
         return request.query(queryString);
     });
 }
 
-function getConnectionString(user) {
-    return tablesInfo.ConnectionString
-        .replace('@login', user.login)
-        .replace('@password', user.password);
-}
-
 function getUpdatePreparedQuery(sqlInstance, data, tableName) {
+    const types = data.types
+
     return sqlInstance.connect().then((connection) => {
         let convertList = (list, word) => list.map(x => {
             return {
@@ -126,7 +140,7 @@ function getUpdatePreparedQuery(sqlInstance, data, tableName) {
         const equalString = oldProperties.map(x => `${x.name} = @${x.paramName}`).join(' and ');
 
         const queryString = `update ${tableName} set ${assignString} where ${equalString}`;
-        const request = getFilledParamsRequest(connection, changeParamNameToName(newProperties.concat(oldProperties)));
+        const request = getFilledParamsRequest(connection, changeParamNameToName(newProperties.concat(oldProperties)), types);
         return request.query(queryString);
     });
 }
@@ -138,16 +152,16 @@ class BaseRepository {
         };
     }
 
-    getObjects(object, tableName) {
-        return createSelectQuery(this.sqlInstance, object, tableName);
+    getObjects(data, tableName) {
+        return createSelectQuery(this.sqlInstance, data, tableName);
     }
 
-    insertObject(object, tableName) {
-        return getInsertPreparedQuery(this.sqlInstance, object, tableName);
+    insertObject(data, tableName) {
+        return getInsertPreparedQuery(this.sqlInstance, data, tableName);
     }
 
-    deleteObject(objects, tableName) {
-        return getDeletePreparedQuery(this.sqlInstance, objects, tableName);
+    deleteObject(data, tableName) {
+        return getDeletePreparedQuery(this.sqlInstance, data, tableName);
     }
 
     updateObject(data, tableName) {

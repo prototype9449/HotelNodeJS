@@ -1,6 +1,8 @@
 'use strict';
 
-let SqlContext = require('./repositories/sqlContext');
+const SqlContext = require('./repositories/sqlContext');
+const getSuccess = require('./helpers/responseHelper').getSuccess
+const getError = require('./helpers/responseHelper').getError
 
 function getContext(request) {
     return new SqlContext({
@@ -8,23 +10,6 @@ function getContext(request) {
             password: request.cookies.password
         }
     );
-}
-
-function getError(err, responce, data) {
-    console.log(err);
-        responce.set({
-            'Content-Type': 'application/json'
-        });
-        responce.statusCode = 409;
-        responce.send(JSON.stringify({ message : data}));
-}
-
-function getSuccess(responce, data) {
-        responce.set({
-            'Status': '202',
-            'Content-Type': 'application/json'
-        });
-        responce.send(JSON.stringify({ message : data}));
 }
 
 function setRoute(app, contextName) {

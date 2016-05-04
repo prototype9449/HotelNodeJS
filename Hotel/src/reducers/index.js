@@ -199,6 +199,22 @@ function reducer(state = initialState, action) {
                     objects: new CustomSet(action.objects)
                 }
             }
+        case types.REQUEST_DELETE_BCI :
+            return {
+                ...state,
+                ['Clients']: {
+                    ...state['Clients'],
+                    isIndicatorShown: true
+                }
+            }
+        case types.REQUEST_DELETE_BCI_SUCCESS :
+            return {
+                ...state,
+                ['Clients']: {
+                    ...state['Clients'],
+                    isIndicatorShown: false
+                }
+            }
         default:
             return state
     }

@@ -1,8 +1,10 @@
 'use strict';
 
-var express = require('express');
-var router = express.Router();
-let SqlContext = require('./repositories/sqlContext');
+const express = require('express');
+const router = express.Router();
+const SqlContext = require('./repositories/sqlContext');
+const getSuccess = require('./helpers/responseHelper').getSuccess
+const getError = require('./helpers/responseHelper').getError
 
 function getContext(request) {
     return new SqlContext({
@@ -14,13 +16,10 @@ function getContext(request) {
 
 router.post('/Clients/DeleteBestClientInfo', (req, res) => {
     getContext(req).Clients().deleteBestClientInfo(req.body.year)
-        .then(() => {
-            res.send('success');
-        })
+        .then(() => getSuccess(res,'Success'))
         .catch((err) => {
-            console.log(err);
-            res.send('There was an error');
-        });
+            getError(err, res,'there was an error');
+        })
 });
 
 module.exports = () => router;
